@@ -1,0 +1,36 @@
+name: 每天更新市場數據
+
+on:
+  schedule:
+    - cron: "30 2,5 * * 2-6"   # 週二到週六 台灣時間 10:30、13:30
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 下載技能包
+        run: git clone --depth 1 https://github.com/tradermonty/claude-trading-skills.git _skills
+
+      - name: 安裝套件
+        run: pip install -r _skills/skills/macro-regime-detector/requirements.txt
+
+      - name: 跑三個技能並更新數據
+        run: python scripts/update.py
+
+      - name: 存回 GitHub
+        run: |
+          git config user.name "island-bot"
+          git config user.email "island-bot@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "更新市場數據 $(date +'%Y-%m-%d %H:%M')"
+          git push
