@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>美股觀測儀表板｜Hello Island</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#F6F3EA;color:#1E2A32;font-family:'Noto Sans TC',system-ui,-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;line-height:1.6}
+a{color:#0E6E72}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 24px 48px;display:flex;flex-direction:column;gap:24px}
+.back{font-size:14px;text-decoration:none;font-weight:700}
+h1{margin:0;font-size:28px;font-weight:900;display:flex;align-items:center;gap:12px}
+.lede{margin:6px 0 0;font-size:16px}
+.asof{margin:2px 0 0;font-size:13px;color:#5B6770}
+.panel{background:#fff;border:1px solid #E4DFD2;border-radius:20px;padding:22px 24px}
+.cap{font-size:13px;color:#5B6770}
+.top{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.gauge{width:230px;max-width:100%;flex:none}
+.head{font-size:22px;font-weight:900;margin:2px 0 6px;line-height:1.35}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:10px;font-size:12px;color:#5B6770}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.sw{width:10px;height:10px;border-radius:3px;display:inline-block}
+.sub{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:20px 0 6px;font-size:12px;color:#5B6770}
+.row{display:grid;grid-template-columns:112px minmax(0,1fr) 48px;align-items:center;gap:10px;padding:5px 0}
+.nm{font-size:14px;line-height:1.3}
+.nm small{display:block;font-size:11px;color:#5B6770}
+.trk{position:relative;height:26px;border-radius:8px;background:#F6F3EA}
+.fil{position:absolute;left:0;top:0;bottom:0;border-radius:8px}
+.in{position:absolute;left:10px;top:0;bottom:0;display:flex;align-items:center;font-size:12px;white-space:nowrap}
+.th{position:absolute;top:-4px;bottom:-4px;width:0;border-left:1.5px dashed #5B6770;opacity:.6}
+.val{font-size:14px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.k{background:#fff;border:1px solid #E4DFD2;border-radius:18px;padding:16px 18px}
+.kl{font-size:13px;color:#5B6770;margin:0}
+.kv{font-size:38px;font-weight:900;line-height:1.15;margin:6px 0 4px;font-variant-numeric:tabular-nums}
+.kv small{font-size:15px;font-weight:500;color:#5B6770}
+.kw{font-size:22px;font-weight:900;margin:10px 0 6px}
+.ks{font-size:13px;color:#5B6770;margin:0}
+.up{color:#0F6E56}.dn{color:#A32D2D}
+.h2row{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+h2{margin:0;font-size:20px;font-weight:900}
+.scale{display:grid;grid-template-columns:112px minmax(0,1fr) 48px;gap:10px;font-size:11px;color:#5B6770}
+.scale div{display:flex;justify-content:space-between}
+.ev{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;background:#F6F3EA;margin-bottom:8px}
+.day{width:52px;text-align:center;flex:none}
+.day b{display:block;font-size:11px;font-weight:400;color:#5B6770}
+.day i{font-style:normal;font-size:18px;font-weight:700}
+.evn{flex:1;min-width:0;font-size:15px}
+.evn small{display:block;font-size:12px;color:#5B6770}
+.pill{font-size:12px;padding:2px 10px;border-radius:999px;white-space:nowrap}
+details{font-size:13px;color:#5B6770}
+details li{margin:4px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html#radar">← 回到 Linda 小島</a>
+
+  <header>
+    <h1><svg width="42" height="28" viewBox="0 0 190 126" role="img" aria-label="美國國旗" style="flex:none;border-radius:4px;box-shadow:0 0 0 1px #E4DFD2"><rect width="190" height="126" fill="#fff"/><g fill="#B22234"><rect y="0" width="190" height="9.7"/><rect y="19.4" width="190" height="9.7"/><rect y="38.8" width="190" height="9.7"/><rect y="58.2" width="190" height="9.7"/><rect y="77.6" width="190" height="9.7"/><rect y="97" width="190" height="9.7"/><rect y="116.3" width="190" height="9.7"/></g><rect width="76" height="67.9" fill="#3C3B6E"/><g fill="#fff"><circle cx="9" cy="8" r="2.6"/><circle cx="21.5" cy="8" r="2.6"/><circle cx="34" cy="8" r="2.6"/><circle cx="46.5" cy="8" r="2.6"/><circle cx="59" cy="8" r="2.6"/><circle cx="71" cy="8" r="2.6"/><circle cx="15" cy="21" r="2.6"/><circle cx="27.5" cy="21" r="2.6"/><circle cx="40" cy="21" r="2.6"/><circle cx="52.5" cy="21" r="2.6"/><circle cx="65" cy="21" r="2.6"/><circle cx="9" cy="34" r="2.6"/><circle cx="21.5" cy="34" r="2.6"/><circle cx="34" cy="34" r="2.6"/><circle cx="46.5" cy="34" r="2.6"/><circle cx="59" cy="34" r="2.6"/><circle cx="71" cy="34" r="2.6"/><circle cx="15" cy="47" r="2.6"/><circle cx="27.5" cy="47" r="2.6"/><circle cx="40" cy="47" r="2.6"/><circle cx="52.5" cy="47" r="2.6"/><circle cx="65" cy="47" r="2.6"/><circle cx="9" cy="60" r="2.6"/><circle cx="21.5" cy="60" r="2.6"/><circle cx="34" cy="60" r="2.6"/><circle cx="46.5" cy="60" r="2.6"/><circle cx="59" cy="60" r="2.6"/><circle cx="71" cy="60" r="2.6"/></g></svg>美股觀測儀表板</h1>
+    <p class="lede" id="lede">資料載入中…</p>
+    <p class="asof">美股 <span id="asof">—</span> 收盤數據・最後更新 <span id="upd">—</span></p>
+  </header>
+
+  <section class="panel" id="macro">
+    <div class="top">
+      <div class="gauge" id="gauge"></div>
+      <div style="flex:1;min-width:180px">
+        <div class="cap">總經格局（1–2 年視角）・跨資產六項指標</div>
+        <div class="head" id="mHead">—</div>
+        <div class="cap">6 項中 <b id="mSig">—</b> 項出現訊號・轉換分數 <b id="mScore">—</b> / 100</div>
+        <div class="legend">
+          <span><span class="sw" style="background:#9FE1CB"></span>穩定 0–20</span>
+          <span><span class="sw" style="background:#C0DD97"></span>初步訊號 20–40</span>
+          <span><span class="sw" style="background:#FAC775"></span>轉換區 40–60</span>
+          <span><span class="sw" style="background:#F0997B"></span>轉換進行中 60–80</span>
+          <span><span class="sw" style="background:#E24B4A"></span>確認轉換 80–100</span>
+        </div>
+      </div>
+    </div>
+    <div class="sub"><span>六項指標轉換訊號（分數越高，格局改變的訊號越強，不代表好壞）</span><span>虛線＝40 分</span></div>
+    <div id="mBars"></div>
+  </section>
+
+  <section class="kpis">
+    <div class="k"><p class="kl">類股風險偏好（0–100）</p><p class="kv"><span id="kScore">—</span><small> / 100</small></p><p class="ks"><span id="kChg">—</span>　<span id="kReg"></span></p></div>
+    <div class="k"><p class="kl">趨勢向上類股</p><p class="kv"><span id="kUp">—</span><small> / 11</small></p><p class="ks" id="kUpN">—</p></div>
+    <div class="k"><p class="kl">最強類股</p><p class="kw" id="kTop">—</p><p class="ks">上升趨勢比例 <span id="kTopR">—</span>%</p></div>
+    <div class="k"><p class="kl">超賣類股</p><p class="kv" id="kOs">—</p><p class="ks" id="kOsN">—</p></div>
+  </section>
+
+  <section class="panel">
+    <div class="h2row"><h2>11 大類股上升趨勢比例</h2><span class="cap">▲▼為近期方向</span></div>
+    <div class="legend" style="margin:0 0 10px"><span><span class="sw" style="background:#3f7fbf"></span>正常</span><span><span class="sw" style="background:#F0997B"></span>超賣</span></div>
+    <div class="scale"><span></span><div><span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%</span></div><span></span></div>
+    <div id="sBars"></div>
+  </section>
+
+  <section class="panel">
+    <div class="h2row"><h2>近期美國重要經濟數據</h2><span class="cap">第一級數據・台灣時間</span></div>
+    <div id="cal"></div>
+  </section>
+
+  <details>
+    <summary>指標說明</summary>
+    <ul>
+      <li>總經格局：用六組跨資產比值（RSP/SPY、殖利率曲線、HYG/LQD、IWM/SPY、SPY/TLT、XLY/XLP）的 6／12 個月均線與動能，評估 1–2 年格局是否正在轉換；分數代表轉換訊號強弱，不代表好壞。殖利率曲線以 SHY/TLT 價格比估算。</li>
+      <li>上升趨勢比例：該類股成分股中，股價處於上升趨勢的比例。超賣：比例明顯低於常態區間的類股。</li>
+      <li>類股風險偏好：比較景氣循環股與防禦股的上升趨勢比例；類股之間分歧大時會扣分。</li>
+      <li>資料來源：TraderMonty 公開數據、Yahoo Finance、FXMacroData（官方發布時程）。僅供研究參考，非投資建議。</li>
+    </ul>
+  </details>
+</div>
+<script>
+(function(){
+  var BANDS=[[0,20,'#9FE1CB','#04342C'],[20,40,'#C0DD97','#173404'],[40,60,'#FAC775','#412402'],[60,80,'#F0997B','#4A1B0C'],[80,100,'#E24B4A','#FFFFFF']];
+  function el(id){ return document.getElementById(id); }
+  function band(v){ var i=0; BANDS.forEach(function(b,k){ if(v>b[0]) i=k; }); return i; }
+  function mk(tag,cls,txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+  function gauge(v){
+    var ns='http://www.w3.org/2000/svg', cx=115, cy=118, R=92, on=band(v);
+    function pt(t,r){ var a=Math.PI*(1-t/100); return [cx+r*Math.cos(a), cy-r*Math.sin(a)]; }
+    var svg=document.createElementNS(ns,'svg'); svg.setAttribute('viewBox','0 0 230 136'); svg.setAttribute('width','100%'); svg.setAttribute('role','img'); svg.setAttribute('aria-label','轉換分數 '+v.toFixed(1));
+    BANDS.forEach(function(b,i){ var a=pt(b[0]+0.7,R), c=pt(b[1]-0.7,R), p=document.createElementNS(ns,'path');
+      p.setAttribute('d','M'+a[0]+','+a[1]+' A'+R+','+R+' 0 0 1 '+c[0]+','+c[1]); p.setAttribute('fill','none'); p.setAttribute('stroke',b[2]); p.setAttribute('stroke-width','18'); p.setAttribute('opacity',i===on?'1':'0.4'); svg.appendChild(p); });
+    var tip=pt(v,R-26), ln=document.createElementNS(ns,'line');
+    ln.setAttribute('x1',cx); ln.setAttribute('y1',cy); ln.setAttribute('x2',tip[0]); ln.setAttribute('y2',tip[1]); ln.setAttribute('stroke','#1E2A32'); ln.setAttribute('stroke-width','3'); ln.setAttribute('stroke-linecap','round'); svg.appendChild(ln);
+    var dot=document.createElementNS(ns,'circle'); dot.setAttribute('cx',cx); dot.setAttribute('cy',cy); dot.setAttribute('r','6'); dot.setAttribute('fill','#1E2A32'); svg.appendChild(dot);
+    var t=document.createElementNS(ns,'text'); t.setAttribute('x',cx); t.setAttribute('y',cy-26); t.setAttribute('text-anchor','middle'); t.setAttribute('style','font-size:30px;font-weight:900;fill:#1E2A32'); t.textContent=v.toFixed(1); svg.appendChild(t);
+    [['0',12],['100',204]].forEach(function(a){ var s=document.createElementNS(ns,'text'); s.setAttribute('x',a[1]); s.setAttribute('y',134); s.setAttribute('style','font-size:11px;fill:#5B6770'); s.textContent=a[0]; svg.appendChild(s); });
+    el('gauge').appendChild(svg);
+  }
+  fetch('data/latest.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+    var s=d.sector||{}, m=d.macro||{};
+    var ups=s.up_names||[], os=s.oversold||[], top=(s.top3||[])[0]||{};
+    el('lede').textContent='總經'+(m.zone_zh||'—')+'；類股風險偏好「'+(s.regime_zh||'—')+'」，11 個類股中 '+ups.length+' 個趨勢向上，最強為'+(top.name||'—')+'，超賣 '+os.length+' 個。';
+    el('asof').textContent=s.us_label||'—'; el('upd').textContent=d.updated_at||'—';
+    // 總經
+    if(m.score!=null){ gauge(Math.max(0,Math.min(100,+m.score))); }
+    el('mHead').textContent=m.zone_zh||'—'; el('mSig').textContent=m.signaling!=null?m.signaling:'—'; el('mScore').textContent=m.score!=null?(+m.score).toFixed(1):'—';
+    (m.parts||[]).forEach(function(p){ var v=+p.score, sig=v>=40, i=band(v);
+      var row=mk('div','row'); var nm=mk('div','nm',p.name); nm.appendChild(mk('small',null,p.ratio+'・權重 '+p.weight+'%'));
+      var trk=mk('div','trk'); var f=mk('div','fil'); f.style.width=v+'%'; f.style.background=sig?BANDS[i][2]:'#E4DFD2';
+      var lab=mk('div','in',p.direction); lab.style.color=sig?BANDS[i][3]:'#5B6770'; var th=mk('div','th'); th.style.left='40%'; trk.append(f,lab,th);
+      var val=mk('div','val',String(v)); if(!sig) val.style.color='#5B6770'; row.append(nm,trk,val); el('mBars').appendChild(row); });
+    // 數字卡
+    el('kScore').textContent=s.score!=null?s.score:'—';
+    if(s.prev_score!=null && s.score!=null){ var c=s.score-s.prev_score; el('kChg').textContent=(c>0?'▲ ':c<0?'▼ ':'持平 ')+(c?Math.abs(c):'')+' 較上次'; el('kChg').className=c>0?'up':c<0?'dn':''; } else { el('kChg').textContent=''; }
+    el('kReg').textContent=s.regime_zh?'・'+s.regime_zh:'';
+    el('kUp').textContent=ups.length; el('kUpN').textContent=ups.join('、')||'無';
+    el('kTop').textContent=top.name||'—'; el('kTopR').textContent=top.ratio!=null?(+top.ratio).toFixed(1):'—';
+    el('kOs').textContent=os.length; el('kOsN').textContent=os.map(function(r){return r.name;}).join('、')||'無';
+    // 類股
+    (s.all||[]).forEach(function(r){ var v=+r.ratio; var row=mk('div','row'); var nm=mk('div','nm',r.name);
+      var ar=mk('span',r.trend==='Up'?'up':'dn',r.trend==='Up'?' ▲':' ▼'); ar.style.fontSize='11px'; nm.appendChild(ar);
+      var trk=mk('div','trk'); var f=mk('div','fil'); f.style.width=Math.max(1,Math.min(100,v/40*100))+'%'; f.style.background=r.oversold?'#F0997B':'#3f7fbf'; trk.appendChild(f);
+      row.append(nm,trk,mk('div','val',v.toFixed(1)+'%')); el('sBars').appendChild(row); });
+    // 行事曆
+    var cal=d.calendar||[]; if(!cal.length){ el('cal').textContent='近期沒有第一級數據'; }
+    cal.forEach(function(c){ var ev=mk('div','ev'); var day=mk('div','day'); day.append(mk('b',null,'週'+c.weekday), mk('i',null,c.date));
+      var nm=mk('div','evn',c.event); nm.appendChild(mk('small',null,c.time));
+      var fed=/FOMC/.test(c.event); var pill=mk('span','pill',fed?'聯準會':'經濟數據'); pill.style.background=fed?'#EEEDFE':'#fff'; pill.style.color=fed?'#3C3489':'#5B6770';
+      ev.append(day,nm,pill); el('cal').appendChild(ev); });
+  }).catch(function(){ el('lede').textContent='數據暫時無法載入，請稍後再試。'; });
+})();
+</script>
+</body>
+</html>

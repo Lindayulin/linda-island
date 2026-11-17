@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hello Island｜Linda 小島</title>
+<meta name="description" content="Linda 的小島：外資報告摘要、投資人會議報名與聯絡方式。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:#F6F3EA;color:#1E2A32;font-family:'Noto Sans TC',system-ui,-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;line-height:1.6}
+a{color:#0E6E72}a:hover{color:#0A5255}
+:focus-visible{outline:3px solid #0E6E72;outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header{background:#fff;border-bottom:1px solid #E4DFD2}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 24px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#1E2A32}
+.logo span{font-size:20px;font-weight:900;letter-spacing:.5px}
+nav.links{display:flex;flex-wrap:wrap;gap:4px}
+nav.links a{padding:10px 14px;border-radius:999px;text-decoration:none;color:#3A4750;font-weight:500}
+nav.links a:hover{background:#F1EEE5}
+.btn-dark{display:inline-block;padding:10px 18px;border-radius:999px;background:#1E2A32;color:#fff;text-decoration:none;font-weight:700;font-size:15px}
+.btn-dark:hover{background:#33434e;color:#fff}
+main.wrap{padding:32px 24px 48px;display:flex;flex-direction:column;gap:28px}
+.row{display:flex;flex-wrap:wrap;gap:20px;align-items:stretch}
+.hello{flex:1 1 420px;min-width:0;background:#DDF0EF;border-radius:20px;padding:20px 20px 18px;display:flex;flex-direction:column;gap:12px}
+.hello h1{margin:0;font-size:22px;line-height:1.3;font-weight:900;text-align:center}
+.folks{display:flex;justify-content:space-around;align-items:flex-end;gap:8px}
+.folk{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#1E2A32}
+.folk .say{background:#fff;border-radius:14px;padding:6px 10px;font-size:12px;line-height:1.4;text-align:center;box-shadow:0 4px 12px rgba(34,64,90,.12);max-width:150px}
+.folk img{height:110px;width:auto;display:block;transition:transform .2s ease}
+.folk:hover img{transform:translateY(-4px)}
+.folk .tag{white-space:nowrap;display:flex;align-items:center;gap:6px;background:#fff;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
+.dot{width:8px;height:8px;border-radius:999px;display:inline-block}
+.glance{flex:1 1 420px;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-content:center}
+.gcard{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #E4DFD2;border-radius:16px;padding:18px 20px;text-decoration:none;color:#1E2A32}
+.gcard:hover{border-color:#CFC8B8;color:#1E2A32}
+.gicon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gtxt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.gtxt small{font-size:13px;color:#5B6770}
+.gtxt b{font-weight:700}
+.panel{background:#fff;border:1px solid #E4DFD2;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px}
+.panel h2{margin:0;font-size:24px;font-weight:900}
+.sub{margin:0;font-size:14px;color:#5B6770}
+.head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.cols{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.col{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.colhead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.colhead h3{margin:0;display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900}
+.colhead .flag{width:27px;height:18px;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.12);flex-shrink:0}
+.colhead h3 span{padding:3px 12px;border-radius:999px;color:#fff;font-size:14px}
+.colhead a{font-size:13px;font-weight:700}
+.rp{border:1px solid #E4DFD2;border-radius:14px;padding:16px;background:#FCFBF7;display:flex;flex-direction:column;gap:6px}
+.rp .d{font-size:13px;color:#5B6770}
+.rp h4{margin:0;font-size:16px;font-weight:700;line-height:1.5}
+.rp p{margin:0;font-size:14px;line-height:1.7;color:#3A4750;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.rp .tk{font-size:13px;line-height:1.6;color:#5B6770;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mk{display:flex;flex-wrap:wrap;gap:12px}
+.mkcard{flex:1 1 220px;min-width:0;border:1px solid #E4DFD2;border-radius:14px;padding:18px;background:#FCFBF7;text-decoration:none;color:#1E2A32;display:flex;flex-direction:column;gap:8px}
+.mkcard:hover{border-color:#CFC8B8;color:#1E2A32}
+.mkcard .pill{align-self:flex-start;padding:3px 10px;border-radius:999px;color:#fff;font-size:13px;font-weight:700}
+.mkcard b{font-size:17px}
+.mkcard span.go{font-size:14px;font-weight:700;color:#0E6E72}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pills button{font:inherit;font-size:14px;padding:8px 14px;border-radius:999px;border:1px solid #CFC8B8;background:#fff;color:#1E2A32;cursor:pointer;min-height:40px}
+.pills button[aria-pressed="true"]{background:#1E2A32;border-color:#1E2A32;color:#fff;font-weight:700}
+.ev-wrap{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+#evList{flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.ev{display:flex;flex-wrap:wrap;align-items:center;gap:16px;border:1px solid #E4DFD2;border-radius:14px;padding:16px 18px;background:#FCFBF7;cursor:pointer}
+.ev.on{border-color:#A8481F;background:#FFF7F1}
+.ev .date{width:64px;text-align:center;flex-shrink:0}
+.ev .date small{display:block;font-size:13px;color:#A8481F;font-weight:700}
+.ev .date b{display:block;font-size:26px;font-weight:900;line-height:1.1}
+.ev .body{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.ev .meta{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;align-items:center}
+.ev .mtag{padding:2px 10px;border-radius:999px;color:#fff;font-weight:700}
+.ev .fmt{padding:2px 10px;border-radius:999px;background:#EFEDE6;color:#3A4750}
+.ev .time{color:#5B6770}
+.ev h3{margin:0;font-size:16px;font-weight:700}
+.ev .spk{margin:0;font-size:13px;color:#5B6770}
+.ev details{font-size:13px;color:#3A4750}
+.ev details summary{cursor:pointer;color:#0E6E72}
+.ev details p{margin:4px 0 0;white-space:pre-line}
+.ev label.pick{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid #CFC8B8;font-size:14px;cursor:pointer;background:#fff}
+.ev input[type=checkbox]{width:18px;height:18px;accent-color:#A8481F}
+.empty{padding:24px;border:1px dashed #CFC8B8;border-radius:14px;text-align:center;color:#5B6770}
+#regForm{flex:1 1 280px;min-width:0;background:#FBEDE4;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px}
+#regForm h3{margin:0;font-size:18px;font-weight:900}
+#regForm label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500}
+#regForm input[type=text],#regForm input[type=email]{font:inherit;padding:12px;border-radius:10px;border:1px solid #CFC8B8;background:#fff}
+#regForm .rem{display:flex;align-items:center;gap:8px;font-size:14px}
+#regForm .rem input{width:18px;height:18px;accent-color:#A8481F}
+#regGo{padding:14px;border:0;border-radius:12px;background:#A8481F;color:#fff;font:inherit;font-weight:700;font-size:16px;cursor:pointer}
+#regGo:disabled{background:#C9A99A;cursor:not-allowed}
+#regForget{align-self:flex-start;background:none;border:0;padding:4px 0;font:inherit;font-size:13px;color:#5B6770;text-decoration:underline;cursor:pointer}
+#regMsg{margin:0;font-size:14px;min-height:1em}
+#regMsg.err{color:#B3261E}
+#regDone{background:#fff;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+#regDone ul{margin:0;padding-left:18px}
+#regDone button{align-self:flex-start;font:inherit;font-size:14px;padding:10px 14px;border-radius:10px;border:1px solid #CFC8B8;background:#fff;cursor:pointer}
+.contact{background:#1E2A32;color:#fff;border-radius:20px;padding:28px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}
+.contact h2{margin:0;font-size:24px;font-weight:900}
+.contact .who{margin:0;font-size:20px;font-weight:700}
+.contact .items{display:flex;flex-wrap:wrap;gap:20px}
+.contact .item{display:flex;align-items:center;gap:10px}
+.contact a{color:#9EDCD8;font-size:15px}
+.contact a.island{color:#fff;font-size:14px}
+.copy{padding:8px 12px;border-radius:8px;border:1px solid #5B6770;background:transparent;color:#fff;font:inherit;font-size:13px;cursor:pointer;min-width:56px}
+footer{border-top:1px solid #E4DFD2;padding:20px 24px;text-align:center;font-size:13px;color:#5B6770}
+@media (max-width:560px){.wrap{padding:0 16px}main.wrap{padding:20px 16px 36px}.panel,.contact{padding:20px}.folk img{height:92px}.folk .say{font-size:11px}.folk .tag{font-size:11px;padding:3px 8px;gap:4px}.mkcard{flex-basis:140px;padding:14px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.folk img{transition:none}}
+
+/* 米諾的美股觀測 */
+.rad-row{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.rad-mino{flex:1 1 300px;max-width:420px;min-width:0;display:flex;align-items:center;gap:14px;background:#E6F1FA;border-radius:16px;padding:16px 18px}
+.rad-mino img{height:96px;width:auto;flex-shrink:0}
+.rad-say{margin:0;background:#fff;border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:15px;line-height:1.7}
+.rad-kpis{flex:2 1 320px;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rad-macro{grid-column:1/-1;background:#EEEDFE;border:1px solid #CECBF6;border-radius:16px;padding:14px 18px;display:flex;flex-direction:column;gap:2px}
+.rad-k{background:#FCFBF7;border:1px solid #E4DFD2;border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.rad-k .big{font-size:36px;font-weight:900;line-height:1.1}
+.rad-pill{align-self:flex-start;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:700;background:#DDF0EF;color:#0A5255}
+.rad-bars{display:flex;flex-wrap:wrap;gap:20px}
+.rad-bars>div{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.rad-bars h3{margin:0;font-size:16px;font-weight:900}
+.rad-bar{display:flex;align-items:center;gap:10px;font-size:15px}
+.rad-bar .n{width:84px;flex-shrink:0}
+.rad-bar .t{flex:1;height:12px;border-radius:999px;background:#EFEDE6;overflow:hidden}
+.rad-bar .t span{display:block;height:100%;border-radius:999px}
+.rad-bar .v{width:52px;text-align:right;font-weight:700}
+.rad-focus{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:#FCFBF7;border:1px solid #E4DFD2;border-radius:14px;padding:12px 16px;font-size:14px}
+.rad-note{margin:0;font-size:13px;color:#5B6770}
+@media (max-width:520px){.rad-kpis{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top wrap" style="padding-left:24px;padding-right:24px">
+    <a class="logo" href="#top">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="16" fill="#DDF0EF"/><path d="M5 22 Q17 15 29 22 Z" fill="#E9C98B"/><path d="M17 20 L17 9" stroke="#6B4B2A" stroke-width="2" fill="none"/><path d="M17 9 Q11 8 9 12 M17 9 Q23 8 25 12 M17 9 Q14 5 11 6" stroke="#2E8B57" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+      <span>Hello Island</span>
+    </a>
+    <nav class="links" aria-label="頁面區塊">
+      <a href="#info">資訊情報站</a>
+      <a href="#radar">市場觀測</a>
+      <a href="#events">活動中心</a>
+      <a href="#contact">聯絡島主</a>
+    </nav>
+    <a class="btn-dark" href="island.html">進入 Linda 小島 →</a>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <section class="row" aria-label="歡迎">
+    <div class="hello">
+      <h1>Hello！歡迎來到 Linda 小島</h1>
+      <div class="folks">
+        <a class="folk" href="#contact">
+          <span class="say">歡迎來到我的小島！慢慢逛喔～</span>
+          <img src="linda.png" alt="島主 Linda">
+          <span class="tag"><span class="dot" style="background:#ec8aa3"></span>島主・Linda</span>
+        </a>
+        <a class="folk" href="#info">
+          <span class="say">今天又從四個國家收到新情報囉！</span>
+          <img src="mino.png" alt="情報員米諾">
+          <span class="tag"><span class="dot" style="background:#4c6a8c"></span>情報員・米諾</span>
+        </a>
+        <a class="folk" href="#events">
+          <span class="say">最新活動出爐囉，快來看看！</span>
+          <img src="peipei.png" alt="活動長珮珮">
+          <span class="tag"><span class="dot" style="background:#e8913a"></span>活動長・珮珮</span>
+        </a>
+      </div>
+    </div>
+    <div class="glance">
+      <a class="gcard" id="gReport" href="https://app.notion.com/p/f9ac181cdad24aeb90fa46cc3fd7b420?v=40cce96aead0813b9e60000c7610ace9" target="_blank" rel="noopener">
+        <span class="gicon" style="background:#E6F1FA"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#235D8C" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h7"/></svg></span>
+        <span class="gtxt"><small>最新報告</small><b id="gReportT">看最新的外資報告摘要 ↗</b></span>
+      </a>
+      <a class="gcard" href="#events">
+        <span class="gicon" style="background:#FBEDE4"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A8481F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span>
+        <span class="gtxt"><small>下一場活動</small><b id="gNext">載入中…</b></span>
+      </a>
+    </div>
+  </section>
+
+  <section id="info" class="panel" aria-labelledby="info-h">
+    <div class="head">
+      <div>
+        <h2 id="info-h">資訊情報站</h2>
+        <p class="sub">各市場最新報告摘要</p>
+      </div>
+      <a href="info.html">走進 3D 情報站 →</a>
+    </div>
+    <div class="cols" aria-live="polite">
+      <div class="col" data-market="美國">
+        <div class="colhead"><h3><svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><g fill="#B22234"><rect y="0" width="30" height="1.54"/><rect y="3.08" width="30" height="1.54"/><rect y="6.15" width="30" height="1.54"/><rect y="9.23" width="30" height="1.54"/><rect y="12.3" width="30" height="1.54"/><rect y="15.38" width="30" height="1.54"/><rect y="18.46" width="30" height="1.54"/></g><rect width="12" height="10.77" fill="#3C3B6E"/><g fill="#fff"><circle cx="2" cy="2" r=".6"/><circle cx="5" cy="2" r=".6"/><circle cx="8" cy="2" r=".6"/><circle cx="11" cy="2" r=".6"/><circle cx="3.5" cy="4" r=".6"/><circle cx="6.5" cy="4" r=".6"/><circle cx="9.5" cy="4" r=".6"/><circle cx="2" cy="6" r=".6"/><circle cx="5" cy="6" r=".6"/><circle cx="8" cy="6" r=".6"/><circle cx="11" cy="6" r=".6"/><circle cx="3.5" cy="8" r=".6"/><circle cx="6.5" cy="8" r=".6"/><circle cx="9.5" cy="8" r=".6"/></g></svg><span style="background:#2f8f6f">美國</span>市場</h3><a href="https://app.notion.com/p/f9ac181cdad24aeb90fa46cc3fd7b420?v=40cce96aead081fabbee000c4e7fc864" target="_blank" rel="noopener">看美國完整報告 ↗</a></div>
+        <div class="rplist"><div class="empty">載入中…</div></div>
+      </div>
+      <div class="col" data-market="日本">
+        <div class="colhead"><h3><svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#BC002D"/></svg><span style="background:#c94f6d">日本</span>市場</h3><a href="https://app.notion.com/p/f9ac181cdad24aeb90fa46cc3fd7b420?v=40cce96aead08189a347000c54178ac6" target="_blank" rel="noopener">看日本完整報告 ↗</a></div>
+        <div class="rplist"><div class="empty">載入中…</div></div>
+      </div>
+      <div class="col" data-market="韓國">
+        <div class="colhead"><h3><svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><g transform="translate(15 10)"><path d="M-5 0a5 5 0 0 1 10 0a2.5 2.5 0 0 1-5 0a2.5 2.5 0 0 0-5 0z" fill="#CD2E3A"/><path d="M-5 0a5 5 0 0 0 10 0a2.5 2.5 0 0 1-5 0a2.5 2.5 0 0 0-5 0z" fill="#0047A0"/></g><g fill="#000"><rect x="3" y="3" width="4.5" height=".8" transform="rotate(33 5.25 3.4)"/><rect x="2.4" y="4.2" width="4.5" height=".8" transform="rotate(33 4.65 4.6)"/><rect x="1.8" y="5.4" width="4.5" height=".8" transform="rotate(33 4.05 5.8)"/><rect x="22.5" y="14.2" width="4.5" height=".8" transform="rotate(33 24.75 14.6)"/><rect x="23.1" y="15.4" width="4.5" height=".8" transform="rotate(33 25.35 15.8)"/><rect x="23.7" y="16.6" width="4.5" height=".8" transform="rotate(33 25.95 17)"/><rect x="22.5" y="5.4" width="4.5" height=".8" transform="rotate(-33 24.75 5.8)"/><rect x="23.1" y="4.2" width="4.5" height=".8" transform="rotate(-33 25.35 4.6)"/><rect x="23.7" y="3" width="4.5" height=".8" transform="rotate(-33 25.95 3.4)"/><rect x="1.8" y="14.2" width="4.5" height=".8" transform="rotate(-33 4.05 14.6)"/><rect x="2.4" y="15.4" width="4.5" height=".8" transform="rotate(-33 4.65 15.8)"/><rect x="3" y="16.6" width="4.5" height=".8" transform="rotate(-33 5.25 17)"/></g></svg><span style="background:#3f7fbf">韓國</span>市場</h3><a href="https://app.notion.com/p/f9ac181cdad24aeb90fa46cc3fd7b420?v=40cce96aead081bca7e6000cfc0a3724" target="_blank" rel="noopener">看韓國完整報告 ↗</a></div>
+        <div class="rplist"><div class="empty">載入中…</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="radar" class="panel" aria-labelledby="radar-h">
+    <div class="head">
+      <div>
+        <h2 id="radar-h">米諾的美股觀測</h2>
+        <p class="sub">美股 <span id="radDate">—</span> 收盤・每個交易日自動更新</p>
+      </div>
+      <a href="dashboard.html">看完整儀表板 →</a>
+    </div>
+    <div class="rad-row">
+      <div class="rad-mino"><img src="mino.png" alt="情報員米諾"><p class="rad-say" id="radSay">資料載入中…</p></div>
+      <div class="rad-kpis">
+        <div class="rad-macro"><span style="font-size:13px;color:#534AB7">總經格局</span><span style="font-size:18px;font-weight:900;color:#26215C" id="radMacro">—</span><span style="font-size:13px;color:#3C3489" id="radMacroSub"></span></div>
+        <div class="rad-k"><span class="sub" style="font-size:13px">類股風險偏好</span><span class="big"><span id="radScore">—</span><span style="font-size:16px;font-weight:500;color:#5B6770"> / 100</span></span><span class="rad-pill" id="radRegime">—</span></div>
+        <div class="rad-k"><span class="sub" style="font-size:13px">循環股 vs 防禦股</span><span style="font-size:28px;font-weight:900;line-height:1.3"><span id="radCyc">—</span>% <span style="font-size:16px;font-weight:500;color:#5B6770">vs</span> <span id="radDef">—</span>%</span><span class="sub" style="font-size:13px">平均上升趨勢比例</span></div>
+      </div>
+    </div>
+    <div class="rad-bars">
+      <div><h3 style="color:#235D8C">最強三類股</h3><div id="radTop"></div></div>
+      <div><h3 style="color:#A8481F">超賣類股</h3><div id="radOs"></div></div>
+    </div>
+    <div class="rad-focus"><b style="color:#A8481F">近期焦點</b><span id="radCal" style="display:contents"></span><span style="color:#5B6770;font-size:12px">台灣時間</span></div>
+    <p class="rad-note">上升趨勢比例＝該類股中股價處於上升趨勢的股票占比。資料來源：TraderMonty 公開數據、Yahoo Finance、FXMacroData。僅供研究參考，非投資建議。最後更新：<span id="radUpd">—</span></p>
+  </section>
+
+  <section id="events" class="panel" aria-labelledby="events-h">
+    <div class="head">
+      <div>
+        <h2 id="events-h">活動中心</h2>
+        <p class="sub" id="evSub">近期法說／投資人會議，勾選場次就能報名</p>
+      </div>
+      <div class="pills" id="evMkt" aria-label="依市場篩選"></div>
+    </div>
+    <div class="ev-wrap">
+      <div id="evList" aria-live="polite"><div class="empty">正在載入會議…</div></div>
+      <form id="regForm" novalidate>
+        <h3>我要報名</h3>
+        <p class="sub" id="regCount">還沒勾選場次</p>
+        <div id="regFields" style="display:flex;flex-direction:column;gap:12px">
+          <label class="f">公司名稱<input type="text" id="regCompany" autocomplete="organization"></label>
+          <label class="f">姓名<input type="text" id="regName" autocomplete="name"></label>
+          <label class="f">Email（會議通知會寄到這裡）<input type="email" id="regEmail" autocomplete="email"></label>
+          <label class="rem"><input type="checkbox" id="regRemember" checked>記住我的資料</label>
+          <button type="submit" id="regGo" disabled>請先勾選會議</button>
+          <p id="regMsg" role="status"></p>
+          <button type="button" id="regForget">不是你嗎？清除資料</button>
+        </div>
+        <div id="regDone" hidden></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="contact" class="contact" aria-labelledby="contact-h">
+    <div>
+      <h2 id="contact-h">聯絡島主</h2>
+      <p class="who">Linda Chou</p>
+    </div>
+    <div class="items">
+      <div class="item"><a href="mailto:Linda.chou@sinopac.com">Linda.chou@sinopac.com</a><button type="button" class="copy" data-copy="Linda.chou@sinopac.com" aria-label="複製 Email">複製</button></div>
+      <div class="item"><a href="tel:0223823840">02-2382-3840</a><button type="button" class="copy" data-copy="02-2382-3840" aria-label="複製電話">複製</button></div>
+    </div>
+    <a class="island" href="island.html">想逛逛？進入 Linda 小島 →</a>
+  </section>
+</main>
+
+<footer>本網站內容僅供參考，不構成投資建議。© Hello Island</footer>
+
+<script>
+(function(){
+'use strict';
+/* ===== 複製聯絡方式 ===== */
+document.querySelectorAll('.copy').forEach(function(b){
+  b.addEventListener('click', function(){
+    var t=b.dataset.copy, done=function(){ b.textContent='已複製'; setTimeout(function(){ b.textContent='複製'; },1500); };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done, function(){ fallback(t); done(); }); }
+    else { fallback(t); done(); }
+  });
+});
+function fallback(t){ var ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} ta.remove(); }
+
+/* ===== 活動中心：會議報名（Supabase，與 Linda 小島共用同一個資料庫） ===== */
+var SB_URL='https://pywelapwrhrosaynznwn.supabase.co';
+var SB_KEY='sb_publishable_zJQOFTx5Skf-51vUAE3IRw_5gvV6Ge9';
+var MKT_COLOR={'台灣':'#d9644a','產業':'#7a6fb0','日本':'#c94f6d','韓國':'#3f7fbf','美國':'#2f8f6f','全球':'#5b6b7a'};
+var SAMPLE=[
+  {id:'demo1', market:'日本', meeting_date:'2026-11-20', start_time:'14:00:00', end_time:'15:00:00', format:'線上', topic:'（範例）日本半導體設備展望', agenda:'1. 產業近況\n2. 主要公司觀察\n3. Q&A', speaker:'（範例）主講者'},
+  {id:'demo2', market:'台灣', meeting_date:'2026-11-25', start_time:'10:00:00', end_time:'11:30:00', format:'實體', topic:'（範例）台股 AI 供應鏈法說', agenda:'1. 公司簡介\n2. 營運展望\n3. Q&A', speaker:'（範例）主講者'}
+];
+var store={ get:function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+  set:function(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }, del:function(k){ try{ localStorage.removeItem(k); }catch(e){} } };
+function hdr(extra){ return Object.assign({'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}, extra||{}); }
+function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function fmtDate(s){ var d=new Date(s+'T00:00:00'); return (d.getMonth()+1)+'/'+d.getDate()+'（'+'日一二三四五六'[d.getDay()]+'）'; }
+function fmtTime(a,b){ if(!a) return ''; return a.slice(0,5)+(b?'–'+b.slice(0,5):''); }
+function el(tag,cls,text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+var $=function(id){ return document.getElementById(id); };
+var S={meetings:[], filter:'全部', demo:false, sending:false};
+var picked=new Set();
+
+async function load(){
+  try{
+    var r=await fetch(SB_URL+'/rest/v1/events?select=id,market,meeting_date,start_time,end_time,format,topic,agenda,speaker'
+      +'&is_open=eq.true&meeting_date=gte.'+todayStr()+'&order=meeting_date.asc,start_time.asc',{headers:hdr()});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    S.meetings=await r.json(); S.demo=false;
+  }catch(e){ S.meetings=SAMPLE; S.demo=true; }
+  $('evSub').textContent = S.demo ? '預覽模式：顯示範例會議，正式網站才能送出報名' : '近期法說／投資人會議，勾選場次就能報名';
+  var n=S.meetings[0];
+  $('gNext').textContent = n ? fmtDate(n.meeting_date)+' · '+n.topic : '目前沒有開放報名的會議';
+  renderMkt(); renderList(); update();
+}
+function renderMkt(){
+  var box=$('evMkt'); box.innerHTML='';
+  ['全部','台灣','產業','日本','韓國','美國','全球'].forEach(function(m){
+    var c = m==='全部' ? S.meetings.length : S.meetings.filter(function(x){ return x.market===m; }).length;
+    if(m!=='全部' && !c) return;
+    var b=el('button',null,m+(c?' '+c:'')); b.type='button'; b.setAttribute('aria-pressed',String(S.filter===m));
+    b.addEventListener('click',function(){ S.filter=m; renderMkt(); renderList(); });
+    box.appendChild(b);
+  });
+}
+function renderList(){
+  var box=$('evList'); box.innerHTML='';
+  var rows=S.meetings.filter(function(x){ return S.filter==='全部' || x.market===S.filter; });
+  if(!rows.length){ box.appendChild(el('div','empty','目前沒有開放報名的會議，過幾天再來看看喔！')); return; }
+  rows.forEach(function(x){
+    var d=new Date(x.meeting_date+'T00:00:00');
+    var card=el('div','ev'+(picked.has(x.id)?' on':''));
+    var dt=el('div','date'); dt.appendChild(el('small',null,(d.getMonth()+1)+' 月')); dt.appendChild(el('b',null,String(d.getDate()))); card.appendChild(dt);
+    var body=el('div','body'); var meta=el('div','meta');
+    var tag=el('span','mtag',x.market); tag.style.background=MKT_COLOR[x.market]||'#6b7f92'; meta.appendChild(tag);
+    if(x.format) meta.appendChild(el('span','fmt',x.format));
+    meta.appendChild(el('span','time','週'+'日一二三四五六'[d.getDay()]+' '+fmtTime(x.start_time,x.end_time)));
+    body.appendChild(meta); body.appendChild(el('h3',null,x.topic));
+    if(x.speaker) body.appendChild(el('p','spk','講者：'+x.speaker));
+    if(x.agenda){ var de=el('details'); de.appendChild(el('summary',null,'會議大綱')); de.appendChild(el('p',null,x.agenda)); body.appendChild(de); }
+    card.appendChild(body);
+    var lb=el('label','pick'); var cb=el('input'); cb.type='checkbox'; cb.checked=picked.has(x.id); cb.setAttribute('aria-label','報名：'+x.topic);
+    lb.appendChild(cb); lb.appendChild(document.createTextNode('報名這場')); card.appendChild(lb);
+    cb.addEventListener('change',function(){ if(cb.checked) picked.add(x.id); else picked.delete(x.id); card.classList.toggle('on',cb.checked); update(); });
+    card.addEventListener('click',function(e){ if(e.target.closest('label') || e.target.closest('details')) return; cb.checked=!cb.checked; cb.dispatchEvent(new Event('change')); });
+    box.appendChild(card);
+  });
+}
+function update(){
+  var n=picked.size;
+  $('regCount').textContent = n ? '已勾選 '+n+' 場' : '還沒勾選場次';
+  $('regGo').disabled = !n || S.sending;
+  $('regGo').textContent = S.sending ? '送出中…' : (n ? '報名 '+n+' 場會議' : '請先勾選會議');
+}
+// 記住的資料（和 Linda 小島共用，同一台裝置會自動帶入）
+(function(){ var c=store.get('li_company'), nm=store.get('li_name'), em=store.get('li_email');
+  if(c) $('regCompany').value=c; if(nm) $('regName').value=nm; if(em) $('regEmail').value=em; })();
+$('regForget').addEventListener('click',function(){
+  store.del('li_company'); store.del('li_name'); store.del('li_email');
+  $('regCompany').value=''; $('regName').value=''; $('regEmail').value='';
+  $('regMsg').className=''; $('regMsg').textContent='已清除這台裝置記住的資料。'; $('regCompany').focus();
+});
+$('regForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg=$('regMsg'), company=$('regCompany').value.trim(), name=$('regName').value.trim(), email=$('regEmail').value.trim();
+  msg.className='err';
+  if(!picked.size){ msg.textContent='請先勾選至少一場會議。'; return; }
+  if(!company){ msg.textContent='請填寫公司名稱。'; $('regCompany').focus(); return; }
+  if(!name){ msg.textContent='請填寫姓名。'; $('regName').focus(); return; }
+  if(!email){ msg.textContent='請填寫 Email，會議通知會寄到這裡。'; $('regEmail').focus(); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent='Email 格式好像不太對，再檢查一下喔。'; $('regEmail').focus(); return; }
+  if(S.demo){ msg.textContent='這是預覽模式，無法送出。請到正式網站報名。'; return; }
+  if($('regRemember').checked){ store.set('li_company',company); store.set('li_name',name); store.set('li_email',email); }
+  else { store.del('li_company'); store.del('li_name'); store.del('li_email'); }
+  S.sending=true; update(); msg.className=''; msg.textContent='';
+  var ids=Array.from(picked);
+  var results=await Promise.all(ids.map(async function(id){
+    try{
+      var r=await fetch(SB_URL+'/rest/v1/registrations',{method:'POST',
+        headers:hdr({'Content-Type':'application/json','Prefer':'return=minimal'}),
+        body:JSON.stringify({event_id:id, company:company, name:name, email:email})});
+      if(r.ok) return {id:id, ok:true};
+      var code=''; try{ code=(await r.json()).code||''; }catch(_){}
+      return {id:id, ok:false, dup: r.status===409 || code==='23505'};
+    }catch(err){ return {id:id, ok:false, net:true}; }
+  }));
+  S.sending=false;
+  var okList=results.filter(function(r){ return r.ok || r.dup; });
+  if(!okList.length){ msg.className='err'; msg.textContent='送出失敗，請檢查網路後再試一次。'; update(); return; }
+  picked.clear(); results.forEach(function(r){ if(!r.ok && !r.dup) picked.add(r.id); });
+  var byId=function(id){ return S.meetings.find(function(x){ return x.id===id; }); };
+  var done=$('regDone'); done.innerHTML='';
+  done.appendChild(el('b',null,'報名完成！'));
+  done.appendChild(el('p',null,name+'，謝謝你！Linda 確認後，會把會議資訊寄到 '+email+'。'));
+  var ul=el('ul');
+  results.forEach(function(r){ var m=byId(r.id); if(!m) return;
+    var t=m.market+'｜'+fmtDate(m.meeting_date)+' '+m.topic;
+    ul.appendChild(el('li',null,(r.ok?'已報名：':r.dup?'已經報名過：':'沒有送出（請再試一次）：')+t)); });
+  done.appendChild(ul);
+  var again=el('button',null,'繼續看其他會議'); again.type='button';
+  again.addEventListener('click',function(){ done.hidden=true; $('regFields').hidden=false; renderList(); update(); });
+  done.appendChild(again);
+  $('regFields').hidden=true; done.hidden=false; renderList(); update();
+});
+
+/* ===== 資訊情報站：報告摘要（Supabase reports 表） ===== */
+var REPORT_COLS=['美國','日本','韓國'], PER_COL=2;
+function fmtRDate(s){ var d=new Date(s+'T00:00:00'); return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate(); }
+async function loadReports(){
+  var rows=[], ok=true;
+  try{
+    var r=await fetch(SB_URL+'/rest/v1/reports?select=market,report_date,title,ticker,summary&is_published=eq.true&order=report_date.desc,created_at.desc&limit=60',{headers:hdr()});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    rows=await r.json();
+  }catch(e){ ok=false; }
+  document.querySelectorAll('.col[data-market]').forEach(function(col){
+    var m=col.dataset.market, box=col.querySelector('.rplist'); box.innerHTML='';
+    var list=rows.filter(function(x){ return x.market===m; }).slice(0,PER_COL);
+    if(!list.length){ box.appendChild(el('div','empty', ok?'最近還沒有新報告':'暫時無法載入，請點上方連結到 Notion 看')); return; }
+    list.forEach(function(x){
+      var c=el('article','rp');
+      c.appendChild(el('span','d',fmtRDate(x.report_date)));
+      c.appendChild(el('h4',null,x.title));
+      if(x.ticker){
+        var tks=x.ticker.split(/[、,，;；]\s*/).map(function(t){ return t.trim(); }).filter(Boolean);
+        var txt='標的：'+tks.slice(0,3).join('、')+(tks.length>3?' 等 '+tks.length+' 檔':'');
+        var tk=el('span','tk',txt); tk.title=tks.join('、'); c.appendChild(tk);
+      }
+      if(x.summary) c.appendChild(el('p',null,x.summary));
+      box.appendChild(c);
+    });
+  });
+  if(rows.length){ var t=rows[0]; $('gReportT').textContent=t.market+'｜'+t.title+' ↗'; }
+}
+loadReports();
+load();
+})();
+</script>
+<script>
+(function(){
+  function el(id){ return document.getElementById(id); }
+  function bar(r,color){ var d=document.createElement('div'); d.className='rad-bar';
+    var n=document.createElement('span'); n.className='n'; n.textContent=r.name;
+    var t=document.createElement('span'); t.className='t'; var f=document.createElement('span'); f.style.width=Math.max(1,r.ratio)+'%'; f.style.background=color; t.appendChild(f);
+    var v=document.createElement('span'); v.className='v'; v.textContent=Number(r.ratio).toFixed(1)+'%'; d.append(n,t,v); return d; }
+  fetch('data/latest.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+    var s=d.sector||{}, m=d.macro||{};
+    el('radDate').textContent=s.us_label||'—'; el('radSay').textContent=d.mino_says||'';
+    el('radMacro').textContent=m.zone_zh||'—'; el('radMacroSub').textContent=m.summary_zh||'';
+    el('radScore').textContent=s.score!=null?s.score:'—'; el('radRegime').textContent=s.regime_zh||'—';
+    el('radCyc').textContent=s.cyclical_pct!=null?Number(s.cyclical_pct).toFixed(1):'—';
+    el('radDef').textContent=s.defensive_pct!=null?Number(s.defensive_pct).toFixed(1):'—';
+    (s.top3||[]).forEach(function(r){ el('radTop').appendChild(bar(r,'#3f7fbf')); });
+    if((s.oversold||[]).length){ s.oversold.forEach(function(r){ el('radOs').appendChild(bar(r,'#e8913a')); }); } else { el('radOs').textContent='目前沒有超賣類股'; }
+    (d.calendar||[]).slice(0,4).forEach(function(c){ var sp=document.createElement('span'); sp.textContent=c.date+'（'+c.weekday+'）'+c.event; el('radCal').appendChild(sp); });
+    el('radUpd').textContent=d.updated_at||'—';
+  }).catch(function(){ el('radSay').textContent='數據暫時無法載入，請稍後再試。'; });
+})();
+</script>
+</body>
+</html>
