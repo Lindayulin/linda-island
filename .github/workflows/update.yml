@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: "30 2,5 * * 2-6"   # 週二到週六 台灣時間 10:30、13:30
   workflow_dispatch:
+  push:
+    paths:
+      - "site-update.zip"      # 上傳網站更新包時自動執行
 
 permissions:
   contents: write
@@ -13,6 +16,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: 套用網站更新包（有上傳 site-update.zip 才會動作）
+        run: |
+          if [ -f site-update.zip ]; then
+            mv site-update.zip /tmp/site-update.zip
+            find . -mindepth 1 -maxdepth 1 ! -name .git ! -name .github -exec rm -rf {} +
+            unzip -o /tmp/site-update.zip -d .
+            git config user.name "island-bot"
+            git config user.email "island-bot@users.noreply.github.com"
+            git add -A
+            git commit -m "套用網站更新包"
+          fi
 
       - uses: actions/setup-python@v5
         with:
