@@ -1,0 +1,1973 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>🍼 幫Linda 照顧小孩DEMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ECEAE6;--bg2:#D8D5D0;--ink:#4A3F36;--soft:#8A7D70;--chip:#FBF8F3;--accent:#C98A5B;--line:rgba(74,63,54,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background-color:var(--bg);background:radial-gradient(120% 90% at 50% 40%,var(--bg) 0%,var(--bg2) 100%);font-family:"Noto Sans TC",system-ui,sans-serif;color:var(--ink);transition:background .8s}
+body.night{--bg:#3B3B4E;--bg2:#1F2030;--ink:#F3ECE2;--soft:#C3B8AC;--chip:#454458;--line:rgba(255,255,255,.14)}
+/* 傍晚：淺色的卡片、對話框、按鍵維持深色字 */
+body.night :is(.rdy,.endc,.sel,.rc,.evbox,.sheetbox,kbd,#mood,#pbub,#loader){--ink:#4A3F36;--soft:#8A7D70;--chip:#FBF8F3;--line:rgba(74,63,54,.12);color:#4A3F36}
+body.night :is(#evP,#evRes,.evres,.story p,.hints){color:#4A3F36}body.night .hint{color:#F3ECE2;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.top{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:16px;right:16px;display:flex;justify-content:flex-end;align-items:flex-start;gap:12px;pointer-events:none}
+.title b{display:block;font-size:20px;letter-spacing:.04em}
+.title span{font-size:13px;color:var(--soft)}
+.tools{display:flex;gap:6px;pointer-events:auto;flex-wrap:wrap;justify-content:flex-end}
+button{font:inherit;color:var(--ink);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(60,40,20,.08);transition:transform .15s,background .3s}
+button:hover{transform:translateY(-1px)}
+button.on{background:var(--accent);color:#fff;border-color:transparent}
+.rooms{position:fixed;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;justify-content:flex-start;gap:8px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.rooms::-webkit-scrollbar{display:none}
+.rooms button:first-child{margin-left:auto}.rooms button:last-child{margin-right:auto}
+.rooms button{flex:none;padding:9px 16px;font-size:15px}
+.card{position:fixed;left:16px;bottom:calc(74px + env(safe-area-inset-bottom,0px));max-width:330px;background:var(--chip);border:1px solid var(--line);border-radius:16px;padding:12px 16px;box-shadow:0 6px 20px rgba(60,40,20,.10);opacity:0;transform:translateY(8px);transition:.35s;pointer-events:none}
+.card.show{opacity:.96;transform:none}
+.card b{font-size:16px}
+.card p{font-size:13px;line-height:1.6;color:var(--soft);margin-top:4px}
+.card i{font-style:normal;display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;margin:4px 4px 0 0}
+.c1{background:#DDEFE6;color:#2F7A5A}.c2{background:#F8E0E8;color:#B0486E}.c3{background:#FBE0DA;color:#C2412E}
+.hint{position:fixed;right:16px;bottom:74px;font-size:12px;color:var(--soft);text-align:right}
+/* 遊戲時鐘 */
+.clock{display:flex;align-items:center;gap:8px;background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 14px;box-shadow:0 2px 8px rgba(60,40,20,.08)}
+.clock b{font-size:16px;font-variant-numeric:tabular-nums;min-width:3.2em}
+.clock input{width:110px;accent-color:var(--accent)}
+.clock button{box-shadow:none;padding:5px 10px}
+/* 開場：只在一開始看外觀 */
+#enter{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-size:17px;padding:12px 26px;background:var(--accent);color:#fff;border:none;box-shadow:0 8px 24px rgba(150,90,40,.28)}
+body:not(.play) .hint,body:not(.play):not(.tutorial) .tools{display:none}.rooms{display:none!important}
+/* 操作教學、提示、照顧進度 */
+kbd{display:inline-block;min-width:1.7em;padding:1px 6px;margin:0 2px;border-radius:6px;background:#fff;border:1px solid #D8CFC3;border-bottom-width:3px;font:700 13px/1.4 system-ui,sans-serif;color:var(--ink);text-align:center}
+.tbtn{display:inline-grid;place-items:center;width:30px;height:30px;vertical-align:middle;border-radius:50%;background:rgba(242,179,107,.35);font-size:18px;font-weight:400}
+#tut{position:fixed;left:50%;transform:translateX(-50%);top:calc(64px + env(safe-area-inset-top,0px));width:min(520px,calc(100% - 32px));background:var(--chip);border:1px solid var(--line);border-radius:18px;padding:12px 16px;box-shadow:0 10px 30px rgba(60,40,20,.14);display:none}
+body.tutorial #tut{display:block}
+#tut .h{display:flex;align-items:center;gap:10px}#tut .h b{font-size:16px;flex:1}
+#tutN{display:flex;gap:5px}#tutN i{width:8px;height:8px;border-radius:50%;background:#E3D9CC}#tutN i.now{background:var(--accent)}#tutN i.ok{background:#7FB394}
+#tut p{font-size:14px;line-height:1.75;color:var(--ink);margin-top:6px}
+#tut .f{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+#tutOk{color:#3E8A63;font-weight:700;opacity:0;transition:opacity .3s}#tutOk.show{opacity:1}
+#tutSkip{font-size:13px;padding:5px 12px}
+#ctx{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;pointer-events:none}
+#ctx span{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;box-shadow:0 4px 12px rgba(60,40,20,.1);white-space:nowrap}
+body:not(.tutorial):not(.play) #ctx,body.touch #ctx{display:none}
+#stats{position:fixed;left:16px;top:calc(14px + env(safe-area-inset-top,0px));width:210px;background:var(--chip);border:1px solid var(--line);border-radius:16px;padding:8px 12px 10px;box-shadow:0 6px 18px rgba(60,40,20,.10);display:none;font-size:12px}
+body.tutorial #stats,body.play #stats{display:block}
+.sg b{display:block;font-size:12px;color:var(--soft);margin:4px 0 2px}
+.sr{position:relative;display:grid;grid-template-columns:18px 30px 1fr 38px;align-items:center;gap:5px;height:20px}
+.si{font-size:13px}.sn{color:var(--ink)}.sv{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.sb{height:8px;border-radius:8px;background:#EEE6DA;overflow:hidden}.sb i{display:block;height:100%;border-radius:8px;transition:width .25s}
+.sb i.g{background:#7FB394}.sb i.m{background:#E8B65C}.sb i.l{background:#E0705A}
+.sr.hit .sb{animation:hit .4s}@keyframes hit{30%{box-shadow:0 0 0 2px rgba(224,112,90,.5)}}
+.pop{position:absolute;right:-30px;top:0;font-style:normal;font-weight:700;font-size:12px;animation:flo 1.3s ease-out forwards;pointer-events:none}
+.pop.neg{color:#D2553D}.pop.pos{color:#3E8A63}@keyframes flo{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-16px)}}
+#mood{position:fixed;left:0;top:0;transform:translate(-50%,-100%);width:52px;height:46px;border-radius:24px;background:#fff;display:none;place-items:center;font-size:28px;line-height:1;box-shadow:0 4px 14px rgba(60,40,20,.18);pointer-events:none;z-index:15}
+#pbub{position:fixed;transform:translate(-50%,-100%);font-size:13px;font-weight:700;color:#C2412E;background:#fff;border-radius:999px;padding:3px 9px;box-shadow:0 3px 10px rgba(60,40,20,.15);white-space:nowrap;display:none;pointer-events:none;z-index:15;animation:moodBob 1.2s ease-in-out infinite}#pbub.show{display:block}
+#pbub.ok{color:#2F7A5A}
+#dang{position:fixed;left:50%;transform:translateX(-50%);top:calc(132px + env(safe-area-inset-top,0px));background:#E0705A;color:#fff;border-radius:999px;padding:7px 16px;font-size:15px;box-shadow:0 6px 18px rgba(200,70,50,.35);display:none;z-index:25;animation:pulse 1s infinite}
+#dang.show{display:block}#dang b{font-variant-numeric:tabular-nums;font-size:17px}
+body.touch #dang{top:calc(50px + env(safe-area-inset-top,0px));font-size:13px}
+#mood::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-top-color:#fff;border-bottom:0}
+#mood.show{display:grid}#mood.mini{box-shadow:0 0 0 3px #F4B740,0 4px 14px rgba(0,0,0,.18);animation:moodBob .8s ease-in-out infinite}#mood span{display:block;animation:moodPop .35s cubic-bezier(.2,.9,.3,1.5)}#mood.bob{animation:moodBob 1.6s ease-in-out infinite}
+@keyframes moodPop{from{transform:scale(.3)}to{transform:none}}@keyframes moodBob{50%{margin-top:-5px}}
+#prog{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(70px + env(safe-area-inset-bottom,0px));width:max-content;min-width:220px;max-width:calc(100% - 32px);background:var(--chip);border:1px solid var(--line);border-radius:14px;padding:8px 12px;font-size:13px;text-align:center;opacity:0;transition:opacity .2s;pointer-events:none}
+#prog.show{opacity:1}#prog .bar{height:8px;border-radius:8px;background:#EDE3D6;margin-top:6px;overflow:hidden}#progF{height:100%;width:0;background:#E3A877;border-radius:8px}
+#pause{position:fixed;inset:0;z-index:42;display:none;place-items:center;background:rgba(80,70,62,.4);backdrop-filter:blur(3px);padding:16px}
+body.paused #pause{display:grid}.pbs{display:flex;flex-direction:column;gap:8px;align-items:stretch;min-width:200px}.pbs .pri{background:var(--accent);color:#fff;border:none}
+#pQuit.warn{background:#E0705A;color:#fff;border-color:transparent}
+#pauseBtn{font-size:15px;padding:7px 12px}body:not(.play):not(.tutorial) #pauseBtn{display:none}
+#ready{position:fixed;inset:0;z-index:40;display:none;place-items:center;background:rgba(80,70,62,.35);backdrop-filter:blur(3px);padding:16px}
+body.ready #ready{display:grid}
+.rdy{background:#F6F2EC;border-radius:22px;padding:24px 26px;text-align:center;max-width:360px;box-shadow:0 18px 50px rgba(60,50,40,.22)}
+.rdy b{font-size:22px}.rdy p{color:var(--soft);font-size:14px;line-height:1.7;margin:8px 0 16px}.rdy .bs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.rdy .pri{background:var(--accent);color:#fff;border:none;font-size:15px;padding:10px 22px}
+/* 手機：左邊半透明搖桿、右邊三顆指令鍵 */
+#pad{display:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#pad *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+body.touch{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body.touch.tutorial #pad,body.touch.play #pad{display:block}
+#joy{position:fixed;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.28);border:2px solid rgba(255,255,255,.55);backdrop-filter:blur(2px);touch-action:none;z-index:20}
+#knob{position:absolute;left:50%;top:50%;width:42px;height:42px;margin:-21px 0 0 -21px;border-radius:50%;background:rgba(255,255,255,.65);box-shadow:0 3px 10px rgba(0,0,0,.15);pointer-events:none}
+.acts{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:170px;height:150px;z-index:20}
+.acts button{position:absolute;width:74px;height:74px;font-size:36px!important;border-radius:50%;padding:0;display:grid;place-items:center;background:rgba(255,255,255,.4);border:2px solid rgba(255,255,255,.65);backdrop-filter:blur(2px);font-size:24px;line-height:1;box-shadow:none;touch-action:manipulation}
+.acts button.lit{background:rgba(242,179,107,.85);border-color:#fff}
+#bE{right:0;bottom:46px;width:88px;height:88px;font-size:44px!important}#bF{right:96px;bottom:0}#bQ{right:96px;bottom:84px}
+#rot{position:fixed;inset:0;z-index:60;display:none;place-items:center;background:rgba(246,242,236,.96);text-align:center;padding:24px}
+@media (orientation:portrait){body.touch:not(.rotSeen).tutorial #rot,body.touch:not(.rotSeen).play #rot,body.touch:not(.rotSeen).ready #rot{display:grid}}
+@media (max-height:500px){#stats{left:calc(12px + env(safe-area-inset-left,0px));right:auto;top:calc(8px + env(safe-area-inset-top,0px));width:170px;padding:4px 10px 6px;font-size:11px}.sr{height:16px;grid-template-columns:16px 26px 1fr 32px}.pop{right:-30px;left:auto}.title{display:none}#tut{left:calc(12px + env(safe-area-inset-left,0px));transform:none;top:calc(8px + env(safe-area-inset-top,0px));width:min(400px,48%);padding:8px 12px}
+  #tut p{font-size:13px;line-height:1.6;margin-top:3px}#tut .f{margin-top:4px}.top{top:calc(8px + env(safe-area-inset-top,0px))}
+  #wallBtn,#rotL,#rotR,#clockR{display:none}
+  #joy{width:88px;height:88px}#knob{width:36px;height:36px;margin:-18px 0 0 -18px}.acts{transform:scale(.9);transform-origin:right bottom}}
+#rot .ic{font-size:54px;animation:tilt 1.6s ease-in-out infinite}@keyframes tilt{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+#rot b{display:block;font-size:19px;margin-top:10px}#rot p{color:var(--soft);font-size:14px;margin:6px 0 16px}
+body:not(.intro) #enter{display:none}body:not(.play):not(.intro) .card{display:none}
+/* (1) Loading：莫蘭迪灰藍底＋三隻小黃鴨 */
+/* (2) 前情提要：手機訊息 */
+#story{position:fixed;inset:0;z-index:45;display:none;place-items:center;background:rgba(80,70,62,.35);backdrop-filter:blur(4px);padding:16px}
+body.story #story,body.ended:not(.over) #story{display:grid}
+#backIsland{position:fixed;left:calc(14px + env(safe-area-inset-left,0px));top:calc(14px + env(safe-area-inset-top,0px));z-index:47;font-size:14px;padding:7px 14px;border-radius:999px;background:rgba(251,248,243,.92);color:#4A3F36;border:1px solid rgba(74,63,54,.12);text-decoration:none;box-shadow:0 2px 8px rgba(60,40,20,.08)}
+body.play #backIsland,body.tutorial #backIsland,body.loading #backIsland{display:none}
+#skipStory{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:46;display:none;background:rgba(251,248,243,.92);font-size:14px;padding:8px 18px;white-space:nowrap}
+body.story #skipStory{display:block}
+.phone{position:relative;width:340px;zoom:var(--pz,1);aspect-ratio:9/19;border-radius:46px;background:#2C3E55;padding:11px;box-shadow:0 30px 70px rgba(30,30,40,.35),inset 0 0 0 2px #3E5470;animation:rise .7s cubic-bezier(.2,.9,.3,1.1)}
+.phone.buzz{animation:buzz .5s linear 2}
+@keyframes rise{from{transform:translateY(60vh) rotate(6deg)}to{transform:none}}
+@keyframes buzz{0%,100%{transform:translateX(0) rotate(0)}20%{transform:translateX(-5px) rotate(-1.5deg)}40%{transform:translateX(5px) rotate(1.5deg)}60%{transform:translateX(-4px) rotate(-1deg)}80%{transform:translateX(4px) rotate(1deg)}}
+.phone::before,.phone::after{content:"";position:absolute;background:#22344A;border-radius:3px}
+.phone::before{left:-4px;top:22%;width:4px;height:9%}.phone::after{right:-4px;top:28%;width:4px;height:13%}
+.scr{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:#000;color:#fff;font-size:14px}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:42%;height:24px;background:#2C3E55;border-radius:0 0 16px 16px;z-index:5}
+.notch::after{content:"";position:absolute;left:50%;top:9px;transform:translateX(-50%);width:34%;height:4px;border-radius:4px;background:#14202E}
+/* 鎖定畫面 */
+.lock{position:absolute;inset:0;background:linear-gradient(160deg,#F2C8B8 0%,#C9A7C7 45%,#8FA6C9 100%);display:flex;flex-direction:column;align-items:center;padding-top:62px;transition:opacity .4s}
+.lock .t{font-size:58px;font-weight:700;letter-spacing:.02em;line-height:1}.lock .d{font-size:14px;opacity:.9;margin-top:6px}
+.noti{margin-top:28px;width:88%;background:rgba(255,255,255,.72);color:#2A2A2E;border-radius:18px;padding:10px 12px;display:flex;gap:10px;align-items:center;cursor:pointer;border:none;font:inherit;text-align:left;box-shadow:0 8px 20px rgba(0,0,0,.12);transform:translateY(-140px);opacity:0;transition:transform .5s cubic-bezier(.2,.9,.3,1.2),opacity .3s}
+.noti.in{transform:none;opacity:1}.noti:focus-visible{outline:2px solid #fff}
+.noti .tx{flex:1;min-width:0}.noti b{font-size:13px}.noti small{float:right;font-size:11px;opacity:.6}.noti p{font-size:13px;margin-top:2px;line-height:1.4}
+.hintTap{margin-top:auto;margin-bottom:34px;font-size:13px;opacity:0;transition:opacity .4s}.hintTap.in{opacity:.9;animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.ava{flex:none;width:34px;height:34px;border-radius:50%;background:#E9A9A3;color:#fff;display:grid;place-items:center;font-weight:700;font-size:15px}
+/* 聊天室 */
+.chat{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .4s}
+.chat.in{opacity:1;pointer-events:auto}
+.ch{display:flex;align-items:center;gap:10px;padding:32px 14px 10px;border-bottom:1px solid #1C1C1E}
+.ch .nm{flex:1;min-width:0}.ch .nm b{display:block;font-size:15px}.ch .nm span{font-size:11px;color:#8E8E93}
+.ch svg{width:22px;height:22px;flex:none}
+.msgs{flex:1;overflow-y:auto;padding:12px 12px 8px;display:flex;flex-direction:column;gap:6px;scrollbar-width:none}
+.msgs::-webkit-scrollbar{display:none}
+.day{align-self:center;font-size:11px;color:#8E8E93;margin:4px 0 6px}
+.row{display:flex;align-items:flex-end;gap:7px;animation:pop .3s cubic-bezier(.2,.9,.3,1.3)}
+.row.me{justify-content:flex-end}.row .ava{width:26px;height:26px;font-size:12px}.row.cont .ava{visibility:hidden}
+.bub{max-width:76%;padding:8px 13px;border-radius:19px;line-height:1.45;font-size:14px;word-break:break-word}
+.them .bub{background:#2F2F33}.me .bub{background:#1E8BFF}
+.seen{align-self:flex-end;font-size:10px;color:#8E8E93;margin-top:-2px}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.typing .bub{display:flex;gap:4px;padding:12px 14px}.typing i{width:7px;height:7px;border-radius:50%;background:#8E8E93;animation:bl 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+.choices{display:flex;flex-direction:column;gap:7px;padding:0 12px 8px}
+.choices button{background:#1C1C1E;color:#fff;border:1px solid #3A3A3C;border-radius:16px;padding:10px 12px;font-size:14px;text-align:left;box-shadow:none;animation:pop .3s}
+.choices button.yes{border-color:#1E8BFF;color:#7CC0FF}
+.bar2{display:flex;align-items:center;gap:8px;padding:8px 10px 18px}
+.bar2 svg{width:22px;height:22px;flex:none}
+.field{flex:1;min-width:0;background:#1C1C1E;border-radius:18px;padding:8px 12px;font-size:14px;color:#8E8E93;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.field.ready{color:#fff}
+.send{flex:none;width:34px;height:34px;border-radius:50%;border:none;background:#1E8BFF;color:#fff;display:grid;place-items:center;padding:0;box-shadow:none;opacity:.35;pointer-events:none}
+.send.on{opacity:1;pointer-events:auto;animation:pulse 1.2s infinite}
+/* 遊戲結束 */
+#ending{position:fixed;inset:0;z-index:48;display:none;place-items:center;background:rgba(60,52,46,.6);backdrop-filter:blur(4px);padding:16px}
+body.ended #ending{display:grid}
+.endc{background:#F6F2EC;border-radius:22px;padding:26px 28px;text-align:center;max-width:340px;box-shadow:0 18px 50px rgba(0,0,0,.25)}
+.endc b{font-size:24px}.endc p{color:var(--soft);font-size:14px;line-height:1.7;margin:8px 0 16px}
+.endc button{background:var(--accent);color:#fff;border:none;font-size:15px;padding:10px 24px}
+#loader{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:#FFEAD3;transition:opacity .7s}
+#loader.done{opacity:0;pointer-events:none}
+.ld{display:flex;flex-direction:column;align-items:center;gap:18px;width:min(460px,86vw)}
+.ducks{display:flex;justify-content:space-around;width:100%;height:58px;align-items:flex-end}
+.duck{width:64px;height:56px;animation:waddle 1.1s ease-in-out infinite;transform-origin:50% 90%}
+.duck:nth-child(2){animation-delay:-.37s}.duck:nth-child(3){animation-delay:-.74s}
+@keyframes waddle{0%,100%{transform:translateY(0) rotate(-6deg)}25%{transform:translateY(-7px) rotate(0)}50%{transform:translateY(0) rotate(6deg)}75%{transform:translateY(-4px) rotate(0)}}
+.track{width:100%;height:9px;border-radius:9px;background:rgba(255,255,255,.75);overflow:hidden}
+.fill{height:100%;width:0;border-radius:9px;background:#E3A877;transition:width .15s linear}
+.ldt{font-family:"Gaegu","Noto Sans TC",system-ui,sans-serif;font-size:40px;color:#9B6B48;letter-spacing:.04em;line-height:1}
+.ldt span{display:inline-block;animation:dot 1.2s infinite}.ldt span:nth-child(2){animation-delay:.2s}.ldt span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,60%,100%{opacity:.2}30%{opacity:1}}
+.tip{font-size:14px;color:#A07E63;min-height:1.4em;text-align:center}
+.pct{font-size:12px;color:#B08F74;font-variant-numeric:tabular-nums;opacity:.8}
+/* (3) 選角色 */
+#select{position:fixed;inset:0;z-index:40;display:none;place-items:center;background:rgba(169,183,187,.55);backdrop-filter:blur(3px);padding:16px}
+body.select #select{display:grid}
+.sel{background:#F6F2EC;border-radius:22px;padding:22px 22px 18px;box-shadow:0 18px 50px rgba(60,50,40,.22);width:min(760px,100%);max-height:100%;overflow:auto}
+.sel h2{font-size:22px;text-align:center}.sel>p{text-align:center;color:var(--soft);font-size:14px;margin-top:4px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.rc{background:#FFFDF9;border:2px solid transparent;border-radius:18px;padding:12px 14px;cursor:pointer;text-align:left;font:inherit;color:inherit;box-shadow:0 3px 12px rgba(60,40,20,.07);transition:border-color .2s,transform .2s}
+.rc:hover{transform:translateY(-2px)}.rc.on{border-color:var(--accent);background:#FFF8EF;color:var(--ink);box-shadow:0 6px 18px rgba(201,138,91,.25)}
+.rc canvas{position:static;width:100%;height:210px;display:block;border-radius:12px;background:linear-gradient(#EFE8DE,#E4DACB)}
+.rc b{display:block;font-size:18px;margin-top:10px}.rc small{display:block;color:var(--soft);font-size:13px;margin:2px 0 8px}
+.st{display:grid;grid-template-columns:auto 1fr auto;gap:5px 10px;align-items:center;font-size:13px}
+.st i{height:7px;border-radius:7px;background:#E7DFD3;overflow:hidden;display:block}.st i em{display:block;height:100%;border-radius:7px}
+.st .g{color:#3E8A63}.st .b{color:#C2553F}.st .n{color:var(--soft)}
+.go{display:block;margin:16px auto 0;font-size:16px;padding:11px 26px;background:var(--accent);color:#fff;border:none}
+.go:disabled{opacity:.45;cursor:default;transform:none}
+@media (max-width:640px){.cards{grid-template-columns:1fr}.rc canvas{height:170px}}
+/* (4) 家裡導覽 */
+#tour{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 32px));background:var(--chip);border:1px solid var(--line);border-radius:18px;padding:14px 18px;box-shadow:0 10px 30px rgba(60,40,20,.14);display:none}
+body.tour #tour{display:block}
+#tour .h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}#tour .h b{font-size:17px}#tour .h span{font-size:12px;color:var(--soft);font-variant-numeric:tabular-nums}
+#tour p{font-size:14px;line-height:1.7;color:var(--soft);margin-top:6px}
+#tour .tags{margin-top:4px}#tour .tags i{font-style:normal;display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;margin:4px 4px 0 0}
+#tour .btns{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}#tour .btns .pri{background:var(--accent);color:#fff;border-color:transparent}
+.toast{position:fixed;left:50%;top:84px;transform:translateX(-50%);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:9px 18px;font-size:14px;box-shadow:0 6px 20px rgba(60,40,20,.12);opacity:0;transition:opacity .4s;pointer-events:none;z-index:30}
+.toast.show{opacity:1}
+#loading{position:fixed;inset:0;display:grid;place-items:center;font-size:15px;color:var(--soft);transition:opacity .6s;pointer-events:none}
+@media (max-width:640px){#stats{width:180px}.title b{font-size:16px;white-space:nowrap}.hint{display:none}.card{right:16px;max-width:none}button{padding:6px 11px;font-size:13px}}
+
+/* 手機：能力值改成畫面上方一排小圓環（下方左右兩塊留給搖桿和按鈕） */
+body.touch #stats{left:calc(10px + env(safe-area-inset-left,0px));right:auto;transform:none;top:calc(6px + env(safe-area-inset-top,0px));width:auto;display:none;gap:10px;padding:5px 10px;border-radius:999px;align-items:center}
+body.touch.tutorial #stats,body.touch.play #stats{display:flex}
+body.touch .sg{display:flex;gap:5px;align-items:center}body.touch .sg b{display:none}
+body.touch .sg+.sg{padding-left:9px;border-left:1px solid var(--line)}
+body.touch .sr{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;grid-template-columns:none;--c:#7FB394;background:conic-gradient(var(--c) calc(var(--v,100)*1%),#E9E1D6 0)}
+body.touch .sr[data-l=m]{--c:#E8B65C}body.touch .sr[data-l=l]{--c:#E0705A}
+body.touch .sr::before{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--chip)}
+body.touch .si{position:relative;font-size:14px;line-height:1}body.touch .sn,body.touch .sb,body.touch .sv{display:none}
+body.touch .pop{right:auto;left:50%;top:32px;transform:translateX(-50%);font-size:11px}
+@keyframes floT{from{opacity:1;margin-top:0}to{opacity:0;margin-top:10px}}body.touch .pop{animation:floT 1.3s ease-out forwards}
+body.touch.tutorial #tut{top:calc(52px + env(safe-area-inset-top,0px))}
+@media (max-height:500px){body.touch #stats{left:calc(10px + env(safe-area-inset-left,0px));right:auto;transform:none;top:calc(8px + env(safe-area-inset-top,0px));padding:4px 8px;gap:8px}
+  body.touch .sr{width:28px;height:28px}body.touch .si{font-size:12px}body.touch .pop{top:28px}
+  body.touch.tutorial #tut{top:calc(8px + env(safe-area-inset-top,0px));width:min(360px,40%)}}
+body.touch #pauseBtn{padding:5px 11px}body.touch .title,body.touch .hint,body.touch #wallBtn,body.touch #rotL,body.touch #rotR,body.touch #clockR{display:none}
+body.touch .top{justify-content:flex-end}
+@media (orientation:portrait){body.touch #stats{top:calc(56px + env(safe-area-inset-top,0px))}body.touch.tutorial #tut{top:calc(104px + env(safe-area-inset-top,0px))}body.touch .toast{top:104px}}
+/* 保留操作區：手機下方左右兩塊只放搖桿和按鈕 */
+body.touch #prog{bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:calc(100% - 340px)}
+
+/* 突發事件卡 */
+#evc{position:fixed;inset:0;z-index:43;display:none;place-items:center;background:rgba(70,60,52,.35);backdrop-filter:blur(2px);padding:16px}
+body.event #evc{display:grid}
+.evbox{background:#FBF8F3;border-radius:20px;padding:18px 20px;width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 18px 50px rgba(60,50,40,.25);animation:pop .3s}
+#evc.emerg .evbox{border:3px solid #E0705A}
+.evh{display:flex;align-items:center;gap:10px}.evh span{font-size:28px}.evh b{font-size:19px}
+#evP{color:var(--ink);font-size:15px;line-height:1.7;margin:8px 0 12px}
+#evC{display:flex;flex-direction:column;gap:8px}
+.evb{display:block;width:100%;text-align:left;border-radius:14px;padding:10px 14px;font-size:15px;line-height:1.5;background:#fff;box-shadow:0 2px 6px rgba(60,40,20,.06)}
+.evb:hover{background:#FFF6EC}.evb:disabled{opacity:.4;text-decoration:line-through}
+.evb small{display:block;color:#9A8E82;font-size:12.5px;margin-top:2px}
+.evw{background:#FBE0DA;color:#B2412E;border-radius:12px;padding:8px 12px;font-size:14px;margin-bottom:10px;line-height:1.6}
+.evres{font-size:16px;line-height:1.7}.evd{color:#9A8E82;font-size:13px;margin-top:6px}
+.evtip{background:#EEF6EF;color:#2F6B4D;border-radius:12px;padding:8px 12px;font-size:13.5px;line-height:1.7;margin-top:10px}
+.evtip[hidden]{display:none}
+#evR .pri,.sbs .pri{background:var(--accent);color:#fff;border:none;font-size:15px;padding:10px 22px}#evR .pri{display:block;margin:14px 0 0 auto}
+/* 結算／開場／結局 */
+#sheet{position:fixed;inset:0;z-index:44;display:none;place-items:center;background:rgba(70,60,52,.45);backdrop-filter:blur(3px);padding:16px;overflow:auto}
+body.sheet #sheet{display:grid}#sheet.side{background:rgba(70,60,52,.12);backdrop-filter:none;justify-items:end}
+.sheetbox{background:#FBF8F3;border-radius:22px;padding:22px 24px;width:min(560px,100%);box-shadow:0 18px 50px rgba(60,50,40,.25);animation:pop .35s}
+#sheet.side .sheetbox{width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto}
+.sheetbox h2{font-size:22px;text-wrap:balance}.sheetbox .lead{color:var(--soft);font-size:14.5px;line-height:1.7;margin:6px 0 10px}
+.story p{font-size:15px;line-height:1.8;margin:4px 0}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.sgrid div{background:#fff;border-radius:12px;padding:8px 4px;text-align:center;animation:pop .4s both}
+.sgrid span{font-size:20px;display:block}.sgrid b{font-size:18px;font-variant-numeric:tabular-nums;display:block}.sgrid small{color:var(--soft);font-size:12px}
+.title2{font-size:15px;margin:6px 0}.title2 b{font-size:17px}.dim{opacity:.25}
+.hints{margin:8px 0;font-size:14px;color:var(--ink);line-height:1.8}.hints .warn{color:#C2553F}
+.tips{margin:10px 0;font-size:13.5px;line-height:1.7}.tips summary{cursor:pointer;font-weight:700;margin-bottom:6px}.tips li{margin:0 0 6px 18px}
+.sbs{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
+.dayn{font-size:12px;color:var(--soft);margin-right:-4px}
+@media (max-width:640px){.sgrid{gap:5px}.sgrid b{font-size:15px}.evb{font-size:14px}}
+@media (max-height:500px){.evbox{padding:12px 16px}#evP{margin:4px 0 8px;font-size:14px}.evb{padding:7px 12px;font-size:14px}}
+/* 教學：一條小小的任務列（細節展開 4 秒後自動收起，點一下可以再看） */
+#tut{width:auto;max-width:min(620px,calc(100% - 32px));padding:7px 10px 7px 14px;opacity:.94;top:calc(64px + env(safe-area-inset-top,0px))}
+#tut .h{gap:8px}#tut .h b{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+#tut p{display:none;font-size:13.5px;margin-top:4px}#tut.open p{display:block}
+#tutMore,#tutSkip{padding:2px 9px;font-size:12px;box-shadow:none;flex:none}
+#tutOk{position:absolute;right:14px;top:-26px;background:#7FB394;color:#fff;border-radius:999px;padding:2px 10px;font-size:13px}
+body.touch #tutN{display:none}body.touch #tut .h b{white-space:normal;font-size:13px;line-height:1.45}body.touch #tut{max-width:min(420px,50%)}
+[hidden]{display:none!important}
+</style>
+
+<script>document.body.classList.add("loading")</script>
+<canvas id="c"></canvas>
+<div class="top">
+  <div class="tools">
+    <button id="rotL" title="向左轉">↺</button>
+    <button id="rotR" title="向右轉">↻</button>
+    <button id="wallBtn">牆壁：自動</button>
+    <button id="musBtn" title="配樂開／關" aria-label="配樂開關">🔊</button>
+    <button id="pauseBtn" title="暫停（Esc）" aria-label="暫停遊戲">⏸</button>
+    <div class="clock" title="遊戲時間：17:00 以後自動變成傍晚"><span>🕗</span><small id="dayN" class="dayn">第1天</small><b id="clockT">08:00</b><input type="range" id="clockR" min="480" max="1080" step="5" value="480" aria-label="調整遊戲時間"><button id="speedBtn" title="時間快轉">⏩ ×1</button></div>
+  </div>
+</div>
+<nav class="rooms" id="rooms"></nav>
+<button id="enter">開始遊戲 →</button>
+<div class="card" id="card"><b id="cardT"></b><p id="cardP"></p></div>
+<div class="hint">拖曳旋轉・滾輪縮放・右鍵拖曳平移</div>
+<div id="story"><div class="phone" id="phone"><div class="scr"><div class="notch"></div>
+  <div class="lock" id="lock"><div class="t" id="lockT">08:00</div><div class="d">星期六</div>
+    <button class="noti" id="noti"><span class="ava">L</span><span class="tx"><b>Linda</b><small>現在</small><p>照顧小孩真的是要崩潰了。🥹🥹🥹🥹</p></span></button>
+    <div class="hintTap" id="hintTap">點一下通知打開訊息</div></div>
+  <div class="chat" id="chat">
+    <div class="ch"><svg viewBox="0 0 24 24" fill="#1E8BFF"><path d="M15 5l-7 7 7 7" stroke="#1E8BFF" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ava">L</span><span class="nm"><b>Linda</b><span id="chS">上線中</span></span><svg viewBox="0 0 24 24" fill="#1E8BFF"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.6 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.6 3.6a1 1 0 01-.25 1z"/></svg><svg viewBox="0 0 24 24" fill="#1E8BFF"><rect x="2" y="6" width="13" height="12" rx="3"/><path d="M16 10l6-3.5v11L16 14z"/></svg><svg viewBox="0 0 24 24" fill="#1E8BFF"><circle cx="12" cy="12" r="10"/><rect x="11" y="10" width="2" height="7" fill="#000"/><circle cx="12" cy="7" r="1.3" fill="#000"/></svg></div>
+    <div class="msgs" id="msgs"><div class="day">今天 08:00</div></div>
+    <div class="choices" id="choices"></div>
+    <div class="bar2"><svg viewBox="0 0 24 24" fill="#1E8BFF"><rect x="3" y="7" width="18" height="13" rx="3"/><rect x="8" y="4" width="8" height="4" rx="1.5"/><circle cx="12" cy="13.5" r="3.4" fill="#000"/></svg><svg viewBox="0 0 24 24" fill="#1E8BFF"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M5 18l5-6 4 4 3-3 3 5z" fill="#000"/><circle cx="16" cy="8.5" r="1.6" fill="#000"/></svg><svg viewBox="0 0 24 24" fill="#1E8BFF"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0012 0M12 17v4" stroke="#1E8BFF" stroke-width="2" fill="none" stroke-linecap="round"/></svg><div class="field" id="field">輸入訊息…</div><button class="send" id="send" aria-label="送出"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M3 20l18-8L3 4l2 7 9 1-9 1z"/></svg></button></div>
+  </div></div></div></div>
+<a id="backIsland" href="../island.html">← 回到小島</a>
+<button id="skipStory">跳過前情提要 ⏭</button>
+<div id="ending"><div class="endc"><b id="endT">遊戲結束</b><p id="endP">Linda 只好一個人撐下去了……<br>改變心意的話，隨時可以回來幫忙。</p><button id="restart">重新開始</button></div></div>
+<div id="loader" role="status" aria-live="polite"><div class="ld">
+  <div class="ducks"><svg class="duck" viewBox="0 0 64 56" aria-hidden="true"><path d="M6 30 Q4 18 14 24 Z" fill="#F2BE34"/><ellipse cx="30" cy="38" rx="24" ry="15" fill="#F6C945"/><circle cx="42" cy="18" r="12" fill="#F6C945"/><path d="M52 15 L62 19 L52 23 Z" fill="#E2553E"/><circle cx="45" cy="15" r="2" fill="#2A2A2A"/><ellipse cx="27" cy="38" rx="11" ry="7" fill="#FBE29A"/><ellipse cx="40" cy="22" rx="3" ry="2" fill="#F7A88A" opacity=".6"/></svg><svg class="duck" viewBox="0 0 64 56" aria-hidden="true"><path d="M6 30 Q4 18 14 24 Z" fill="#F2BE34"/><ellipse cx="30" cy="38" rx="24" ry="15" fill="#F6C945"/><circle cx="42" cy="18" r="12" fill="#F6C945"/><path d="M52 15 L62 19 L52 23 Z" fill="#E2553E"/><circle cx="45" cy="15" r="2" fill="#2A2A2A"/><ellipse cx="27" cy="38" rx="11" ry="7" fill="#FBE29A"/><ellipse cx="40" cy="22" rx="3" ry="2" fill="#F7A88A" opacity=".6"/></svg><svg class="duck" viewBox="0 0 64 56" aria-hidden="true"><path d="M6 30 Q4 18 14 24 Z" fill="#F2BE34"/><ellipse cx="30" cy="38" rx="24" ry="15" fill="#F6C945"/><circle cx="42" cy="18" r="12" fill="#F6C945"/><path d="M52 15 L62 19 L52 23 Z" fill="#E2553E"/><circle cx="45" cy="15" r="2" fill="#2A2A2A"/><ellipse cx="27" cy="38" rx="11" ry="7" fill="#FBE29A"/><ellipse cx="40" cy="22" rx="3" ry="2" fill="#F7A88A" opacity=".6"/></svg></div>
+  <div class="track"><div class="fill" id="ldFill"></div></div>
+  <div class="ldt">Loading<span>.</span><span>.</span><span>.</span></div>
+  <div class="tip" id="ldTip">正在幫奶瓶消毒…</div><div class="pct" id="ldPct">0%</div>
+</div></div>
+<div id="select"><div class="sel">
+  <h2>選擇你的角色</h2><p>今天要由誰來幫 Linda 顧小麻糬呢？</p>
+  <div class="cards">
+    <button class="rc" data-r="nanny"><canvas></canvas><b>保母 Amy</b><small>專業保母，手腳俐落，但年紀大了比較容易累。</small></button>
+    <button class="rc" data-r="friend"><canvas></canvas><b>Linda 的朋友</b><small>沒帶過小孩，動作慢一點，但體力好、很有耐心。</small></button>
+  </div>
+  <button class="go" id="goBtn" disabled>選一位角色</button>
+</div></div>
+<div id="tour"><div class="h"><b id="tourT"></b><span id="tourN"></span></div><p id="tourP"></p><div class="tags" id="tourG"></div>
+  <div class="btns"><button id="tourSkip">跳過導覽</button><button id="tourPrev">← 上一個</button><button class="pri" id="tourNext">下一個 →</button></div></div>
+<div class="toast" id="toast"></div>
+<div id="tut"><div class="h"><b id="tutT"></b><div id="tutN"></div><button id="tutMore" aria-label="看說明">說明</button><button id="tutSkip">跳過教學</button></div><p id="tutD"></p><span id="tutOk">✓ 很好！</span></div>
+<div id="ctx"></div>
+<div id="stats"></div>
+<div id="mood" aria-hidden="true"></div><div id="pbub" aria-hidden="true"></div><div id="dang" role="alert"></div>
+<div id="prog"><span id="progT"></span><div class="bar"><div id="progF"></div></div></div>
+<div id="ready"><div class="rdy"><b>準備好了嗎？</b><p>Linda 要出門了，小麻糬就交給你囉！<br>撐到 18:00 她回家就過關。</p>
+  <div class="bs"><button id="readyAgain">再練習一次</button><button class="pri" id="readyGo">準備好了！</button></div></div></div>
+<div id="pause"><div class="rdy"><b>遊戲暫停</b><p id="pauseP"></p>
+  <div class="pbs"><button class="pri" id="pResume">▶ 繼續遊戲</button><button id="pRestart">↺ 重新開始</button><button id="pQuit">⏹ 結束遊戲</button><button id="pIsland" onclick="location.href='../island.html'">🏝️ 回到小島</button></div></div></div>
+<div id="evc"><div class="evbox"><div class="evh"><span id="evIcon"></span><b id="evT"></b></div><p id="evP"></p>
+  <div id="evW" class="evw" hidden></div><div id="evC"></div>
+  <div id="evR" hidden><p id="evRes" class="evres"></p><p id="evD" class="evd"></p><p id="evTip" class="evtip"></p><button class="pri" id="evOk">繼續 →</button></div></div></div>
+<div id="sheet"><div class="sheetbox" id="sheetB"></div></div>
+<div id="pad"><div id="joy"><div id="knob"></div></div>
+  <div class="acts"><button id="bE" aria-label="抱起或放下小麻糬">👶🏻</button><button id="bF" aria-label="照顧">🍼</button><button id="bQ" aria-label="處理危險">🛡️</button></div></div>
+<div id="rot"><div><div class="ic">📱</div><b>把手機轉成橫向</b><p>左手搖桿走路、右手按指令，玩起來更順手。</p><button id="rotOk">先用直向玩</button></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
+<script src="js/characters.js"></script>
+<script>
+// =====================================================================
+//  幫 Linda 照顧小孩：場景精修版（只有場景，還沒有遊戲玩法）
+//  座標和原本的遊戲一樣：房子 x -8~8、z -6~6，地板高度 y=0
+//  z 是負的那邊是後牆，z 是正的那邊是大門
+// =====================================================================
+const $=id=>document.getElementById(id);
+THREE.ColorManagement.legacyMode=false;          // 讓色碼看起來跟設計稿一樣
+const canvas=$("c");
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();
+
+// ---------- 攝影機：正交（斜角俯視，遠近一樣大） ----------
+const camera=new THREE.OrthographicCamera(-1,1,1,-1,.1,200);
+const controls=new THREE.OrbitControls(camera,canvas);
+controls.enableDamping=true;controls.dampingFactor=.09;
+controls.minZoom=.55;controls.maxZoom=5;controls.minPolarAngle=.35;controls.maxPolarAngle=1.22;
+controls.screenSpacePanning=false;
+let VIEW=7.4;
+function resize(){const w=innerWidth,h=innerHeight,a=w/h;renderer.setSize(w,h,false);
+  VIEW=a<1.25?8.6*1.25/a:7.4;camera.left=-VIEW*a;camera.right=VIEW*a;camera.top=VIEW;camera.bottom=-VIEW;camera.updateProjectionMatrix()}
+addEventListener("resize",resize);resize();
+
+// ---------- 光線 ----------
+const hemi=new THREE.HemisphereLight(0xFFF7EE,0xD8C8B4,.95);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xFFF0DD,1.55);sun.position.set(-5,15,9);sun.castShadow=true;
+sun.shadow.mapSize.set(4096,4096);Object.assign(sun.shadow.camera,{left:-17,right:17,top:17,bottom:-17,near:1,far:50});
+sun.shadow.bias=-.0004;sun.shadow.normalBias=.02;scene.add(sun);
+const fill=new THREE.DirectionalLight(0xE8EEFF,.35);fill.position.set(8,6,-6);scene.add(fill);
+
+// ---------- 小工具 ----------
+let seed=11;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const MC={};
+function M(c,o={}){if(c&&c.isMaterial)return c;const k=c+JSON.stringify(o);return MC[k]||(MC[k]=new THREE.MeshStandardMaterial({color:c,roughness:.82,metalness:0,...o}))}
+let CAPTURE=null;
+function add(m,p){m.castShadow=true;m.receiveShadow=true;(p||scene).add(m);if(CAPTURE)CAPTURE.push(m);return m}
+const GC={};
+function rgeo(w,h,d,r){const k=[w,h,d,r].map(v=>v.toFixed(3)).join();return GC[k]||(GC[k]=new THREE.RoundedBoxGeometry(w,h,d,3,r))}
+// rbox = 圓角方塊（y 是底部的高度）
+function rbox(w,h,d,c,x,y,z,p,r=.03){r=Math.min(r,Math.min(w,h,d)/2-.002);
+  const g=r>.004?rgeo(w,h,d,r):new THREE.BoxGeometry(w,h,d);const m=add(new THREE.Mesh(g,M(c)),p);m.position.set(x,y+h/2,z);return m}
+function box(w,h,d,c,x,y,z,p){const m=add(new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c)),p);m.position.set(x,y+h/2,z);return m}
+function cyl(rt,rb,h,c,x,y,z,p,s=24){const m=add(new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,s),M(c)),p);m.position.set(x,y+h/2,z);return m}
+function sph(r,c,x,y,z,p,sx=1,sy=1,sz=1){const m=add(new THREE.Mesh(new THREE.SphereGeometry(r,24,16),M(c)),p);m.position.set(x,y,z);m.scale.set(sx,sy,sz);return m}
+function grp(x=0,y=0,z=0,ry=0,p){const g=new THREE.Group();g.position.set(x,y,z);g.rotation.y=ry;(p||scene).add(g);return g}
+function rod(a,b,r,c,p){// 兩點之間的細棍子
+  const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),L=A.distanceTo(B);
+  const m=add(new THREE.Mesh(new THREE.CylinderGeometry(r,r,L,10),M(c)),p);m.position.copy(A).lerp(B,.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),B.clone().sub(A).normalize());return m}
+
+// ---------- 程式畫的材質貼圖（木地板、地毯、大理石…） ----------
+function ctex(w,h,draw){const c=document.createElement("canvas");c.width=w;c.height=h;draw(c.getContext("2d"),w,h);
+  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t}
+const hex=c=>"#"+c.toString(16).padStart(6,"0");
+function shade(c,k){const col=new THREE.Color(c);const hsl={};col.getHSL(hsl);col.setHSL(hsl.h,hsl.s,Math.max(0,Math.min(1,hsl.l+k)));return "#"+col.getHexString()}
+function noise(x,w,h,n,a){for(let i=0;i<n;i++){x.fillStyle=rnd()<.5?`rgba(255,255,255,${a})`:`rgba(0,0,0,${a})`;x.fillRect(rnd()*w,rnd()*h,2,2)}}
+// 木地板：一張貼圖代表 2.4 公尺見方
+function woodTex(base,plank=.2){return ctex(1024,1024,(x,w,h)=>{const rows=Math.round(2.4/plank),rh=h/rows;
+  for(let r=0;r<rows;r++){let u=-rnd()*400;while(u<w){const L=380+rnd()*520;x.fillStyle=shade(base,(rnd()-.5)*.07);x.fillRect(u,r*rh,L,rh);
+    for(let g=0;g<7;g++){x.strokeStyle=`rgba(80,50,30,${.04+rnd()*.05})`;x.lineWidth=1+rnd()*1.5;x.beginPath();const y0=r*rh+rnd()*rh;x.moveTo(u,y0);
+      for(let s=0;s<=L;s+=40)x.lineTo(u+s,y0+Math.sin(s*.02+g)*2);x.stroke()}
+    x.fillStyle="rgba(60,35,20,.28)";x.fillRect(u,r*rh,2,rh);u+=L}
+    x.fillStyle="rgba(60,35,20,.25)";x.fillRect(0,r*rh,w,2)}})}
+function floorMat(base,w,d,plank){const t=woodTex(base,plank);t.repeat.set(w/2.4,d/2.4);return new THREE.MeshStandardMaterial({map:t,roughness:.62})}
+function knitTex(base){return ctex(512,512,(x,w,h)=>{x.fillStyle=hex(base);x.fillRect(0,0,w,h);
+  for(let j=0;j<h;j+=8)for(let i=0;i<w;i+=8){x.fillStyle=`rgba(255,255,255,${.12+rnd()*.12})`;x.beginPath();x.ellipse(i+4,j+4,3,2.4,0,0,7);x.fill();
+    x.fillStyle=`rgba(90,70,50,${.05+rnd()*.06})`;x.fillRect(i,j+7,8,1)}noise(x,w,h,6000,.05)})}
+function dotsTex(){return ctex(512,384,(x,w,h)=>{x.fillStyle="#F6EEE3";x.fillRect(0,0,w,h);noise(x,w,h,4000,.04);
+  const cols=["#F3C7A5","#BFE0D3","#F6DE9C","#BBD7EC","#F2B8B0"];
+  for(let i=0;i<26;i++){x.fillStyle=cols[i%5];x.globalAlpha=.85;x.beginPath();x.arc(30+rnd()*(w-60),30+rnd()*(h-60),16+rnd()*30,0,7);x.fill()}x.globalAlpha=1})}
+function stripeTex(){return ctex(512,384,(x,w,h)=>{x.fillStyle="#EFE9E0";x.fillRect(0,0,w,h);noise(x,w,h,5000,.05);
+  x.strokeStyle="rgba(120,110,100,.45)";x.lineWidth=3;for(let i=1;i<6;i++){const m=i*26;x.beginPath();x.roundRect(m,m,w-2*m,h-2*m,h/2-m);x.stroke()}})}
+function juteTex(){return ctex(256,256,(x,w,h)=>{x.fillStyle="#B98E5E";x.fillRect(0,0,w,h);
+  for(let j=0;j<h;j+=16)for(let i=0;i<w;i+=16){const o=((i+j)/16)%2;x.fillStyle=o?"#C99D6B":"#A87F52";x.beginPath();x.roundRect(i+2,j+2,o?12:12,o?12:12,4);x.fill()}noise(x,w,h,3000,.06)})}
+function concreteTex(base){return ctex(512,512,(x,w,h)=>{x.fillStyle=hex(base);x.fillRect(0,0,w,h);
+  for(let i=0;i<60;i++){const g=x.createRadialGradient(0,0,0,0,0,40+rnd()*90);const a=.035+rnd()*.04,d=rnd()<.5;
+    g.addColorStop(0,d?`rgba(90,90,90,${a})`:`rgba(255,255,255,${a})`);g.addColorStop(1,"rgba(0,0,0,0)");x.save();x.translate(rnd()*w,rnd()*h);x.fillStyle=g;x.fillRect(-140,-140,280,280);x.restore()}
+  noise(x,w,h,9000,.04)})}
+function marbleTex(){return ctex(512,512,(x,w,h)=>{x.fillStyle="#F6F4F1";x.fillRect(0,0,w,h);x.filter="blur(1.2px)";
+  for(let i=0;i<14;i++){x.strokeStyle=`rgba(150,145,140,${.12+rnd()*.18})`;x.lineWidth=.6+rnd()*2;x.beginPath();let px=rnd()*w,py=0;x.moveTo(px,py);
+    while(py<h){px+=(rnd()-.5)*60;py+=20+rnd()*30;x.lineTo(px,py)}x.stroke()}x.filter="none"})}
+function artTex(){return ctex(256,320,(x,w,h)=>{x.fillStyle="#EEE8DF";x.fillRect(0,0,w,h);
+  x.fillStyle="#C9BBA8";x.beginPath();x.arc(170,110,60,0,7);x.fill();x.fillStyle="#2E2B29";x.beginPath();x.arc(90,190,58,Math.PI,0);x.fill();
+  x.fillStyle="#D9D0C3";x.fillRect(40,220,170,60);x.strokeStyle="#2E2B29";x.lineWidth=4;x.beginPath();x.arc(150,240,40,Math.PI*1.1,Math.PI*1.9);x.stroke()})}
+function glowTex(){return ctex(128,128,(x,w,h)=>{const g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,"rgba(255,255,255,1)");g.addColorStop(.35,"rgba(255,255,255,.35)");g.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=g;x.fillRect(0,0,w,h)})}
+const texMat=(t,o={})=>new THREE.MeshStandardMaterial({map:t,roughness:.9,...o});
+const MARBLE=texMat(marbleTex(),{roughness:.35});
+const STEEL=M(0xC9CDD0,{metalness:.55,roughness:.32}),STEEL2=M(0xB7BCC0,{metalness:.6,roughness:.3});
+const GOLD=M(0xC9A15B,{metalness:.75,roughness:.3}),BLACKM=M(0x232222,{metalness:.4,roughness:.45});
+const GLASS=new THREE.MeshStandardMaterial({color:0xDCEFF7,emissive:0xEAF5FB,emissiveIntensity:.55,transparent:true,opacity:.5,roughness:.08,depthWrite:false});
+const CLEAR=new THREE.MeshStandardMaterial({color:0xE8F2F4,transparent:true,opacity:.22,roughness:.05,depthWrite:false});
+function rug(x,z,w,d,mat,r=.08,ry=0){const m=add(new THREE.Mesh(rgeo(w,.025,d,Math.min(r,.0105)),mat));m.position.set(x,.0125,z);m.rotation.y=ry;m.castShadow=false;return m}
+function roundRug(x,z,r,mat){const m=add(new THREE.Mesh(new THREE.CylinderGeometry(r,r,.03,48),mat));m.position.set(x,.015,z);m.castShadow=false;return m}
+// 柔和光暈：貼在燈和窗戶上的發光小圖
+const GLOWT=glowTex(),GLOWS=[];
+function glow(x,y,z,s,c,day=.0,night=.85,p){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOWT,color:c,transparent:true,opacity:day,depthWrite:false,blending:THREE.AdditiveBlending}));
+  sp.position.set(x,y,z);sp.scale.set(s,s,s);(p||scene).add(sp);GLOWS.push({sp,day,night});if(CAPTURE)CAPTURE.push(sp);return sp}
+const LAMPS=[];// 傍晚會亮的燈
+function lamp(x,y,z,c=0xFFC98A,dist=5.5,power=1.3){const l=new THREE.PointLight(c,0,dist,2);l.position.set(x,y,z);scene.add(l);LAMPS.push({l,power});return l}
+const EMIS=[];// 燈罩在傍晚會更亮
+function emis(c,day=.35,night=1.6){const m=new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:day,roughness:.6});EMIS.push({m,day,night});return m}
+
+// =====================================================================
+//  房子：地板、外牆、隔間牆（牆會自動降低，讓你看得到裡面）
+// =====================================================================
+const H=2.5,T=.16,SH=.22;
+const WALLC={living:0xEADFCF,kitchen:0xEDE5DA,nursery:0xF5ECE2,master:0xE6D7C4,outside:0xF7F6F2};
+const wallMats={};
+for(const k in WALLC)wallMats[k]=new THREE.MeshStandardMaterial({color:WALLC[k],roughness:.95,map:concreteTex(WALLC[k])});
+wallMats.bath=new THREE.MeshStandardMaterial({color:0xC9C6C1,roughness:.9,map:concreteTex(0xB8B5B0)});
+const CAP=M(0xFBF8F3),CAPLOW=M(0xF4EEE6);
+const WALLS=[];
+// axis "x"：沿著 x 方向的牆（在 z=pos）；axis "z"：沿著 z 方向的牆（在 x=pos）
+// sides：[負的那一側房間, 正的那一側房間]；doors：[起,迄]；wins：[起,迄,窗台高,窗頂高]
+const WALLBY={};
+function wall(axis,pos,a,b,sides,{doors=[],wins=[],outer=0,name}={}){
+  const full=new THREE.Group(),stub=new THREE.Group();scene.add(full);scene.add(stub);
+  const [negM,posM]=sides.map(s=>wallMats[s]);
+  const mats=axis==="x"?[CAP,CAP,CAP,CAP,posM,negM]:[posM,negM,CAP,CAP,CAP,CAP];
+  const piece=(u0,u1,y0,y1,g,th=T,mm=mats)=>{const L=u1-u0,hh=y1-y0;
+    const geo=axis==="x"?new THREE.BoxGeometry(L,hh,th):new THREE.BoxGeometry(th,hh,L);
+    const m=add(new THREE.Mesh(geo,mm),g);const u=(u0+u1)/2;
+    if(axis==="x")m.position.set(u,y0+hh/2,pos);else m.position.set(pos,y0+hh/2,u);return m};
+  const ops=[...doors.map(d=>({a:d[0],b:d[1],door:1})),...wins.map(w=>({a:w[0],b:w[1],y0:w[2],y1:w[3]}))].sort((p,q)=>p.a-q.a);
+  let cur=a;
+  ops.forEach(o=>{if(o.a>cur)piece(cur,o.a,0,H,full);
+    if(o.door){piece(o.a,o.b,2.12,H,full)}
+    else{piece(o.a,o.b,0,o.y0,full);piece(o.a,o.b,o.y1,H,full);
+      // 玻璃和白色窗框
+      const gl=piece(o.a,o.b,o.y0,o.y1,full,.02,GLASS);gl.castShadow=false;
+      const F=M(0xFAFAF8),fw=.05;
+      piece(o.a,o.b,o.y0,o.y0+fw,full,T+.03,F);piece(o.a,o.b,o.y1-fw,o.y1,full,T+.03,F);
+      piece(o.a,o.a+fw,o.y0,o.y1,full,T+.03,F);piece(o.b-fw,o.b,o.y0,o.y1,full,T+.03,F);
+      const mid=(o.a+o.b)/2;piece(mid-.02,mid+.02,o.y0,o.y1,full,T+.02,F);
+      if(o.y1-o.y0>1.1)piece(o.a,o.b,(o.y0+o.y1)/2-.02,(o.y0+o.y1)/2+.02,full,T+.02,F)}
+    cur=Math.max(cur,o.b)});
+  if(cur<b)piece(cur,b,0,H,full);
+  // 外牆：深灰色牆腳＋深色窗框（像參考圖）
+  if(outer){const os=sides[0]==="outside"?-1:1,DK=M(0x2E3134,{roughness:.6});
+    const skin=(u0,u1,y0,y1,th,off,G=full)=>{const L=u1-u0,hh=y1-y0,o=os*(T/2+off);const g=axis==="x"?new THREE.BoxGeometry(L,hh,th):new THREE.BoxGeometry(th,hh,L);
+      const m=add(new THREE.Mesh(g,DK),G);const u=(u0+u1)/2;if(axis==="x")m.position.set(u,y0+hh/2,pos+o);else m.position.set(pos+o,y0+hh/2,u);return m};
+    let c2=a;doors.slice().sort((p,q)=>p[0]-q[0]).forEach(d=>{if(d[0]>c2)skin(c2,d[0],0,.36,.02,.01);c2=d[1]});if(c2<b)skin(c2,b,0,.36,.02,.01);
+    c2=a;doors.slice().sort((p,q)=>p[0]-q[0]).forEach(d=>{if(d[0]>c2)skin(c2,d[0],0,SH-.02,.02,.008,stub);c2=d[1]});if(c2<b)skin(c2,b,0,SH-.02,.02,.008,stub);
+    wins.forEach(([u0,u1,y0,y1])=>{const f=.06;skin(u0-f,u1+f,y1,y1+f,.05,.025);skin(u0-f,u1+f,y0-f,y0,.07,.035);skin(u0-f,u0,y0,y1,.05,.025);skin(u1,u1+f,y0,y1,.05,.025);skin((u0+u1)/2-.02,(u0+u1)/2+.02,y0,y1,.04,.02)})}
+  // 矮牆（牆降下來的時候看到的那一段）
+  const solid=[];cur=a;doors.slice().sort((p,q)=>p[0]-q[0]).forEach(d=>{if(d[0]>cur)solid.push([cur,d[0]]);cur=d[1]});if(cur<b)solid.push([cur,b]);
+  const smats=mats.map(m=>m===CAP?CAPLOW:m);
+  solid.forEach(([u0,u1])=>piece(u0,u1,0,SH,stub,T-.006,smats));
+  const rec={axis,pos,a,b,full,s:1,outer,doors};WALLS.push(rec);if(name)WALLBY[name]=rec;return rec;
+}
+// =====================================================================
+//  家具小工具（每一種家具都是一個 function，可以重複使用）
+// =====================================================================
+const WAL=0x6E4A33,OAK=0xD6B183,BIRCH=0xE7D1AA,SOFA=0xC9C4BD,SOFA2=0xD3CEC7,KW=0xF7F5F1;
+const RAINBOW=[0x7B5EA7,0x3F7CC6,0x55A85A,0xF2C443,0xF08A3A,0xE1483F];
+const JUTE=texMat(juteTex());
+function leafGeo(len,wid){const s=new THREE.Shape();s.moveTo(0,0);s.quadraticCurveTo(wid,len*.45,0,len);s.quadraticCurveTo(-wid,len*.45,0,0);return new THREE.ShapeGeometry(s,6)}
+const LEAFM=[0x4F7D45,0x5C8C4E,0x456F3D].map(c=>M(c,{side:THREE.DoubleSide,roughness:.7}));
+function leaf(len,wid,y,yaw,tilt,p,mi=0){const piv=new THREE.Group();piv.position.y=y;piv.rotation.y=yaw;p.add(piv);
+  const m=add(new THREE.Mesh(leafGeo(len,wid),LEAFM[mi%3]),piv);m.rotation.x=-tilt;return m}
+function potPlant(x,y,z,p,s=1,pot=0xEDE8E0){const g=grp(x,y,z,0,p);g.scale.setScalar(s);
+  cyl(.13,.1,.2,pot,0,0,0,g,20);cyl(.12,.12,.01,0x5A4636,0,.19,0,g,16);
+  for(let i=0;i<9;i++)leaf(.22+rnd()*.12,.07,.19,i*2.4,.35+rnd()*.6,g,i);return g}
+function bigPlant(x,z,s=1){const g=grp(x,0,z,0);g.scale.setScalar(s);
+  cyl(.26,.2,.46,0xDAD4CB,0,0,0,g,28);cyl(.24,.24,.01,0x5A4636,0,.44,0,g,20);
+  for(let i=0;i<10;i++){const a=i*2.39,h=.9+rnd()*.9,r=.08+rnd()*.12;
+    rod([0,.44,0],[Math.cos(a)*r,h,Math.sin(a)*r],.012,0x5F7F48,g);
+    const piv=grp(Math.cos(a)*r,h,Math.sin(a)*r,-a+Math.PI/2,g);const m=add(new THREE.Mesh(leafGeo(.75+rnd()*.3,.2),LEAFM[i%3]),piv);m.rotation.x=-(.35+rnd()*.5)}
+  return g}
+function curtain(axis,pos,u0,u1,h,color,op=1){const n=Math.max(3,Math.round((u1-u0)/.075)),r=(u1-u0)/n*.75;
+  const mat=op<1?new THREE.MeshStandardMaterial({color,roughness:.95,transparent:true,opacity:op,side:THREE.DoubleSide}):M(color,{roughness:.95});
+  for(let i=0;i<n;i++){const u=u0+(i+.5)*(u1-u0)/n,m=add(new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.15,h,10,1,true),mat));
+    if(axis==="z")m.position.set(pos,2.32-h/2,u);else m.position.set(u,2.32-h/2,pos);m.scale.set(axis==="z"?.55:1,1,axis==="z"?1:.55);if(op<1)m.castShadow=false}}
+function lowShelf(g,w,h,d,c){[-1,1].forEach(s=>rbox(.035,h,d,c,s*(w/2-.0175),0,0,g,.008));
+  rbox(w,.035,d,c,0,h-.035,0,g,.008);rbox(w-.06,.03,d-.02,c,0,h*.48,0,g,.005);rbox(w-.06,.03,d-.02,c,0,.03,0,g,.005);
+  box(w-.07,h-.07,.01,shade(c,-.03).replace("#","0x")*1,0,.035,-d/2+.006,g);rbox(.03,h*.48,d-.02,c,0,.06,0,g,.005)}
+function stacker(x,y,z,p,s=1){const g=grp(x,y,z,0,p);g.scale.setScalar(s);
+  rbox(.17,.03,.17,BIRCH,0,0,0,g,.01);cyl(.012,.012,.22,BIRCH,0,.03,0,g,8);
+  RAINBOW.forEach((c,i)=>cyl(.074-i*.0065,.074-i*.0065,.028,c,0,.03+i*.03,0,g,24));sph(.036,BIRCH,0,.24,0,g);return g}
+function puzzleTray(x,y,z,p,k=0){const g=grp(x,y,z,0,p);rbox(.34,.025,.26,BIRCH,0,0,0,g,.006);
+  if(k===0){cyl(.04,.04,.015,0xE1483F,-.1,.025,-.05,g,20);box(.07,.015,.07,0x3F7CC6,.0,.025,-.05,g);cyl(.045,.045,.015,0x55A85A,.1,.025,-.05,g,3);
+    box(.08,.015,.05,0xF2C443,-.08,.025,.06,g);cyl(.04,.04,.015,0x7B5EA7,.07,.025,.06,g,6)}
+  else RAINBOW.forEach((c,i)=>box(.08,.02,.08,c,-.11+(i%3)*.11,.025,-.05+Math.floor(i/3)*.1,g));return g}
+function bookRack(g){[-1,1].forEach(s=>rbox(.03,.82,.32,BIRCH,s*.435,0,0,g,.008));rbox(.9,.03,.32,BIRCH,0,.82,0,g,.008);
+  box(.87,.78,.01,0xDEC69C,0,.03,-.155,g);
+  const covers=[0x6FA8DC,0xF6B26B,0x93C47D,0xE06666,0xFFD966,0x8E7CC3,0x76A5AF,0xF9CB9C];
+  [.06,.33,.58].forEach((y,t)=>{box(.87,.02,.24,BIRCH,0,y,0,g);box(.87,.07,.02,BIRCH,0,y,.12,g);
+    for(let i=0;i<4;i++){const b=rbox(.19,.24,.014,covers[(t*3+i)%8],-.32+i*.215,y+.02,.06-i%2*.03,g,.004);b.rotation.x=-.18;
+      box(.12,.05,.002,0xFFFFFF,-.32+i*.215,y+.17,.068-i%2*.03,g).rotation.x=-.18}})}
+function basket(x,z,r,h,kind){const g=grp(x,0,z);
+  const b=add(new THREE.Mesh(new THREE.CylinderGeometry(r,r*.85,h,28,1,true),M(0xB48C5E,{side:THREE.DoubleSide})),g);b.material=JUTE.clone();b.material.side=THREE.DoubleSide;b.position.y=h/2;
+  cyl(r*.85,r*.85,.01,0x9A7550,0,0,0,g,28);const rim=new THREE.Mesh(new THREE.TorusGeometry(r,.012,6,32),M(0xA07A4E));rim.rotation.x=Math.PI/2;rim.position.y=h;add(rim,g);
+  [-1,1].forEach(s=>{const hd=new THREE.Mesh(new THREE.TorusGeometry(.06,.01,6,12,Math.PI),M(0xA07A4E));hd.position.set(s*r,h,0);hd.rotation.y=Math.PI/2;add(hd,g)});
+  for(let i=0;i<14;i++){const a=rnd()*6.3,d=rnd()*r*.65,px=Math.cos(a)*d,pz=Math.sin(a)*d,py=h-.06+rnd()*.06;
+    if(kind==="balls")sph(.045,RAINBOW[i%6],px,py+.02,pz,g);
+    else{const m=i%3?rbox(.07,.07,.07,shade(BIRCH,(rnd()-.5)*.08).replace("#","0x")*1,px,py,pz,g,.012):cyl(.035,.035,.1,BIRCH,px,py,pz,g,12);m.rotation.set(rnd(),rnd(),rnd())}}
+  return g}
+function kidChair(x,z,ry,p){const g=grp(x,0,z,ry,p);rbox(.26,.025,.26,BIRCH,0,.26,0,g,.006);
+  [[-.11,-.11],[.11,-.11],[-.11,.11],[.11,.11]].forEach(([a,b])=>box(.025,.26,.025,BIRCH,a,0,b,g));
+  rbox(.26,.12,.02,BIRCH,0,.38,-.12,g,.006);[-.11,.11].forEach(a=>box(.02,.14,.02,BIRCH,a,.27,-.12,g));return g}
+function ballPit(x,z){const g=grp(x,0,z);g.scale.setScalar(.85);cyl(.6,.6,.34,0xCFCBC6,0,0,0,g,48);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(.53,.08,12,48),M(0xD6D2CD));rim.rotation.x=Math.PI/2;rim.position.y=.34;add(rim,g);
+  cyl(.47,.47,.02,0xDCD8D2,0,.3,0,g,32);
+  const N=170,im=new THREE.InstancedMesh(new THREE.SphereGeometry(.05,12,8),M(0xFFFFFF,{roughness:.5}),N);im.castShadow=true;im.receiveShadow=true;
+  const cols=[0xE5453A,0xF5C433,0x3E7FD6,0x8E5CC8].map(c=>new THREE.Color(c)),m4=new THREE.Matrix4();
+  for(let i=0;i<N;i++){const a=rnd()*6.3,d=Math.sqrt(rnd())*.44;m4.makeTranslation(Math.cos(a)*d,.33+rnd()*.07,Math.sin(a)*d);im.setMatrixAt(i,m4);im.setColorAt(i,cols[i%4])}
+  g.add(im);return g}
+function frustum(wb,db,wt,dt,h){const geo=new THREE.BoxGeometry(wb,h,db);const p=geo.attributes.position;
+  for(let i=0;i<p.count;i++)if(p.getY(i)>0){p.setX(i,p.getX(i)*wt/wb);p.setZ(i,p.getZ(i)*dt/db)}
+  geo.translate(0,h/2,0);geo.computeVertexNormals();return geo}
+function shaker(w,h,cx,y,g,z=.27){rbox(w,h,.02,KW,cx,y,z,g,.006);rbox(w-.1,h-.1,.008,0xEDE9E2,cx,y+.05,z+.012,g,.004)}
+function cabinetRun(g,x0,x1,units){const L=x1-x0,cx=(x0+x1)/2;
+  rbox(L,.78,.56,KW,cx,.1,-.02,g,.01);box(L-.04,.1,.5,0xE2DDD5,cx,0,-.05,g);box(L+.02,.04,.64,MARBLE,cx,.88,0,g);
+  units.forEach(([u0,u1,t])=>{const w=u1-u0-.02,c=(u0+u1)/2;
+    if(t==="door"){shaker(w,.68,c,.13,g);cyl(.014,.014,.03,GOLD,c+w/2-.07,.68,.3,g,10).rotation.x=Math.PI/2}
+    if(t==="drawers")[0,1,2].forEach(i=>{shaker(w,.21,c,.13+i*.235,g);box(.14,.012,.02,GOLD,c,.3+i*.235,.3,g)});
+    if(t==="sink"){[-1,1].forEach(s=>{shaker(w/2-.01,.68,c+s*w/4,.13,g);cyl(.014,.014,.03,GOLD,c+s*.06,.68,.3,g,10).rotation.x=Math.PI/2})}
+    if(t==="oven"){rbox(w,.56,.02,STEEL,c,.14,.27,g,.006);rbox(w-.14,.26,.006,0x151515,c,.26,.284,g,.004);rod([c-w/2+.06,.64,.31],[c+w/2-.06,.64,.31],.012,0xD8DBDE,g);
+      rbox(w,.12,.02,0x2B2B2B,c,.72,.27,g,.006);for(let i=0;i<4;i++){const k=cyl(.022,.022,.03,0xDCDCDC,c-.2+i*.13,.78,.29,g,12);k.rotation.x=Math.PI/2}}
+    if(t==="dw"){rbox(w,.68,.02,STEEL,c,.13,.27,g,.006);rod([c-w/2+.06,.76,.31],[c+w/2-.06,.76,.31],.012,0xD8DBDE,g)}})}
+function upperCab(g,x0,x1){const L=x1-x0,cx=(x0+x1)/2;rbox(L,.85,.34,KW,cx,1.5,-.14,g,.01);
+  const n=Math.max(1,Math.round(L/.5)),w=L/n;for(let i=0;i<n;i++){const c=x0+(i+.5)*w;shaker(w-.02,.83,c,1.51,g,.03);cyl(.012,.012,.03,GOLD,c+(i%2?-1:1)*(w/2-.07),1.6,.06,g,10).rotation.x=Math.PI/2}}
+function stool(x,z,g){const s=grp(x,0,z,0,g);rbox(.4,.07,.38,0xF3EFE8,0,.64,0,s,.03);rbox(.4,.2,.05,0xF3EFE8,0,.7,.17,s,.024);
+  [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>rod([a*.17,0,b*.16],[a*.14,.64,b*.13],.016,OAK,s));
+  [[-1,0],[1,0]].forEach(([a])=>rod([a*.16,.24,-.15],[a*.16,.24,.15],.01,OAK,s));rod([-.16,.24,-.15],[.16,.24,-.15],.01,OAK,s);return s}
+function highChair(x,z,ry){const g=grp(x,0,z,ry);
+  [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>rod([a*.26,0,b*.26],[a*.15,.75,b*.15],.022,OAK,g));
+  rbox(.38,.05,.36,KW,0,.75,0,g,.02);rbox(.32,.04,.3,0xBFD3C0,0,.8,0,g,.02);rbox(.38,.42,.05,KW,0,.78,-.17,g,.02);
+  [-1,1].forEach(s=>rbox(.04,.18,.34,KW,s*.18,.8,0,g,.015));rbox(.44,.03,.24,KW,0,.98,.25,g,.012);rbox(.4,.02,.2,0xEDE9E2,0,1.0,.25,g,.01);
+  rod([-.2,.45,.2],[.2,.45,.2],.012,OAK,g);return g}
+// 外牆（後牆、前牆、左牆、右牆）
+wall("x",-6,-8.08,-2,["outside","nursery"],{outer:1,name:"nBack",wins:[[-5.8,-4.2,.75,1.95]]});
+wall("x",-6,-2,2,["outside","bath"],{outer:1,name:"bBack",wins:[[1.0,1.7,1.65,2.15]]});
+wall("x",-6,2,8.08,["outside","master"],{outer:1,name:"mBack",wins:[[3.95,4.9,.35,2.15]]});
+wall("x",6,-8.08,0,["living","outside"],{outer:1,name:"lFront",doors:[[-6.9,-5.4]],wins:[[-3.8,-1.8,.8,2.0]]});
+wall("x",6,0,8.08,["kitchen","outside"],{outer:1,wins:[[1.8,3.2,.9,2.0]]});
+wall("z",-8,-6,0,["outside","nursery"],{outer:1,wins:[[-2.95,-2.2,1.05,2.0]]});
+wall("z",-8,0,6,["outside","living"],{outer:1,name:"lLeft",wins:[[2.0,3.6,.85,2.05]]});
+wall("z",8,-6,0,["master","outside"],{outer:1,wins:[[-4.75,-3.45,1.0,2.05]]});
+wall("z",8,0,6,["kitchen","outside"],{outer:1,name:"kRight",wins:[[3.15,4.15,1.08,2.05]]});
+// 隔間牆（門的位置和原本平面圖一樣）
+wall("x",0,-8,-2,["nursery","living"],{doors:[[-5.4,-4.3]]});
+wall("x",0,-2,0,["bath","living"],{doors:[[-.55,0]],name:"mid"});
+wall("x",0,0,2,["bath","kitchen"],{doors:[[0,.55]]});
+wall("x",0,2,8,["master","kitchen"],{doors:[[3.6,4.7]],name:"midK"});
+wall("z",-2,-6,0,["nursery","bath"],{name:"bLeft"});
+wall("z",2,-6,0,["bath","master"]);
+
+// 掛在牆上的東西：跟著那面牆一起降下來
+const HANG=[];function hangOn(name,fn){CAPTURE=[];fn();HANG.push([name,CAPTURE]);CAPTURE=null}
+function attachHung(){scene.updateMatrixWorld(true);HANG.forEach(([n,list])=>list.forEach(m=>WALLBY[n].full.attach(m)))}
+// 地板（每個房間不同的木頭顏色）
+function floor(mat,x0,x1,z0,z1){const m=add(new THREE.Mesh(new THREE.BoxGeometry(x1-x0,.04,z1-z0),mat));m.position.set((x0+x1)/2,-.02,(z0+z1)/2);m.castShadow=false;return m}
+floor(floorMat(0x8E6345,8,6,.2),-8,0,0,6);          // 客廳：深色胡桃木
+floor(floorMat(0xDDC6A2,8,6,.2),0,8,0,6);           // 廚房：淺橡木
+floor(floorMat(0xE3CBA6,6,6,.18),-8,-2,-6,0);       // 嬰兒房：淺色木頭
+floor(texMat(concreteTex(0xC9C6C1),{roughness:.7}),-2,2,-6,0); // 浴室：水泥地
+floor(floorMat(0xC59C72,6,6,.22),2,8,-6,0);         // 主臥：中等木色
+box(16.5,.42,12.5,0xD9CDBD,0,-.46,0).castShadow=false;  // 房子底座
+box(16.56,.03,12.56,0xCDBFAD,0,-.07,0).castShadow=false;
+
+// =====================================================================
+//  客廳（參考圖 7）
+// =====================================================================
+rug(-2.8,3.15,3.3,2.4,texMat(stripeTex()),1);
+{ // 電視櫃（危險區：電視櫃）＋電視
+  const g=grp(-2.8,0,.36);
+  [[-1.12,-.14],[1.12,-.14],[-1.12,.14],[1.12,.14]].forEach(([x,z])=>box(.04,.12,.04,0x3B2A20,x,0,z,g));
+  rbox(2.4,.42,.42,WAL,0,.12,0,g,.02);
+  for(let i=0;i<4;i++){rbox(.56,.32,.012,0x7C5640,-.9+i*.6,.17,.212,g,.004);box(.12,.012,.012,0x3B2A20,-.9+i*.6,.44,.222,g)}
+  rbox(1.72,1.0,.05,0x1B1D21,0,.62,-.06,g,.015);
+  box(1.62,.9,.006,M(0x2C3644,{emissive:0x1E2A38,emissiveIntensity:.4,roughness:.25}),0,.67,-.033,g);
+  box(.36,.06,.2,0x222222,0,.54,-.06,g);
+  potPlant(-.95,.54,.02,g,.5);sph(.1,emis(0xFFF1DA,.5,2),.95,.66,0,g);glow(-1.85,.66+.4,.36,.6,0xFFD9A0,.15,.8);
+  rbox(.3,.04,.22,0xE9E2D6,.55,.54,0,g,.01);rbox(.28,.04,.2,0x8C9AA3,.55,.58,0,g,.01);
+}
+hangOn("mid",()=>{ // 牆上的木頭層板＋小擺飾
+  const g=grp(-2.4,1.82,.2);rbox(1.15,.05,.22,WAL,0,0,0,g,.01);
+  potPlant(-.38,.05,0,g,.35);cyl(.05,.06,.18,0xE8E2D8,.05,.05,0,g);cyl(.04,.04,.12,0x2E2B29,.3,.05,0,g);
+{ // 掛畫
+  const g=grp(-1.15,1.0,.1);rbox(.66,.86,.03,0x7A563C,0,0,0,g,.008);
+  const a=new THREE.Mesh(new THREE.PlaneGeometry(.58,.78),texMat(artTex()));a.position.set(0,.43,.017);add(a,g);
+}});
+{ // 茶几（危險區：果凍）
+  const g=grp(-2.8,0,3.25);
+  rbox(1.45,.05,.78,OAK,0,.36,0,g,.025);rbox(1.35,.03,.68,0xC79E70,0,.12,0,g,.01);
+  [[-.66,-.33],[.66,-.33],[-.66,.33],[.66,.33]].forEach(([x,z])=>cyl(.014,.014,.36,GOLD,x,0,z,g,8));
+  rbox(.4,.012,.28,0xF2EEE7,.38,.41,.1,g,.004);rbox(.3,.02,.22,0xE6DED0,.36,.13,0,g,.004);
+  cyl(.035,.03,.1,CLEAR,-.45,.41,-.15,g,14);
+}
+const jelly=grp(-2.95,.41,3.2);
+[[0xFF6B8A,-.13],[0x7FD36B,0],[0xFFB547,.13]].forEach(([c,x])=>{const m=cyl(.05,.04,.07,c,x,0,0,jelly,14);m.material=new THREE.MeshStandardMaterial({color:c,roughness:.25,transparent:true,opacity:.85})});
+{ // 灰色模組沙發（休息點：沙發）
+  const g=grp(-2.85,0,5.3,Math.PI);
+  rbox(3.1,.22,.96,SOFA,0,.05,0,g,.07);
+  for(let i=-1;i<=1;i++){rbox(1.0,.2,.8,SOFA2,i*1.02,.27,.07,g,.08);rbox(1.0,.46,.26,SOFA2,i*1.02,.27,-.34,g,.1)}
+  [[-1.62,0],[1.62,0]].forEach(([x])=>rbox(.2,.42,.96,SOFA,x,.05,0,g,.08));
+  const p1=rbox(.44,.4,.13,0xF4F1EC,-1.0,.44,-.14,g,.06);p1.rotation.x=-.25;
+  const p2=rbox(.44,.4,.13,0xEDE8E0,1.0,.44,-.14,g,.06);p2.rotation.x=-.25;
+  const t=rbox(.6,.03,.5,0x8B8F92,.25,.47,.12,g,.012);t.rotation.y=.2;
+  [[-1.4,-.4],[1.4,-.4],[-1.4,.4],[1.4,.4]].forEach(([x,z])=>box(.05,.05,.05,0x3B2A20,x,0,z,g));
+}
+function armchair(x,z,ry){ // 木框扶手椅（深色坐墊）
+  const g=grp(x,0,z,ry);
+  [[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]].forEach(([a,b])=>rod([a,0,b],[a*.95,.42,b*.9],.022,WAL,g));
+  [-1,1].forEach(s=>{rbox(.05,.04,.68,WAL,s*.33,.52,0,g,.015);rod([s*.33,.42,.28],[s*.33,.54,.28],.018,WAL,g)});
+  rbox(.6,.05,.62,WAL,0,.3,0,g,.015);rbox(.58,.1,.58,0x2F2F33,0,.35,.02,g,.04);
+  const b=rbox(.58,.5,.08,0x2F2F33,0,.4,-.3,g,.04);b.rotation.x=-.22;
+  rod([-.3,.38,-.33],[-.3,.92,-.45],.02,WAL,g);rod([.3,.38,-.33],[.3,.92,-.45],.02,WAL,g);return g}
+armchair(-.75,2.55,-Math.PI/2-.25);armchair(-.75,3.8,-Math.PI/2+.25);
+bigPlant(-.42,5.45,1);           // 大盆栽
+{ // 和紙落地燈
+  const g=grp(-4.62,0,5.62);[0,2.1,4.2].forEach(a=>rod([Math.cos(a)*.22,0,Math.sin(a)*.22],[0,1.05,0],.008,0x1E1E1E,g));
+  rod([0,1.05,0],[0,1.2,0],.008,0x1E1E1E,g);
+  const shade=sph(.27,emis(0xF7EBD7,.45,1.9),0,1.38,0,g,1,1.08,1);shade.castShadow=false;
+  for(let i=-3;i<=3;i++){const r=new THREE.Mesh(new THREE.TorusGeometry(.27*Math.cos(i*.33),.004,4,40),M(0xD9CBB5));r.rotation.x=Math.PI/2;r.position.y=1.38+.27*1.08*Math.sin(i*.33);g.add(r)}
+  glow(-4.62,1.38,5.62,1.5,0xFFD39A,.12,.9);lamp(-4.62,1.4,5.35,0xFFC58A,6,1.4);
+}
+// 窗簾（左牆窗戶）
+hangOn("lLeft",()=>{curtain("z",-7.86,1.55,2.05,2.25,0xF2EDE6,.95);curtain("z",-7.86,3.55,4.05,2.25,0xF2EDE6,.95);
+rod([-7.84,2.3,1.5],[-7.84,2.3,4.1],.015,0x2A2A2A);
+box(.02,.14,.1,0xFFFFFF,-7.91,.24,1.3);[-.02,.02].forEach(d=>box(.01,.035,.012,0x666666,-7.9,.29,1.3+d));});
+
+// =====================================================================
+//  遊戲區（客廳左邊，參考圖 1 + 圖 2 的球池）
+// =====================================================================
+rug(-6.4,2.6,2.7,2.5,texMat(knitTex(0xEDE6DA)),.06);
+{ // Montessori 矮層架（靠後牆）＋彩虹疊疊樂
+  const g=grp(-6.75,0,.27);lowShelf(g,2.0,.62,.34,BIRCH);
+  [-.75,-.25,.25,.75].forEach(x=>stacker(x,.62,0,g,1));
+  [[-.55,0],[.35,1]].forEach(([x,k])=>puzzleTray(x,.33,.02,g,k));
+  [[-.85,0xE1483F],[-.7,0xF2C443],[-.55,0x3F7CC6],[-.4,0x55A85A]].forEach(([x,c])=>rbox(.11,.11,.11,c,x,.06,.02,g,.01));
+  rbox(.36,.12,.24,BIRCH,.55,.06,0,g,.01);rbox(.3,.06,.18,0xE8B94A,.55,.18,0,g,.01);
+}
+{ // 正面書架（看得到封面的那種）＋音響（休息點：聽音樂）
+  const g=grp(-7.66,0,4.55,Math.PI/2);bookRack(g);
+  rbox(.26,.26,.24,0x3A3F48,.2,.86,-.02,g,.03);const sp=cyl(.07,.07,.01,0x8A93A0,.2,.99,.1,g,20);sp.rotation.x=Math.PI/2;sp.position.y=.99;
+  rbox(.14,.14,.14,0xE6D3B0,-.22,.86,0,g,.02);
+}
+{ // 窗戶下面的閱讀角：地墊和靠枕
+  rbox(.75,.14,1.55,0xDCD4C8,-7.45,0,2.8,null,.06);
+  [[2.3,0x8E9C7E],[2.85,0xD2BFA6],[3.35,0xEFE9DF]].forEach(([z,c],i)=>{const p=rbox(.16,.45,.48,c,-7.8,.14,z,null,.07);p.rotation.z=-.18;p.rotation.y=(i-1)*.12});
+  const bl=rbox(.5,.05,.62,0xF0EBE2,-7.3,.14,2.5,null,.02);bl.rotation.y=.4;
+}
+// 插座（危險區：插座）
+basket(-6.1,.78,.24,.22,"blocks");
+stacker(-6.9,0,3.1,null,1.1);
+[[-5.9,3.2,0xE1483F],[-5.75,3.35,0x3F7CC6],[-6.0,3.45,0xF2C443]].forEach(([x,z,c])=>rbox(.1,.1,.1,c,x,0,z,null,.01).rotation.y=rnd()*2);
+sph(.13,0xF08A5D,-5.6,.13,2.0);
+
+// =====================================================================
+//  廚房（參考圖 6）
+// =====================================================================
+{ // 右牆：冰箱、流理台、瓦斯爐、水槽、洗碗機、泡奶區
+  const g=grp(7.6,0,0,-Math.PI/2);   // 這個群組裡的 x = 世界的 z，正面朝向 -x
+  // 冰箱
+  rbox(.92,1.95,.62,STEEL,.58,0,-.02,g,.02);
+  rbox(.44,1.12,.03,STEEL2,.355,.8,.3,g,.01);rbox(.44,1.12,.03,STEEL2,.805,.8,.3,g,.01);rbox(.9,.7,.03,STEEL2,.58,.06,.3,g,.01);
+  [[.55,1.2],[.61,1.2]].forEach(([x,y])=>rod([x,y-.35,.34],[x,y+.35,.34],.012,0xD8DBDE,g));rod([.38,.62,.34],[.78,.62,.34],.012,0xD8DBDE,g);
+  rbox(.92,.42,.6,KW,.58,2.02,0,g,.01);
+  cabinetRun(g,1.06,5.25,[[1.06,1.6,"door"],[1.6,2.25,"drawers"],[2.25,2.97,"oven"],[2.97,3.25,"door"],[3.25,4.05,"sink"],[4.05,4.65,"dw"],[4.65,5.25,"drawers"]]);
+  // 瓦斯爐面（危險區：瓦斯爐）
+  box(.66,.015,.56,0x1E1E1E,2.61,.92,-.01,g);
+  for(let i=0;i<3;i++)box(.64,.012,.012,0x111111,2.61,.94,-.22+i*.21,g);for(let i=0;i<3;i++)box(.012,.012,.54,0x111111,2.32+i*.29,.94,-.01,g);
+  [[2.45,-.13],[2.77,-.13],[2.45,.12],[2.77,.12]].forEach(([x,z])=>cyl(.05,.05,.02,0x333333,x,.935,z,g,16));
+  hangOn("kRight",()=>{// 抽油煙機
+  const hood=add(new THREE.Mesh(frustum(.8,.52,.42,.36,.42),M(0xF4F2EE)),g);hood.position.set(2.61,1.72,-.04);
+  rbox(.4,.36,.34,0xF4F2EE,2.61,2.14,-.12,g,.01);box(.8,.03,.52,0xEAE6E0,2.61,1.7,-.04,g);upperCab(g,1.06,2.24);upperCab(g,4.25,5.25);});
+  // 水槽＋金色水龍頭
+  box(.62,.012,.44,M(0x9EA3A7,{metalness:.7,roughness:.3}),3.65,.925,-.02,g);box(.56,.01,.38,M(0x5E6367,{metalness:.6,roughness:.4}),3.65,.93,-.02,g);
+  cyl(.018,.022,.32,GOLD,3.65,.92,-.25,g,12);const sp=new THREE.Mesh(new THREE.TorusGeometry(.1,.016,8,20,Math.PI),GOLD);sp.position.set(3.65,1.24,-.15);sp.rotation.y=Math.PI/2;add(sp,g);
+  // 泡奶區：熱水壺、奶粉罐（奶瓶模型等一下載入）
+  cyl(.07,.08,.2,0xF4F2EE,4.85,.92,-.05,g,20);cyl(.02,.02,.06,0xF4F2EE,4.93,1.08,-.05,g,8);
+  cyl(.075,.075,.15,0xFFFFFF,5.05,.92,-.12,g,20);cyl(.077,.077,.05,0x7FB6DA,5.05,.97,-.12,g,20);
+  potPlant(3.05,.92,-.15,g,.45);
+}
+// 窗外光和水龍頭旁的小盆栽
+hangOn("kRight",()=>glow(7.95,1.6,3.65,1.8,0xFFF4E0,.25,.15));
+{ // 後牆：咖啡機那一段＋開放式木層板（休息點：咖啡）
+  const g=grp(0,0,.39);
+  cabinetRun(g,.35,3.4,[[.35,.95,"door"],[.95,1.55,"drawers"],[1.55,2.25,"door"],[2.25,2.85,"door"],[2.85,3.4,"drawers"]]);
+  // 咖啡機
+  rbox(.32,.42,.34,0x2B2B2D,2.55,.92,-.05,g,.03);rbox(.26,.1,.06,STEEL,2.55,1.18,.12,g,.01);box(.2,.02,.16,STEEL,2.55,.94,.1,g);
+  cyl(.035,.03,.08,0xFFFFFF,2.55,.96,.1,g,12);
+  hangOn("midK",()=>[[1.45,0],[2.05,1]].forEach(([y,k])=>{rbox(2.7,.035,.26,OAK,1.85,y,-.18,g,.008);
+    for(let i=0;i<4;i++)cyl(.07,.06,.05,0xF5F2EC,.75+i*.17,y+.035,-.18,g,18);
+    k?potPlant(2.9,y+.035,-.18,g,.5):[0,1,2].forEach(i=>{cyl(.06,.06,.16,CLEAR,1.6+i*.2,y+.035,-.18,g,14);cyl(.055,.055,.08,[0xE9D5B0,0x8E6B4A,0xF2EEE6][i],1.6+i*.2,y+.035,-.18,g,14)})}));
+  box(.9,.2,.06,0xC9C2B6,1.0,.92,-.25,g).visible=false;
+}
+{ // 後牆：右邊那一段（轉角層板＋上櫃）
+  const g=grp(0,0,.39);
+  cabinetRun(g,4.85,7.34,[[4.85,5.45,"door"],[5.45,6.05,"drawers"],[6.05,6.7,"door"],[6.7,7.34,"door"]]);
+  hangOn("midK",()=>{[1.42,1.8,2.15].forEach((y,i)=>{rbox(.95,.035,.3,OAK,5.35,y,-.15,g,.008);
+    if(i===0){cyl(.08,.06,.06,0xF5F2EC,5.1,y+.035,-.15,g,18);cyl(.08,.06,.06,0xF5F2EC,5.1,y+.095,-.15,g,18)}
+    if(i===1)potPlant(5.6,y+.035,-.15,g,.4);if(i===2)[0,1,2].forEach(k=>cyl(.05,.07,.1,0xEDE8DF,5.0+k*.2,y+.035,-.15,g,16))});
+  upperCab(g,5.9,7.34);});
+  potPlant(5.3,.92,-.1,g,.4);
+}
+{ // 中島餐桌＋三張高腳凳
+  const g=grp(3.6,0,3.25);
+  rbox(2.0,.86,.86,OAK,0,0,0,g,.02);for(let i=-9;i<=9;i++)box(.008,.8,.004,0xBF9A6C,i*.105,.03,.432,g);
+  box(2.24,.05,1.06,MARBLE,0,.86,.06,g);
+  cyl(.2,.2,.02,0xB48A5E,.1,.91,0,g,28);potPlant(.1,.93,0,g,.55);
+  [-.66,0,.66].forEach(x=>stool(x,.82,g));
+}
+[3.0,4.2].forEach(x=>{rod([x,2.5,3.25],[x,2.0,3.25],.006,0x222222);const s=new THREE.Mesh(new THREE.SphereGeometry(.19,28,14,0,Math.PI*2,0,Math.PI/2),M(0xF7F5F1,{side:THREE.DoubleSide}));
+  s.position.set(x,1.82,3.25);add(s);s.scale.y=.8;sph(.06,emis(0xFFF2D8,.6,2.2),x,1.84,3.25);glow(x,1.76,3.25,1.1,0xFFD7A0,.1,.85)});
+lamp(3.6,1.7,3.25,0xFFCB90,6,1.5);
+highChair(5.7,3.25,-Math.PI/2);       // 高腳椅
+rug(6.85,3.6,.7,2.0,texMat(juteTex()),.03);
+cyl(.17,.15,.45,0xF4F2EE,7.35,0,5.7,null,20);cyl(.175,.175,.03,0xDAD5CE,7.35,.45,5.7,null,20);
+const fire=grp(7.6,.95,2.61);fire.visible=false;   // 瓦斯爐的火（危險時才出現）
+[[0,0,.25,0xFF7A2E],[.06,.03,.18,0xFFB02E],[-.06,-.02,.2,0xFF5A2E]].forEach(([x,z,h,c])=>{const m=new THREE.Mesh(new THREE.ConeGeometry(.06,h,12),new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:.9}));m.position.set(x,h/2,z);fire.add(m)});
+// =====================================================================
+//  嬰兒房（參考圖 3，加上圖 2 的帳篷和圓地毯）
+// =====================================================================
+const NW=0xFBFAF7;
+function archGeo(w,h,arch,d){const s=new THREE.Shape();s.moveTo(-w/2,0);s.lineTo(w/2,0);s.lineTo(w/2,h);s.quadraticCurveTo(0,h+arch*2,-w/2,h);s.lineTo(-w/2,0);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:.008,bevelSize:.008,bevelSegments:2,curveSegments:20});g.translate(0,0,-d/2);return g}
+function teddy(x,y,z,p,c=0xB98A62,s=1,ry=0){const g=grp(x,y,z,ry,p);g.scale.setScalar(s);
+  sph(.09,c,0,.08,0,g,1,1.05,.9);sph(.07,c,0,.22,.01,g);[-1,1].forEach(k=>{sph(.03,c,k*.055,.28,0,g);sph(.032,c,k*.07,.04,.05,g);sph(.028,c,k*.085,.12,.03,g)});
+  sph(.03,shade(c,.12).replace("#","0x")*1,0,.2,.065,g);sph(.008,0x222222,-.025,.235,.065,g);sph(.008,0x222222,.025,.235,.065,g);return g}
+function bunny(x,y,z,p,ry=0){const g=grp(x,y,z,ry,p),c=0xF4D6D2;sph(.08,c,0,.07,0,g,1,1.1,.9);sph(.065,c,0,.2,.01,g);
+  [-1,1].forEach(k=>{const e=sph(.022,c,k*.03,.3,0,g,1,3.2,.6);e.rotation.z=-k*.15});sph(.007,0x222222,-.022,.21,.06,g);sph(.007,0x222222,.022,.21,.06,g);return g}
+{ // 嬰兒床（照顧點：哄睡）
+  const g=grp(-6.88,0,-4.3);
+  [[-.63,-1.03],[.63,-1.03],[-.63,1.03],[.63,1.03]].forEach(([x,z])=>rbox(.07,1.02,.07,NW,x,0,z,g,.02));
+  [-1.03,1.03].forEach(z=>{const p=add(new THREE.Mesh(archGeo(1.22,.6,.12,.04),M(NW)),g);p.position.set(0,.32,z)});
+  [-.63,.63].forEach(x=>{rbox(.06,.05,2.0,NW,x,.95,0,g,.02);rbox(.06,.05,2.0,NW,x,.32,0,g,.02);
+    for(let z=-.9;z<=.91;z+=.15)cyl(.016,.016,.6,NW,x,.36,z,g,8)});
+  rbox(1.18,.14,1.98,0xF3F0EA,0,.36,0,g,.05);rbox(1.16,.02,1.96,0xA9D6D3,0,.5,0,g,.008);
+  teddy(-.18,.5,-.72,g,0xB98A62,1.1,.3);bunny(.2,.5,-.8,g,-.3);
+  // 床鈴（會慢慢轉）
+  rod([-.63,1.0,-1.03],[-.63,1.75,-1.03],.012,NW,g);rod([-.63,1.75,-1.03],[-.1,1.78,-.55],.012,NW,g);
+  window.mobile=grp(-.1,1.7,-.55,0,g);rod([0,.08,0],[0,0,0],.004,0xBBBBBB,mobile);
+  [[0xF2C443,"star"],[0x9FC9E6,"cloud"],[0xF2C443,"star"],[0xF4D6D2,"moon"]].forEach(([c,t],i)=>{const a=i*Math.PI/2,px=Math.cos(a)*.22,pz=Math.sin(a)*.22;
+    rod([px,0,pz],[px,-.2,pz],.003,0xCCCCCC,mobile);rod([0,0,0],[px,0,pz],.006,NW,mobile);
+    if(t==="star"){const s=new THREE.Shape();for(let k=0;k<10;k++){const r=k%2?.03:.07,an=k*Math.PI/5+Math.PI/2;k?s.lineTo(Math.cos(an)*r,Math.sin(an)*r):s.moveTo(Math.cos(an)*r,Math.sin(an)*r)}
+      const m=add(new THREE.Mesh(new THREE.ExtrudeGeometry(s,{depth:.02,bevelEnabled:false}),M(c)),mobile);m.position.set(px,-.26,pz)}
+    else if(t==="cloud"){[-.04,0,.04].forEach((o,j)=>sph(.04+(j===1?.012:0),c,px+o,-.25,pz,mobile))}else sph(.055,c,px,-.26,pz,mobile)});
+}
+{ // 尿布台（照顧點：換尿布）
+  const g=grp(-3.05,0,-5.6);
+  rbox(1.42,.86,.56,NW,0,.04,0,g,.02);[[-.66,-.24],[.66,-.24],[-.66,.24],[.66,.24]].forEach(([x,z])=>box(.05,.06,.05,NW,x,0,z,g));
+  box(.66,.74,.02,0xEFEBE4,-.36,.1,.27,g).visible=false;
+  // 左邊開放格：毛巾和籃子
+  box(.62,.78,.5,0xF1EEE8,-.36,.08,.04,g);rbox(.64,.025,.5,NW,-.36,.46,.05,g,.006);
+  [[0xF2C2C4,0],[0x8FC9C4,1],[0xF6F1E8,2]].forEach(([c,i])=>rbox(.26,.045,.22,c,-.5,.12+i*.05,.08,g,.015));
+  [[0x8FC9C4,0],[0xF2C2C4,1]].forEach(([c,i])=>rbox(.26,.045,.22,c,-.5,.49+i*.05,.08,g,.015));
+  rbox(.24,.17,.22,0xE8C46A,-.2,.12,.08,g,.03);rbox(.22,.16,.2,0x8FC9C4,-.2,.49,.08,g,.03);
+  // 右邊三個抽屜
+  [0,1,2].forEach(i=>{rbox(.68,.24,.02,NW,.35,.12+i*.25,.28,g,.008);sph(.022,0xE9E3D8,.35,.24+i*.25,.3,g)});
+  // 上面的尿布墊和圍邊
+  rbox(1.34,.08,.52,0xF8F3EA,0,.9,0,g,.035);const bk=add(new THREE.Mesh(archGeo(1.42,.1,.05,.035),M(NW)),g);bk.position.set(0,.9,-.26);
+  [-.69,.69].forEach(x=>rbox(.035,.14,.52,NW,x,.9,0,g,.012));
+  rbox(.3,.16,.22,0xE8C46A,.45,.98,-.08,g,.03);[0,1,2].forEach(i=>rbox(.24,.04,.18,0xFFFFFF,.45,1.0+i*.045,-.08,g,.015));
+}
+{ // 拱形白色書櫃（靠左牆）
+  const g=grp(-7.73,0,-1.75,Math.PI/2);
+  [-1,1].forEach(s=>rbox(.035,1.78,.34,NW,s*.4,0,0,g,.008));
+  const top=add(new THREE.Mesh(archGeo(.84,.06,.1,.34),M(NW)),g);top.position.set(0,1.78,0);
+  box(.77,1.76,.01,0xF4F1EB,0,.02,-.16,g);
+  [.02,.38,.8,1.22].forEach(y=>rbox(.79,.03,.32,NW,0,y,0,g,.006));
+  rbox(.78,.32,.02,NW,0,.05,.16,g,.008);sph(.02,0xE9E3D8,0,.21,.18,g);
+  const bc=[0x8FC9C4,0xF2C443,0xF2C2C4,0x9FC9E6,0xE8B07A,0x8FC9C4];
+  bc.forEach((c,i)=>rbox(.045,.24-i%3*.02,.2,c,-.3+i*.05,1.25,0,g,.006));rbox(.04,.2,.2,0xEDE6D9,-.04,1.25,0,g,.006).rotation.z=-.3;
+  rbox(.28,.18,.24,0x8FC9C4,.18,.83,0,g,.02);stacker(-.2,.41,0,g,.9);sph(.1,0xF08A5D,.2,.51,0,g);
+  window.nightL=sph(.06,emis(0xFFE6B0,.6,2.4),.25,1.32,0,g);glow(-7.73,1.38,-1.5,.8,0xFFD58F,.15,.9);
+}
+lamp(-7.2,1.5,-1.75,0xFFC88A,5,1.0);
+hangOn("nBack",()=>{curtain("x",-5.86,-6.25,-5.82,2.1,0xF3EDE4);curtain("x",-5.86,-4.18,-3.78,2.1,0xF3EDE4);rod([-6.3,2.33,-5.86],[-3.75,2.33,-5.86],.014,0xE6DCCB);
+window.winLatch=box(.06,.08,.04,0xFFFFFF,-5.0,1.3,-5.89);               // 窗戶（危險區：窗戶）
+{ // 三角旗
+  const pts=[];for(let i=0;i<=7;i++){const t=i/7;pts.push([-3.8+t*1.6,2.05-Math.sin(t*Math.PI)*.18])}
+  for(let i=0;i<7;i++)rod([pts[i][0],pts[i][1],-5.88],[pts[i+1][0],pts[i+1][1],-5.88],.004,0xCFC3B2);
+  [0x8FC9C4,0xE8C46A,0xF2C2C4,0x9FC9E6,0xE8C46A,0x8FC9C4].forEach((c,i)=>{const t=(i+.5)/6;const s=new THREE.Shape();s.moveTo(-.08,0);s.lineTo(.08,0);s.lineTo(0,-.17);
+    const m=add(new THREE.Mesh(new THREE.ShapeGeometry(s),M(c,{side:THREE.DoubleSide})));m.position.set(-3.8+t*1.6,2.05-Math.sin(t*Math.PI)*.18,-5.87)});
+}});
+rug(-4.75,-2.75,2.3,1.7,texMat(dotsTex()),.1);
+roundRug(-3.05,-1.95,.85,texMat(knitTex(0xF4F0EA)));
+{ // 帳篷
+  const g=grp(-3.05,0,-1.95,.6);
+  const tent=add(new THREE.Mesh(new THREE.ConeGeometry(.62,1.45,24,1,true,.55,2*Math.PI-1.1),M(0xEFE7DA,{side:THREE.DoubleSide,roughness:.95})),g);tent.position.y=.72;
+  for(let i=0;i<5;i++){const a=i/5*Math.PI*2+.3;rod([Math.cos(a)*.66,0,Math.sin(a)*.66],[-Math.cos(a)*.08,1.72,-Math.sin(a)*.08],.012,0xC9A57B,g)}
+  rbox(.6,.1,.45,0xD9CFC0,0,0,-.05,g,.05);rbox(.28,.24,.1,0xCFC3B2,-.08,.08,-.25,g,.05).rotation.x=-.3;
+  [0xF3EDE4,0xE8C46A,0x8FC9C4].forEach((c,i)=>{const t=sph(.04,c,.62*Math.cos(.35+i*.18)*.25,1.2,0,g);t.visible=false});
+}
+basket(-2.45,-.75,.2,.22,"balls");teddy(-2.42,.2,-.8,null,0xD9C3A8,1.2,-.6);
+{ // 玩具車
+  const g=grp(-4.2,0,-2.35,.7);rbox(.3,.09,.15,0xF08A3A,0,.05,0,g,.04);rbox(.15,.08,.13,0xF6B26B,-.02,.13,0,g,.03);
+  [[-.1,-.08],[.1,-.08],[-.1,.08],[.1,.08]].forEach(([x,z])=>{const w=cyl(.04,.04,.03,0x333333,x,.025,z,g,16);w.rotation.x=Math.PI/2;w.position.y=.04})}
+{ const b=new THREE.Group();b.position.set(-5.2,.14,-3.25);scene.add(b);
+  [0xF08A5D,0x7FB6DA,0xF2C443,0xFFFFFF].forEach((c,i)=>{const m=add(new THREE.Mesh(new THREE.SphereGeometry(.14,24,16,i*Math.PI/2,Math.PI/2),M(c)),b)})}
+
+// =====================================================================
+//  浴室（參考圖 4）
+// =====================================================================
+{ // 浴缸（危險區：浴缸）
+  const g=grp(-1.27,0,-4.72);const TW=0xF7F7F5;
+  rbox(1.3,.1,2.36,TW,0,0,0,g,.03);
+  rbox(.12,.54,2.36,TW,-.59,0,0,g,.04);rbox(.12,.54,2.36,TW,.59,0,0,g,.04);rbox(1.3,.54,.12,TW,0,0,-1.12,g,.04);rbox(1.3,.54,.12,TW,0,0,1.12,g,.04);
+  box(1.06,.34,2.12,0xEEF3F4,0,.1,0,g);
+  window.water=box(1.06,.02,2.12,new THREE.MeshStandardMaterial({color:0x9ED8F0,transparent:true,opacity:.7,roughness:.1}),0,.42,0,g);
+  window.duck=sph(.07,0xFFD43B,.15,.48,.4,g);sph(.045,0xFFD43B,.2,.56,.44,g);box(.04,.015,.03,0xF08A3A,.25,.55,.45,g);
+}
+{ // 淋浴玻璃（黑框）＋花灑
+  const gl=box(.012,1.45,1.25,CLEAR,-.6,.55,-5.3);gl.castShadow=false;
+  box(.03,.03,1.27,BLACKM,-.6,2.0,-5.3);box(.03,1.48,.03,BLACKM,-.6,.54,-4.66);box(.03,1.48,.03,BLACKM,-.6,.54,-5.93);
+  hangOn("bBack",()=>{rod([-1.27,2.25,-5.92],[-1.27,2.25,-5.55],.014,BLACKM);cyl(.1,.1,.02,BLACKM,-1.27,2.22,-5.52,null,24);
+  box(.03,.13,.08,BLACKM,-1.27,1.15,-5.9);});
+  hangOn("bLeft",()=>{// 牆上的置物凹槽
+  box(.02,.32,.62,0x1E1E1E,-1.91,1.2,-4.5);box(.06,.02,.6,0x2A2A2A,-1.88,1.2,-4.5);
+  cyl(.035,.035,.16,0xFFFFFF,-1.86,1.22,-4.65,null,14);cyl(.02,.02,.04,0x3F7CC6,-1.86,1.38,-4.65,null,10);cyl(.03,.03,.1,0xF3F3F3,-1.86,1.22,-4.4,null,14);});
+}
+{ // 洗手台：木頭抽屜＋白色檯面＋碗型洗手盆＋圓鏡
+  const g=grp(.12,0,-5.65);const W2=0xD7A86E;
+  rbox(1.0,.6,.5,W2,0,.2,0,g,.015);[0,1,2].forEach(i=>box(.98,.006,.004,0x9C7447,0,.2+i*.2,.252,g));
+  rbox(1.04,.05,.52,0xF8F8F6,0,.8,0,g,.012);
+  const bowl=add(new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(.0,0),new THREE.Vector2(.12,.005),new THREE.Vector2(.2,.05),new THREE.Vector2(.23,.12),new THREE.Vector2(.215,.125),new THREE.Vector2(.18,.06),new THREE.Vector2(.0,.04)],32),M(0xFFFFFF,{roughness:.3})),g);bowl.position.set(-.08,.85,.02);
+  hangOn("bBack",()=>{rod([-.08,1.12,-.25],[-.08,1.12,-.1],.012,BLACKM,g);box(.12,.06,.02,BLACKM,.18,1.1,-.25,g);
+  const fr=new THREE.Mesh(new THREE.TorusGeometry(.33,.016,10,48),BLACKM);fr.position.set(0,1.6,-.23);add(fr,g);
+  const mir=new THREE.Mesh(new THREE.CircleGeometry(.325,48),new THREE.MeshStandardMaterial({color:0xDDE3E6,metalness:.8,roughness:.12}));mir.position.set(0,1.6,-.235);add(mir,g);});
+  cyl(.03,.03,.09,0x222222,.36,.85,.06,g,12);cyl(.03,.025,.12,0x9B5E3C,.42,.85,-.1,g,12);
+}
+{ // 木頭層板＋壁掛馬桶
+  const g=grp(1.33,0,-5.82);rbox(1.12,1.05,.2,0xD7A86E,0,0,0,g,.012);
+  rbox(.36,.3,.5,0xFFFFFF,0,.24,.35,g,.13);rbox(.37,.04,.48,0xFAFAFA,0,.53,.36,g,.12);
+  box(.22,.13,.01,0x1E1E1E,.18,.78,.105,g);
+  cyl(.04,.035,.07,0xA9433A,-.35,1.05,0,g,14);[0,1,2].forEach(i=>rod([-.35,1.1,0],[-.35+(i-1)*.04,1.3,(i-1)*.02],.003,0x333333,g));
+}
+{ // 黑色毛巾架＋綠色毛巾、捲筒衛生紙架、小凳子上的盆栽
+  const x=-1.88;hangOn("bLeft",()=>{[[-2.75],[-2.25]].forEach(([z])=>rod([x,.15,z],[x,1.8,z],.012,BLACKM));for(let i=0;i<9;i++)rod([x,.3+i*.18,-2.75],[x,.3+i*.18,-2.25],.008,BLACKM);
+  rbox(.03,.55,.3,0x7FA88A,x+.03,1.1,-2.5,null,.012);});
+  const g=grp(1.82,0,-4.35);cyl(.13,.13,.012,BLACKM,0,0,0,g,20);rod([0,0,-.1],[0,.75,-.1],.008,BLACKM,g);
+  [0,1,2].forEach(i=>cyl(.06,.06,.11,0xF8F8F8,0,.03+i*.115,0,g,18));
+  const st=grp(1.55,0,-1.2);cyl(.17,.17,.03,OAK,0,.5,0,st,24);[0,2.1,4.2].forEach(a=>rod([Math.cos(a)*.15,0,Math.sin(a)*.15],[Math.cos(a)*.1,.5,Math.sin(a)*.1],.012,OAK,st));
+  potPlant(0,.53,0,st,1.3,0xA9433A);
+}
+rug(.15,-3.95,1.15,.68,JUTE,.03);
+
+// =====================================================================
+//  主臥（參考圖 5）
+// =====================================================================
+hangOn("mBack",()=>{ // 床頭木條牆板（有一條暖光燈條）
+  const g=grp(6.45,0,-5.89);rbox(2.95,2.3,.04,0xB78A61,0,0,0,g,.006);
+  for(let i=-4;i<=4;i++)box(.012,2.28,.006,0x8E6747,i*.33,.01,.022,g);
+  box(.018,2.1,.01,emis(0xFFE8C0,.9,2.2),.99,.1,.025,g);glow(7.44,1.2,-5.84,1.2,0xFFD9A0,.1,.6);
+});
+{ // 雙人床（照顧點：Linda 的床）
+  const g=grp(6.45,0,-4.6);
+  [[-.92,-1.0],[.92,-1.0],[-.92,1.02],[.92,1.02]].forEach(([x,z])=>box(.035,.18,.035,0x2A2827,x,0,z,g));
+  rbox(1.95,.08,2.15,0x3A3836,0,.18,0,g,.02);rbox(1.86,.24,2.05,0xF0EEEA,0,.24,0,g,.06);
+  const hb=rbox(2.05,1.0,.18,0x4B4846,0,.2,-1.1,g,.08);hb.rotation.x=-.06;
+  rbox(1.98,.12,1.55,0x9E9A95,0,.46,.3,g,.05);[-1,1].forEach(s=>rbox(.035,.26,1.5,0x9E9A95,s*.99,.3,.3,g,.012));rbox(1.98,.26,.035,0x9E9A95,0,.3,1.07,g,.012);
+  const th=rbox(1.3,.05,.62,0x2E2D2E,.35,.56,.62,g,.02);th.rotation.y=.18;rbox(.04,.3,.5,0x2E2D2E,1.0,.29,.62,g,.012).rotation.y=.18;
+  [[-.45,0x8E8B88,-.78,.35],[.45,0x8E8B88,-.78,.35],[-.4,0xB9B5B0,-.6,.2],[.4,0xB9B5B0,-.6,.2]].forEach(([x,c,z,t])=>{const p=rbox(.75,.36,.16,c,x,.46,z,g,.07);p.rotation.x=-t});
+}
+{ // 床頭櫃：左邊胡桃木、右邊黑框大理石＋黑色檯燈
+  const L=grp(5.2,0,-5.6);[[-.18,-.14],[.18,-.14],[-.18,.14],[.18,.14]].forEach(([x,z])=>box(.02,.12,.02,BLACKM,x,0,z,L));
+  rbox(.44,.36,.36,WAL,0,.12,0,L,.015);box(.4,.004,.004,0x4A3222,0,.31,.182,L);rbox(.2,.025,.15,0xE9E2D6,0,.48,0,L,.006);
+  const f=rbox(.12,.15,.01,0x1E1E1E,.12,.48,-.08,L,.004);f.rotation.x=-.2;
+  const R=grp(7.72,0,-5.6);[[-.2,-.16],[.2,-.16],[-.2,.16],[.2,.16]].forEach(([x,z])=>box(.016,.5,.016,BLACKM,x,0,z,R));
+  box(.44,.02,.36,BLACKM,0,.06,0,R);box(.45,.03,.37,MARBLE,0,.5,0,R);box(.42,.15,.34,0x8F8C88,0,.33,0,R).visible=false;
+  cyl(.06,.07,.02,BLACKM,-.08,.53,-.06,R,16);rod([-.08,.55,-.06],[-.05,.9,-.06],.007,BLACKM,R);rod([-.05,.9,-.06],[.08,.98,.02],.007,BLACKM,R);
+  const sh=cyl(.035,.08,.14,BLACKM,.1,.88,.04,R,20);sh.rotation.x=.4;sph(.03,emis(0xFFEFD0,.4,2.4),.1,.88,.06,R);
+  glow(7.82,.86,-5.54,.9,0xFFD49A,.05,.9);lamp(7.6,.95,-5.3,0xFFC48A,4.5,1.0);
+}
+{ // 橄欖樹
+  const g=grp(2.6,0,-.62);cyl(.24,.2,.5,0x3B3937,0,0,0,g,24);cyl(.22,.22,.01,0x4B3B2E,0,.48,0,g,20);
+  rod([0,.48,0],[.05,1.5,.02],.025,0x6B5743,g);rod([.03,1.1,0],[-.15,1.55,.05],.015,0x6B5743,g);
+  const fm=M(0x7B8A58,{flatShading:true,roughness:.9}),fm2=M(0x6A7A4A,{flatShading:true,roughness:.9});
+  for(let i=0;i<26;i++){const a=rnd()*6.3,r=rnd()*.38,y=1.25+rnd()*.8;const m=add(new THREE.Mesh(new THREE.IcosahedronGeometry(.1+rnd()*.08,0),i%2?fm:fm2),g);m.position.set(Math.cos(a)*r,y,Math.sin(a)*r);m.rotation.set(rnd()*3,rnd()*3,0)}
+}
+{ // 灰色單人沙發（面向床）
+  const g=grp(3.0,0,-2.35,Math.PI/2+.35);
+  rbox(.78,.4,.72,0xA9A6A2,0,.02,0,g,.12);rbox(.66,.12,.58,0xB3B0AC,0,.36,.05,g,.06);
+  rbox(.78,.48,.18,0xA9A6A2,0,.3,-.28,g,.09);[-1,1].forEach(s=>rbox(.16,.3,.66,0xA9A6A2,s*.32,.3,0,g,.08));
+}
+rug(5.7,-3.3,3.3,2.3,texMat(knitTex(0xEDE8DF)),.05);
+cyl(.17,.19,.42,WAL,6.45,0,-2.85,null,7).rotation.y=.4;
+{const b=rbox(.3,.02,.22,0xF2EEE7,5.1,.025,-2.6,null,.006);b.rotation.y=.4;rbox(.12,.004,.1,0x222222,5.1,.045,-2.6,null,.002).rotation.y=.4}
+{ // 衣櫃（靠右牆）
+  const g=grp(7.62,0,-1.3,-Math.PI/2);rbox(1.8,2.15,.6,0xD5B68E,0,0,0,g,.012);
+  [-.6,0,.6].forEach(x=>box(.006,2.05,.004,0xA88760,x,.05,.3,g));[-.06,.06,-.66,.54].forEach(x=>box(.015,.5,.02,BLACKM,x+(x>0?0:0),.9,.31,g));
+}
+{ // 書桌＋筆電＋椅子
+  const g=grp(3.05,0,-5.6);rbox(1.45,.04,.62,0xEDE6DA,0,.72,0,g,.012);
+  [[-.68,-.27],[.68,-.27],[-.68,.27],[.68,.27]].forEach(([x,z])=>box(.035,.72,.035,0xF4F1EC,x,0,z,g));
+  rbox(.42,.015,.3,0xC8CBCE,0,.76,.04,g,.006);const sc=rbox(.42,.28,.012,0x2B2D31,0,.775,-.11,g,.006);sc.rotation.x=-.25;
+  box(.38,.24,.002,M(0x7FA8C8,{emissive:0x6D9ABD,emissiveIntensity:.5}),0,.79,-.098,g).rotation.x=-.25;
+  cyl(.04,.035,.09,0xF4F1EC,.48,.76,.08,g,14);potPlant(-.55,.76,-.1,g,.4);
+  const c=grp(3.05,0,-4.95,Math.PI);rbox(.5,.07,.48,0xDCD5CA,0,.46,0,c,.03);rbox(.5,.42,.07,0xDCD5CA,0,.5,-.22,c,.035);
+  cyl(.025,.025,.42,BLACKM,0,.04,0,c,10);[0,1.26,2.5,3.77,5.03].forEach(a=>rod([0,.05,0],[Math.cos(a)*.24,.03,Math.sin(a)*.24],.014,BLACKM,c));
+}
+// 紗簾＋窗簾拉繩（危險區：窗簾拉繩）
+hangOn("mBack",()=>{curtain("x",-5.85,3.72,4.05,2.25,0xFFFFFF,.78);curtain("x",-5.85,4.78,5.0,2.25,0xFFFFFF,.78);rod([3.68,2.34,-5.85],[5.0,2.34,-5.85],.012,BLACKM);
+window.cord=grp(4.1,2.3,-5.8);rod([0,0,0],[0,-1.15,0],.006,0xFFFFFF,cord).userData.cord=1;sph(.03,0xFFFFFF,0,-1.18,0,cord).userData.cord=1;
+glow(4.42,1.3,-5.85,2.2,0xFFF6E6,.28,.1);});
+
+// =====================================================================
+//  屋外（參考白色平頂小屋）：草地方塊、石板步道、灌木、花圃、圓樹、屋頂
+// =====================================================================
+const GY=-.46;                                   // 草地表面的高度（房子底座的底部）
+const OUT=new THREE.Group();scene.add(OUT);      // 屋外的東西放一起，進房間時可以藏起來
+function voxTex(base,dark,light,n=64){return ctex(256,256,(x,w,h)=>{const s=w/n;for(let j=0;j<n;j++)for(let i=0;i<n;i++){const r=rnd();x.fillStyle=r<.18?dark:r>.84?light:base;x.fillRect(i*s,j*s,s+.5,s+.5)}})}
+{ // 草地方塊：上面一層綠草、側面一圈草皮、下面深色土
+  const top=voxTex("#7FA65A","#6E9550","#8DB466",96);top.repeat.set(4,3.4);
+  const stripe=ctex(512,512,(x,w,h)=>{for(let i=0;i<8;i++){x.fillStyle=i%2?"rgba(255,255,255,.05)":"rgba(0,0,0,.035)";x.fillRect(i*w/8,0,w/8,h)}});
+  const side=voxTex("#6F9A4E","#5E8642","#7DA85A",48);side.repeat.set(8,1);
+  const gm=new THREE.MeshStandardMaterial({map:top,roughness:1}),sm=new THREE.MeshStandardMaterial({map:side,roughness:1}),dm=M(0x3A3B37,{roughness:1});
+  const grass=new THREE.Mesh(new THREE.BoxGeometry(25,.22,21),[sm,sm,gm,dm,sm,sm]);grass.position.set(0,GY-.11,1);grass.receiveShadow=true;OUT.add(grass);
+  const ov=new THREE.Mesh(new THREE.PlaneGeometry(25,21),new THREE.MeshBasicMaterial({map:stripe,transparent:true,depthWrite:false}));ov.rotation.x=-Math.PI/2;ov.position.set(0,GY+.002,1);OUT.add(ov);
+  const soil=new THREE.Mesh(new THREE.BoxGeometry(25,.55,21),dm);soil.position.set(0,GY-.22-.275,1);OUT.add(soil);
+  const sh=new THREE.Mesh(new THREE.PlaneGeometry(80,80),new THREE.ShadowMaterial({opacity:.16}));sh.rotation.x=-Math.PI/2;sh.position.y=GY-.78;sh.receiveShadow=true;OUT.add(sh);
+}
+{ // 大門前的石板步道
+  const t=ctex(256,512,(x,w,h)=>{x.fillStyle="#C9C5BE";x.fillRect(0,0,w,h);for(let j=0;j<h;j+=32)for(let i=-((j/32)%2)*32;i<w;i+=64){x.fillStyle=shade(0xEEEBE6,(rnd()-.5)*.05);x.fillRect(i+2,j+2,60,28)}});
+  const p=new THREE.Mesh(new THREE.BoxGeometry(1.5,.05,4.65),texMat(t,{roughness:.85}));p.position.set(-6.15,GY+.025,8.6);p.receiveShadow=true;OUT.add(p);
+  const m=rbox(1.0,.03,.55,0x3A3B3D,-6.15,GY+.05,6.65,OUT,.02);
+}
+// 灌木（方方的，像參考圖那樣有一顆一顆的葉子）
+const HEDGE=new THREE.MeshStandardMaterial({map:voxTex("#4E7F3C","#3E6A30","#5F9348",32),roughness:1});
+function hedge(x,z,w,d,h){const m=add(new THREE.Mesh(new THREE.RoundedBoxGeometry(w,h,d,2,.05),HEDGE),OUT);m.position.set(x,GY+h/2,z);
+  return m}
+hedge(-8.8,6.85,2.6,.75,.85);hedge(-4.45,6.8,1.6,.7,.7);hedge(3.6,6.8,2.4,.6,.55);
+hedge(8.85,3.2,.6,2.6,.6);hedge(-8.85,-2.5,.6,2.2,.6);hedge(2.5,-6.85,3.4,.6,.5);
+// 花圃：紅色、橘色的小花＋小草叢
+{ const N=260,im=new THREE.InstancedMesh(new THREE.BoxGeometry(.07,.07,.07),M(0xFFFFFF,{roughness:.8}),N);im.castShadow=true;
+  const cols=[0xD9483B,0xE8743A,0xF2A14A,0xC93A3A].map(c=>new THREE.Color(c)),m4=new THREE.Matrix4();let i=0;
+  const bed=(x0,x1,z0,z1,n)=>{for(let k=0;k<n&&i<N;k++,i++){m4.makeTranslation(x0+rnd()*(x1-x0),GY+.12+rnd()*.14,z0+rnd()*(z1-z0));im.setMatrixAt(i,m4);im.setColorAt(i,cols[i%4])}};
+  bed(-3.4,-.4,6.5,7.0,120);bed(5.2,7.6,6.5,6.95,90);bed(-5.4,-5.0,6.45,7.1,40);OUT.add(im);
+  rbox(3.1,.1,.62,0x4B3A2E,-1.9,GY,6.75,OUT,.03);rbox(2.5,.1,.55,0x4B3A2E,6.4,GY,6.72,OUT,.03);
+  [[-3.2,6.75],[-.6,6.8],[5.4,6.7],[7.4,6.75],[-2,6.7]].forEach(([x,z])=>{for(let k=0;k<3;k++){const s=sph(.13+rnd()*.06,k%2?0x5C8E45:0x4A7A3A,x+(k-1)*.12,GY+.16,z+(rnd()-.5)*.15,OUT,1,1.3,1)}})}
+// 圓圓的樹：樹幹＋分枝＋一顆一顆小方塊組成的樹冠（像參考圖）
+const TREEG=new THREE.Group();OUT.add(TREEG);
+const TREES=[[-10.4,-7.3,1.25],[-10.6,8.9,1.0],[10.6,1.6,1.05],[9.9,-7.6,1.15],[10.2,9.4,.85]];
+{ const cubes=[];
+  TREES.forEach(([x,z,s])=>{const H0=GY,top=H0+2.2*s;
+    rod([x,H0,z],[x,H0+1.3*s,z],.09*s,0x6B3A2C,TREEG);rod([x,H0+1.1*s,z],[x-.35*s,top,z+.1*s],.06*s,0x6B3A2C,TREEG);rod([x,H0+1.1*s,z],[x+.35*s,top,z-.1*s],.06*s,0x6B3A2C,TREEG);rod([x,H0+1.2*s,z],[x,top+.2*s,z],.06*s,0x6B3A2C,TREEG);
+    const R=1.15*s,cy=H0+2.55*s;
+    for(let k=0;k<900*s;k++){const u=rnd()*2-1,a=rnd()*6.283,rr=R*(.82+rnd()*.18),q=Math.sqrt(1-u*u);cubes.push([x+Math.cos(a)*q*rr,cy+u*rr*.95,z+Math.sin(a)*q*rr,s])}});
+  const im=new THREE.InstancedMesh(new THREE.BoxGeometry(.17,.17,.17),M(0xFFFFFF,{roughness:.9}),cubes.length);im.castShadow=true;im.receiveShadow=true;
+  const cols=[0x4F8A3A,0x5E9A45,0x6FAE4E,0x447A33,0x82BC5C].map(c=>new THREE.Color(c)),m4=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler();
+  cubes.forEach(([x,y,z,s],i)=>{e.set(0,rnd()*.3,0);q.setFromEuler(e);m4.compose(new THREE.Vector3(x,y,z),q,new THREE.Vector3(s,s,s));im.setMatrixAt(i,m4);
+    const up=(y-GY)/(3.5*s);im.setColorAt(i,cols[Math.min(4,Math.floor(rnd()*3+up*2))])});
+  TREEG.add(im)}
+// 大門：深色門板、門牌、壁燈、信箱
+hangOn("lFront",()=>{
+  rbox(1.42,2.08,.06,0x2B3034,-6.15,0,6.0,null,.01);box(.025,.22,.04,0xB8BCC0,-5.62,.95,6.05);
+  box(.4,.24,.02,0x2B3034,-4.95,1.35,6.11);
+  const plate=new THREE.Mesh(new THREE.PlaneGeometry(.36,.2),new THREE.MeshBasicMaterial({map:ctex(256,140,(x,w,h)=>{x.fillStyle="#2B3034";x.fillRect(0,0,w,h);x.fillStyle="#F1ECE2";x.font="bold 54px 'Noto Sans TC',sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText("Linda",w/2,h/2+2)})}));
+  plate.position.set(-4.95,1.47,6.125);add(plate);
+  [-7.15,-5.15].forEach(x=>{box(.12,.22,.08,0x222426,x,1.75,6.14);box(.08,.12,.02,emis(0xFFE2B0,.3,2.2),x,1.78,6.185);glow(x,1.8,6.3,.8,0xFFD39A,0,.9)});
+});
+{ const g=grp(-7.25,GY,10.6,0,OUT);box(.06,1.0,.06,0x2B3034,0,0,0,g);rbox(.3,.22,.38,0x2B3034,0,1.0,0,g,.03);box(.16,.02,.01,0xB8BCC0,0,1.15,.19,g)}
+box(.6,.42,.3,0xD8D6D2,-4.9,GY,6.6,OUT);   // 冷氣室外機
+// 屋頂：白色平頂、女兒牆、斜線紋路、小煙囪（切到房間時會往上掀開）
+const ROOF=new THREE.Group();scene.add(ROOF);
+{ const t=ctex(1024,512,(x,w,h)=>{x.fillStyle="#F4F3F0";x.fillRect(0,0,w,h);x.strokeStyle="rgba(150,150,150,.28)";x.lineWidth=2;for(let i=0;i<h;i+=18){x.beginPath();x.moveTo(0,i);x.lineTo(w,i);x.stroke()}});
+  const deck=new THREE.Mesh(new THREE.BoxGeometry(16.3,.16,12.3),[M(0xF2F1ED),M(0xF2F1ED),texMat(t,{roughness:.8}),M(0xEDECE8),M(0xF2F1ED),M(0xF2F1ED)]);deck.position.set(0,H+.08,0);add(deck,ROOF);
+  [[0,-6.17,16.5,.16],[0,6.17,16.5,.16]].forEach(([x,z,w,d])=>rbox(w,.3,d,0xFBFAF8,x,H,z,ROOF,.02));
+  [[-8.17,0],[8.17,0]].forEach(([x,z])=>rbox(.16,.3,12.5,0xFBFAF8,x,H,z,ROOF,.02));
+  rbox(.4,.55,.4,0xF4F3F0,-1.0,H+.16,-1.2,ROOF,.02);rbox(.48,.05,.48,0xE6E4E0,-1.0,H+.7,-1.2,ROOF,.01);
+  rbox(1.1,.35,.8,0xDAD8D4,4.6,H+.16,-3.4,ROOF,.04);[0,1,2].forEach(i=>box(.9,.01,.02,0xB9B7B3,4.6,H+.52,-3.65+i*.25,ROOF));
+  // 大門上方的雨遮
+  rbox(2.6,.18,1.0,0xFBFAF8,-6.15,2.32,6.55,ROOF,.02);
+}
+let roofK=1;   // 0＝蓋上、1＝掀開
+
+// =====================================================================
+//  小麻糬（程式做的寶寶，從原本的遊戲搬過來）
+// =====================================================================
+const baby=grp(-6.3,0,2.55,.9);
+{ const SK=0xFFDDC6,ONE=0xF58B95;
+  sph(.19,ONE,0,.27,0,baby,1,.88,1.25);sph(.15,0xFFFFFF,0,.27,-.19,baby,1.12,.95,.8);
+  window.bhead=grp(0,.47,.27,0,baby);sph(.26,SK,0,0,0,bhead);sph(.06,SK,-.25,0,0,bhead);sph(.06,SK,.25,0,0,bhead);
+  sph(.12,0x3A2A22,0,.2,-.04,bhead,1.3,.55,1.2);sph(.045,0x3A2A22,.03,.29,.05,bhead);
+  sph(.042,0x1D1D1D,-.085,.02,.225,bhead);sph(.042,0x1D1D1D,.085,.02,.225,bhead);
+  sph(.014,0xFFFFFF,-.072,.04,.262,bhead);sph(.014,0xFFFFFF,.098,.04,.262,bhead);
+  sph(.048,0xFF9AA8,-.15,-.07,.19,bhead);sph(.048,0xFF9AA8,.15,-.07,.19,bhead);sph(.028,0xD9535F,0,-.1,.235,bhead,1.3,.8,.6);
+  const limb=(x,y,z,len)=>{const p=grp(x,y,z,0,baby);cyl(.055,.05,len,ONE,0,-len,0,p,10);sph(.06,SK,0,-len,0,p);return p};
+  window.barms=[limb(-.13,.3,.17,.24),limb(.13,.3,.17,.24)];limb(-.11,.24,-.15,.18);limb(.11,.24,-.15,.18);
+}
+
+// =====================================================================
+//  載入模型：奶瓶（MiniPoly）、食物（Kenney）、樹（Quaternius）
+// =====================================================================
+const GL=new THREE.GLTFLoader();
+const packReady=new Promise(res=>{const sc=document.createElement("script");sc.src="models/models.js";sc.onload=sc.onerror=()=>res();document.head.appendChild(sc)});
+function loadGLB(path){return packReady.then(()=>new Promise((ok,fail)=>{const b64=window.GLB&&window.GLB[path];
+  if(!b64)return GL.load(path,ok,undefined,fail);const bin=atob(b64),buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);
+  GL.parse(buf.buffer,path.slice(0,path.lastIndexOf("/")+1),ok,fail)}))}
+const glbCache={};
+function glb(path){return glbCache[path]||(glbCache[path]=loadGLB(path).then(g=>{g.scene.traverse(m=>{if(m.isMesh){m.castShadow=m.receiveShadow=true}});return g}))}
+function put(path,{x=0,y=0,z=0,ry=0,s=1,p=scene}={}){return glb(path).then(g=>{const m=g.scene.clone(true);m.scale.setScalar(s);
+  const b=new THREE.Box3().setFromObject(m),c=b.getCenter(new THREE.Vector3());m.position.set(-c.x,-b.min.y,-c.z);
+  const w=grp(x,y,z,ry,p);w.add(m);return w}).catch(e=>console.warn("沒載入",path,e))}
+const loads=[];
+// 奶瓶放在泡奶區（廚房右邊流理台）
+[[7.5,4.62,.3],[7.62,4.42,-.4],[7.45,4.32,0]].forEach(([x,z,ry])=>loads.push(put("models/props/bottle.glb",{x,y:.92,z,ry,s:.18})));
+loads.push(put("models/food/plate.glb",{x:3.05,y:.91,z:3.3,s:.6}),put("models/food/apple.glb",{x:2.97,y:.93,z:3.25,s:.7}),put("models/food/orange.glb",{x:3.15,y:.93,z:3.38,s:.7}),
+  put("models/food/banana.glb",{x:4.25,y:.91,z:3.35,ry:.6,s:.55}),put("models/food/cup-coffee.glb",{x:2.85,y:.92,z:.55,s:.8}),put("models/food/carton.glb",{x:7.45,y:.92,z:1.3,ry:-Math.PI/2,s:.55}));
+
+const ASSETS=Promise.race([Promise.all(loads),new Promise(r=>setTimeout(r,8000))]);
+
+attachHung();
+// =====================================================================
+//  房間切換＋自動降牆
+// =====================================================================
+const ROOMS={
+  exterior:{name:"外觀",x0:-8,x1:8,z0:-6,z1:6,fz:1.2,az:.62,zoom:.82,all:1,ext:1,
+    p:"白色平頂小屋：深灰色牆腳、深色窗框、黑色大門和門牌，前院有石板步道、方形灌木、紅橘色花圃，四周是圓圓的大樹。"},
+  all:{name:"全家",x0:-8,x1:8,z0:-6,z1:6,az:.62,zoom:1,all:1,
+    p:"房子約 16 × 12 公尺。前面和中間的牆會自動降低，轉動視角時，擋住視線的那面牆也會降下來。"},
+  living:{name:"客廳",x0:-8,x1:0,z0:0,z1:6,fx:-2.6,fz:3.2,az:.55,zoom:1.75,
+    p:"灰色模組沙發、胡桃木電視櫃、和紙落地燈。",care:["沙發休息","看電視"],danger:["電視櫃","果凍（茶几上）"]},
+  play:{name:"遊戲區",x0:-8,x1:0,z0:0,z1:6,fx:-6.2,fz:2.9,az:.8,zoom:2.6,
+    p:"Montessori 矮層架、彩虹疊疊樂、正面書架、閱讀角、小桌椅、球池。",care:["遊戲區陪玩","聽音樂"],danger:["插座（左牆）"]},
+  kitchen:{name:"廚房",x0:0,x1:8,z0:0,z1:6,fx:4.4,fz:2.9,az:-.6,zoom:1.75,
+    p:"白色門板＋金色把手、大理石檯面、中島和高腳凳、吊燈。",care:["泡奶區","水槽（降溫）","咖啡"],danger:["瓦斯爐"]},
+  nursery:{name:"嬰兒房",x0:-8,x1:-2,z0:-6,z1:0,fx:-5,fz:-3.2,az:.62,zoom:2.15,
+    p:"白色嬰兒床和床鈴、尿布台、拱形書櫃、帳篷、點點地毯。",care:["嬰兒床（哄睡）","換尿布"],danger:["窗戶"]},
+  bath:{name:"浴室",x0:-2,x1:2,z0:-6,z1:0,fx:0,fz:-3.3,az:.5,zoom:2.5,
+    p:"水泥牆、木頭洗手台、碗型洗手盆、圓鏡、黑框玻璃、壁掛馬桶。",care:[],danger:["浴缸"]},
+  master:{name:"主臥",x0:2,x1:8,z0:-6,z1:0,fx:5.1,fz:-3.3,az:-.6,zoom:2.1,
+    p:"木條床頭牆、灰色雙人床、黑框大理石床頭櫃、橄欖樹、紗簾。",care:[],danger:["窗簾拉繩"]},
+};
+let region=ROOMS.exterior,wallMode="auto";
+const nav=$("rooms");
+Object.entries(ROOMS).forEach(([k,r])=>{if(r.ext)return;const b=document.createElement("button");b.textContent=r.name;b.dataset.k=k;b.onclick=()=>focus(k);nav.appendChild(b)});
+function showCard(r){if(r.ext){$("card").classList.remove("show");return}if(r.all){$("card").classList.remove("show");return}
+  $("cardT").textContent=r.name;$("cardP").innerHTML=r.p+"<br>"+r.care.map(c=>`<i class="c1">${c}</i>`).join("")+r.danger.map(c=>`<i class="c3">⚠ ${c}</i>`).join("");$("card").classList.add("show")}
+// 攝影機動畫：從現在的位置慢慢移到目標
+let tween=null;const POL=.98;
+function camState(){const off=camera.position.clone().sub(controls.target),sp=new THREE.Spherical().setFromVector3(off);return{t:controls.target.clone(),az:sp.theta,pol:sp.phi,zoom:camera.zoom}}
+function setCam(t,az,pol,zoom){camera.position.set(t.x+Math.sin(az)*Math.sin(pol)*40,t.y+Math.cos(pol)*40,t.z+Math.cos(az)*Math.sin(pol)*40);controls.target.copy(t);camera.zoom=zoom;camera.updateProjectionMatrix();camera.lookAt(t)}
+function goTo(t,az,zoom,dur=1.1){const a=camState();let d=az-a.az;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;tween={a,b:{t,az:a.az+d,pol:POL,zoom},k:0,dur}}
+function focus(k){const r=ROOMS[k];region=r;
+  [...nav.children].forEach(b=>b.classList.toggle("on",b.dataset.k===k));
+  const cx=r.fx??(r.x0+r.x1)/2,cz=r.fz??(r.z0+r.z1)/2;goTo(new THREE.Vector3(cx,r.all?0:.6,cz),r.az,r.zoom);showCard(r)}
+$("rotL").onclick=()=>{const a=camState();goTo(a.t,a.az+Math.PI/2,a.zoom,.7)};
+$("rotR").onclick=()=>{const a=camState();goTo(a.t,a.az-Math.PI/2,a.zoom,.7)};
+$("wallBtn").onclick=()=>{wallMode=wallMode==="auto"?"low":wallMode==="low"?"high":"auto";$("wallBtn").textContent="牆壁："+{auto:"自動",low:"全部降低",high:"全部升起"}[wallMode]};
+// 哪些牆要降低：在房間「前面」（靠近攝影機那一側）的牆就降低
+const _d=new THREE.Vector3();
+function updateWalls(dt){roofK+=((region.ext?0:1)-roofK)*Math.min(1,dt*3.5);ROOF.position.y=roofK*roofK*9;ROOF.visible=roofK<.85;
+  TREEG.visible=!!region.all;
+_d.subVectors(camera.position,controls.target);_d.y=0;_d.normalize();
+  const cx=(region.x0+region.x1)/2,cz=(region.z0+region.z1)/2;
+  WALLS.forEach(w=>{const off=w.axis==="x"?(w.pos-cz)*_d.z:(w.pos-cx)*_d.x;const behind=off<-.01;
+    let t=region.ext?1:wallMode==="low"?0:wallMode==="high"?1:(region.all?(w.outer&&behind):behind)?1:0;
+    w.s+=(t-w.s)*Math.min(1,dt*5);w.full.scale.y=Math.max(.001,w.s);w.full.visible=w.s>.06})}
+
+// =====================================================================
+//  白天／傍晚
+// =====================================================================
+// 遊戲時鐘：08:00 開始、18:00 媽媽回家。16:30 開始慢慢變暗，17:00 以後就是傍晚
+const DAY_START=8*60,DAY_END=18*60,DUSK_FROM=16.5*60,DUSK_FULL=17*60;
+const SPEEDS=[1.25,12.5,62.5],SPEED_LBL=["×1","×10","×50"];        // 現實 1 秒＝遊戲幾分鐘（1＝遊戲一天約 10 分鐘）
+let gameMin=DAY_START,speedI=0,dragging=false,night=0,nightK=0;
+const fmt=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(Math.floor(m%60)).padStart(2,"0");
+$("speedBtn").onclick=()=>{speedI=(speedI+1)%SPEEDS.length;$("speedBtn").textContent="⏩ "+SPEED_LBL[speedI]};
+$("clockR").addEventListener("input",e=>{gameMin=+e.target.value;dragging=true});$("clockR").addEventListener("change",()=>dragging=false);
+function updateClock(dt){if(FLOW.step==="play"&&!dragging&&!(typeof G!=="undefined"&&(G.paused||G.ev)))gameMin=Math.min(DAY_END,gameMin+dt*SPEEDS[speedI]*(RUN.day===1?1.6:1));
+  night=Math.max(0,Math.min(1,(gameMin-DUSK_FROM)/(DUSK_FULL-DUSK_FROM)));
+  $("clockT").textContent=fmt(gameMin);if(!dragging)$("clockR").value=gameMin;document.body.classList.toggle("night",night>.5)}
+// 開場：看完外觀，按「進入 Linda 家」就進到屋內，之後不會再回到外觀
+// =====================================================================
+//  遊戲流程：(1) Loading → (2) 外觀開場 →（前情提要，之後再做）→ (3) 選角色 → (4) 家裡導覽 → 開始玩
+// =====================================================================
+const FLOW={step:"loading",role:null};
+function setStep(s){["loading","intro","story","ended","select","tour","tutorial","ready","play","sheet"].forEach(c=>document.body.classList.remove(c));document.body.classList.add(s);FLOW.step=s}
+function toast(msg,ms=3200){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("show"),ms)}
+// (1) Loading：其實很快就載完了，但至少播 7 秒讓小鴨子走一下
+{ const tips=["正在幫奶瓶消毒…","正在把插座蓋起來…","小麻糬正在睡午覺…","正在收拾滿地的玩具…","Linda 正在傳訊息給你…"];
+  let p=0,ready=false,el=0,last=0,ti=0;ASSETS.then(()=>ready=true);
+  // el＝畫面真的有在動的時間（卡住的那幾格不算），保證小鴨子至少走 7 秒
+  const tick=()=>{const now=performance.now();const dt=last?Math.min(.1,(now-last)/1000):0;last=now;el+=dt;
+    const goal=ready&&el>7?100:Math.min(94,el/7*92);p=goal>=100?Math.min(100,p+dt*60):p+(goal-p)*Math.min(1,dt*4);
+    $("ldFill").style.width=p+"%";$("ldPct").textContent=Math.round(p)+"%";
+    if(Math.floor(el/1.8)!==ti){ti=Math.floor(el/1.8);$("ldTip").textContent=tips[ti%tips.length]}
+    if(FLOW.step!=="loading")return;if(p>99.5){$("loader").classList.add("done");setStep("intro");return}requestAnimationFrame(tick)};tick();}
+// (2) 外觀開場 → 按「開始遊戲」
+$("enter").onclick=()=>{
+  setStep("story");startStory()};
+// (2) 前情提要：Linda 傳訊息來求救
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let storyRun=0;
+function addMsg(who,text){const m=$("msgs"),last=m.lastElementChild;const cont=last&&last.classList&&last.classList.contains(who);
+  const r=document.createElement("div");r.className=`row ${who}${cont?" cont":""}`;
+  r.innerHTML=(who==="them"?'<span class="ava">L</span>':"")+`<div class="bub"></div>`;r.querySelector(".bub").textContent=text;m.appendChild(r);m.scrollTop=m.scrollHeight;return r}
+async function lindaSays(text,wait=1300){$("chS").textContent="正在輸入…";const t=document.createElement("div");t.className="row them typing"+($("msgs").lastElementChild.classList.contains("them")?" cont":"");
+  t.innerHTML='<span class="ava">L</span><div class="bub"><i></i><i></i><i></i></div>';$("msgs").appendChild(t);$("msgs").scrollTop=1e5;
+  await sleep(wait);t.remove();$("chS").textContent="上線中";addMsg("them",text);await sleep(500)}
+function seen(){const s=document.createElement("div");s.className="seen";s.textContent="已讀";$("msgs").appendChild(s)}
+function waitSend(text){return new Promise(res=>{$("field").textContent=text;$("field").classList.add("ready");$("send").classList.add("on");
+  $("send").onclick=()=>{$("send").onclick=null;$("send").classList.remove("on");$("field").textContent="輸入訊息…";$("field").classList.remove("ready");addMsg("me",text);res()}})}
+function choose(opts){return new Promise(res=>{const c=$("choices");c.innerHTML="";opts.forEach(([t,k,cls])=>{const b=document.createElement("button");b.textContent=t;if(cls)b.className=cls;
+  b.onclick=()=>{c.innerHTML="";addMsg("me",t);res(k)};c.appendChild(b)})})}
+// 手機縮放：直式約螢幕高度 2/3，橫式盡量放大，電腦維持原本大小
+function fitPhone(){const vw=innerWidth,vh=innerHeight,mob=matchMedia("(pointer:coarse)").matches||vw<700;
+  const frac=mob?(vh>vw?.67:.9):.84;document.documentElement.style.setProperty("--pz",Math.min(1,vh*frac/718,vw*.86/340).toFixed(3))}
+addEventListener("resize",fitPhone);fitPhone();
+// 跳過前情提要：直接到選角色
+$("skipStory").onclick=()=>{storyRun++;$("noti").onclick=null;$("send").onclick=null;$("send").classList.remove("on");$("choices").innerHTML="";setStep("select");startSelect()};
+async function startStory(){const run=++storyRun;const chk=()=>{if(run!==storyRun)throw "skip"};try{
+  $("msgs").innerHTML='<div class="day">今天 08:00</div>';$("choices").innerHTML="";$("chat").classList.remove("in");$("lock").style.opacity=1;$("noti").classList.remove("in");$("hintTap").classList.remove("in");
+  const ph=$("phone");ph.style.animation="none";ph.offsetWidth;ph.style.animation="";
+  await sleep(1300);chk();if(run!==storyRun)return;
+  $("noti").classList.add("in");ph.classList.add("buzz");setTimeout(()=>ph.classList.remove("buzz"),1100);
+  await sleep(900);chk();$("hintTap").classList.add("in");
+  await new Promise(r=>$("noti").onclick=r);chk();
+  $("lock").style.opacity=0;$("chat").classList.add("in");
+  await sleep(500);chk();addMsg("them","照顧小孩真的是要崩潰了。🥹🥹🥹🥹");await sleep(700);chk();
+  await waitSend("還好嗎?❤️‍🩹");chk();await sleep(500);chk();seen();
+  await lindaSays("小麻糬從早上哭到現在，我已經三天沒好好睡覺了……",1600);chk();
+  await lindaSays("可以拜託你今天來幫我顧一下他嗎？",1400);chk();
+  await lindaSays("我 18:00 前一定回家！🙏",1100);chk();
+  const k=await choose([["好，我馬上過去！","yes","yes"],["痾....最近沒空","no"]]);chk();await sleep(400);chk();seen();
+  chk();if(k==="yes"){await lindaSays("真的嗎！！你是我的救星 😭❤️",1200);chk();await sleep(900);chk();setStep("select");startSelect()}
+  else{await lindaSays("好吧……😢",1400);chk();await sleep(1000);chk();setStep("ended")}}catch(e){if(e!=="skip")throw e}}
+$("restart").onclick=()=>{if(typeof G!=="undefined"&&G.endMode==="over"){G.endMode=null;document.body.classList.remove("over");startDay(RUN.day,true);return}setStep("intro");focus("exterior")};
+// (3) 選角色：每張卡片有一個小 3D 舞台
+const ROLE_STATS={
+  nanny:[["泡奶、換尿布","快",5,"g"],["走路","快",4,"g"],["體力消耗","快",4,"b"],["耐心消耗","普通",3,"n"],["體力恢復","慢",2,"b"]],
+  friend:[["泡奶、換尿布","慢",2,"b"],["走路","慢",2,"b"],["體力消耗","慢",2,"g"],["耐心消耗","慢",2,"g"],["體力恢復","普通",3,"n"]]};
+const BAR={g:"#7FB394",b:"#E39A84",n:"#C9BBA8"};
+const minis=[];
+function startSelect(){if(minis.length)return;
+  document.querySelectorAll(".rc").forEach(card=>{const k=card.dataset.r;
+    const cv=card.querySelector("canvas"),r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});r.setPixelRatio(Math.min(devicePixelRatio,2));r.outputEncoding=THREE.sRGBEncoding;r.toneMapping=THREE.ACESFilmicToneMapping;
+    const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xFFF7EE,0xD8C8B4,1.1));const d=new THREE.DirectionalLight(0xFFF0DD,1.3);d.position.set(-2,4,5);sc.add(d);
+    const cam=new THREE.PerspectiveCamera(26,1,.1,50);cam.position.set(0,1.2,5.2);cam.lookAt(0,.9,0);
+    const f=makeFigure(FIGURES[k]);sc.add(f.root);const ped=new THREE.Mesh(new THREE.CylinderGeometry(.5,.55,.06,40),M(0xF7F2EA));ped.position.y=-.03;sc.add(ped);
+    minis.push({k,r,sc,cam,f,cv,card});
+    card.onclick=()=>{FLOW.role=k;minis.forEach(m=>{const on=m.k===k;m.card.classList.toggle("on",on);m.f.mode=on?"wave":"idle"});
+      $("goBtn").disabled=false;$("goBtn").textContent=`就決定是你了！進入 Linda 家 →`}})}
+function renderSelect(dt){minis.forEach(m=>{const w=m.cv.clientWidth,h=m.cv.clientHeight;if(!w)return;if(m.cv.width!==Math.round(w*m.r.getPixelRatio())){m.r.setSize(w,h,false);m.cam.aspect=w/h;m.cam.updateProjectionMatrix()}
+  m.f.update(dt);m.f.root.rotation.y=Math.sin(performance.now()/1600)*.35;m.r.render(m.sc,m.cam)})}
+// 進入 Linda 家：選的角色出現在大門內側
+let player=null;
+$("goBtn").onclick=()=>{if(!FLOW.role)return;player=makeFigure(FIGURES[FLOW.role]);player.root.scale.setScalar(.82);player.root.position.set(-6.15,0,5.15);player.root.rotation.y=Math.PI*.85;scene.add(player.root);
+  setStep("tour");startTour()};
+// (4) 家裡導覽：鏡頭一間一間介紹
+const TOUR=[
+  ["all","歡迎來到 Linda 家！","這是 Linda 家的全貌，接下來帶你看看每個地方。"],
+  ["living","客廳","累的時候可以坐沙發休息、看電視回耐心。但小心：放鬆的時候小麻糬最容易出狀況！"],
+  ["play","遊戲區","陪小麻糬玩的地方，也可以在書架旁聽音樂。左牆的插座要特別注意。"],
+  ["kitchen","廚房","泡奶、用水槽把奶沖涼、泡咖啡回體力都在這裡。瓦斯爐是危險區。"],
+  ["nursery","嬰兒房","哄睡和換尿布的地方。小麻糬會爬去窗戶邊，記得防護。"],
+  ["bath","浴室","浴缸是危險區，小麻糬靠近時要趕快把他抱走。"],
+  ["master","主臥","Linda 的房間。窗簾拉繩對小寶寶很危險。"],
+  ["all","接下來是操作教學","每個動作都讓你試一次，也可以隨時跳過。"]];
+// 危險區的半透明紅色箭頭（只在導覽時出現）：[位置, 箭頭指的方向]
+const DANGER={living:[[[-2.8,.62,.62],[0,-1,0]],[[-2.95,.5,3.2],[0,-1,0]]],play:[[[-7.86,.3,1.3],[-1,0,0]]],kitchen:[[[7.55,1.0,2.61],[0,-1,0]]],
+  nursery:[[[-5.0,1.35,-5.85],[0,0,-1]]],bath:[[[-1.27,.6,-4.72],[0,-1,0]]],master:[[[4.1,1.25,-5.8],[0,0,-1]]]};
+const ARROWM=new THREE.MeshStandardMaterial({color:0xE5483B,emissive:0xE5483B,emissiveIntensity:.55,transparent:true,opacity:.62,depthTest:false,depthWrite:false});
+const ARROWS={};
+for(const k in DANGER)ARROWS[k]=DANGER[k].map(([p,d])=>{const g=new THREE.Group(),inner=new THREE.Group();g.add(inner);
+  const head=new THREE.Mesh(new THREE.ConeGeometry(.15,.26,20),ARROWM);head.rotation.x=Math.PI;head.position.y=.13;inner.add(head);
+  const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.055,.055,.34,14),ARROWM);shaft.position.y=.43;inner.add(shaft);
+  [head,shaft].forEach(m=>m.renderOrder=20);
+  const dir=new THREE.Vector3(...d).normalize();g.quaternion.setFromUnitVectors(new THREE.Vector3(0,-1,0),dir);
+  g.position.set(...p).addScaledVector(dir,-.08);g.userData.inner=inner;g.visible=false;scene.add(g);return g});
+let arrowRoom=null;
+function showArrows(k){arrowRoom=k;for(const r in ARROWS)ARROWS[r].forEach(a=>a.visible=r===k)}
+function animArrows(t){if(!arrowRoom||!ARROWS[arrowRoom])return;ARROWS[arrowRoom].forEach((a,i)=>{a.userData.inner.position.y=.06+Math.abs(Math.sin(t*3+i))*.14})}
+let tourI=0;
+function showTour(){const [k,t,p]=TOUR[tourI],r=ROOMS[k];focus(k);showArrows(k);$("card").classList.remove("show");
+  $("tourT").textContent=t;$("tourN").textContent=`${tourI+1} / ${TOUR.length}`;$("tourP").textContent=p;
+  $("tourG").innerHTML=r.all?"":(r.care||[]).map(c=>`<i class="c1">${c}</i>`).join("")+(r.danger||[]).map(c=>`<i class="c3">⚠ ${c}</i>`).join("");
+  $("tourPrev").disabled=tourI===0;$("tourNext").textContent=tourI===TOUR.length-1?"開始教學 →":"下一個 →"}
+function startTour(){tourI=0;showTour()}
+function endTour(){showArrows(null);startTutorial()}
+$("tourNext").onclick=()=>{if(tourI<TOUR.length-1){tourI++;showTour()}else endTour()};
+$("tourPrev").onclick=()=>{if(tourI>0){tourI--;showTour()}};
+$("tourSkip").onclick=endTour;
+
+// =====================================================================
+//  操作：移動、抱寶寶（E）、照顧動作（F）、處理危險（Q）
+//  電腦：方向鍵或滑鼠點地板走路，指令都在左手（E / F / Q）
+//  手機：左下角半透明搖桿，右下角三顆指令鍵
+// =====================================================================
+const IS_TOUCH=matchMedia("(pointer:coarse)").matches;if(IS_TOUCH)document.body.classList.add("touch");
+const PR=.22;                                        // 玩家身體半徑（碰撞用）
+// 不能走過去的地方：[x0,x1,z0,z1]（家具大概的範圍）
+const FURN=[
+  [-4.0,-1.6,.15,.62],[-4.45,-1.25,4.75,5.85],[-3.55,-2.05,2.85,3.65],[-1.15,-.35,2.15,4.25],[-.75,-.1,5.15,5.8],[-4.85,-4.4,5.4,5.85],
+  [-7.85,-5.7,.08,.46],[-7.92,-7.4,4.05,5.05],[-7.88,-7.05,2.0,3.6],[-6.36,-5.84,.52,1.04],
+  [6.98,8,.1,5.3],[.3,3.45,.08,.72],[4.8,7.4,.08,.72],[2.48,4.72,2.8,3.72],[2.75,4.45,3.72,4.3],[5.4,6.0,2.95,3.55],[7.12,7.58,5.5,5.9],
+  [-7.62,-6.14,-5.42,-3.18],[-3.8,-2.3,-5.95,-5.3],[-7.95,-7.5,-2.2,-1.3],[-3.65,-2.45,-2.55,-1.35],[-2.7,-2.2,-1.0,-.5],
+  [-1.95,-.6,-5.95,-3.5],[-.4,.65,-5.95,-5.35],[.75,1.95,-5.95,-5.05],[1.65,2,-4.55,-4.15],[1.35,1.75,-1.4,-1.0],
+  [5.45,7.45,-5.9,-3.45],[4.95,5.45,-5.85,-5.35],[7.45,7.95,-5.85,-5.35],[2.3,3.8,-5.95,-5.25],[2.75,3.35,-5.25,-4.65],[2.6,3.45,-2.8,-1.9],[2.3,2.9,-.95,-.3],[7.3,8,-2.25,-.35],[6.25,6.65,-3.05,-2.65]];
+// 牆也是障礙物（門的地方空出來）
+const SOLID=[...FURN];
+WALLS.forEach(w=>{let c=w.a;const segs=[];(w.doors||[]).slice().sort((p,q)=>p[0]-q[0]).forEach(d=>{if(d[0]>c)segs.push([c,d[0]]);c=d[1]});if(c<w.b)segs.push([c,w.b]);
+  segs.forEach(([u0,u1])=>SOLID.push(w.axis==="x"?[u0,u1,w.pos-T/2,w.pos+T/2]:[w.pos-T/2,w.pos+T/2,u0,u1]))});
+SOLID.push([-6.9,-5.4,5.92,6.3]);                    // 大門關著
+const blocked=(x,z,r=PR)=>SOLID.some(([a,b,c,d])=>x>a-r&&x<b+r&&z>c-r&&z<d+r);
+function roomAt(x,z){for(const k of ["living","kitchen","nursery","bath","master"]){const r=ROOMS[k];if(x>=r.x0&&x<=r.x1&&z>=r.z0&&z<=r.z1)return k}return "living"}
+
+// ---------- 小麻糬：縮小一點，比較像寶寶 ----------
+baby.scale.setScalar(.72);const BABY_HOME=new THREE.Vector3(-6.3,0,2.55);
+const G={carry:false,bottle:false,action:null,crawlTo:null,protected:{},moveTo:null,keys:{},joy:{x:0,y:0},paused:false};
+// =====================================================================
+//  危險區：小麻糬會自己爬過去，到了就開始倒數，要在時間內按 E 把他抱走
+//  也可以事先靠近按 Q 做防護（要花一點時間），做好之後他就不會再去那裡
+// =====================================================================
+const outletCover=box(.035,.2,.16,0x7FB394,-7.89,.18,1.3);outletCover.visible=false;
+const tvStrap=new THREE.Group();scene.add(tvStrap);[-.62,.62].forEach(x=>box(.05,.55,.03,0x2B2B2B,-2.8+x,1.1,.13,tvStrap));tvStrap.visible=false;
+const winLock=box(.16,.1,.06,0x7FB394,-5.0,1.22,-5.83);winLock.visible=false;
+const knobCover=box(.04,.12,.64,0x7FB394,7.27,.74,2.61);knobCover.visible=false;
+const cordTie=sph(.07,0xFFFFFF,4.1,2.2,-5.78);cordTie.visible=false;
+const CORD=[];scene.traverse(o=>{if(o.userData.cord)CORD.push(o)});
+function makeArrow(p,d){const g=new THREE.Group(),inner=new THREE.Group();g.add(inner);
+  const head=new THREE.Mesh(new THREE.ConeGeometry(.15,.26,20),ARROWM);head.rotation.x=Math.PI;head.position.y=.13;inner.add(head);
+  const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.055,.055,.34,14),ARROWM);shaft.position.y=.43;inner.add(shaft);[head,shaft].forEach(m=>m.renderOrder=20);
+  const dir=new THREE.Vector3(...d).normalize();g.quaternion.setFromUnitVectors(new THREE.Vector3(0,-1,0),dir);g.position.set(...p).addScaledVector(dir,-.08);g.userData.inner=inner;g.visible=false;scene.add(g);return g}
+const HAZARDS=[
+ {k:"outlet",verb:"在挖插座",name:"裝插座保護蓋",x:-7.45,z:1.3,ax:[-7.86,.3,1.3],ad:[-1,0,0],done(){outletCover.visible=true},
+  over:"啪滋！小麻糬把手指伸進插座，被電到了！",tip:"幼兒會把手指或金屬塞進插座。沒在用的插座要裝上保護蓋。"},
+ {k:"tv",verb:"在攀爬電視櫃",name:"用防傾倒帶固定電視",x:-2.8,z:.9,ax:[-2.8,.62,.62],ad:[0,-1,0],done(){tvStrap.visible=true},
+  over:"小麻糬抓著電視往下拉，整台電視倒下來了！",tip:"電視和高櫃要用防傾倒帶固定在牆上，幼兒常把它們當成攀爬架。"},
+ {k:"jelly",verb:"在吃果凍",name:"把果凍收進冰箱",x:-2.8,z:2.6,ax:[-2.95,.5,3.2],ad:[0,-1,0],done(){jelly.visible=false},
+  over:"小麻糬把果凍整顆吞下去，噎住了！",tip:"果凍又滑又有彈性，是幼兒噎到的高風險食物。3 歲以下不要給果凍，也別放在孩子拿得到的地方。"},
+ {k:"window",verb:"在開窗戶",name:"裝窗戶安全鎖",x:-5.0,z:-5.25,ax:[-5.0,1.35,-5.85],ad:[0,0,-1],done(){winLock.visible=true},
+  over:"小麻糬踩著玩具推開窗戶，探出身體……",tip:"窗戶要裝安全鎖或限位器，窗邊不要放可以墊腳的家具或箱子。"},
+ {k:"fire",verb:"在轉瓦斯爐",name:"關掉瓦斯總開關",x:6.6,z:2.61,ax:[7.55,1.0,2.61],ad:[0,-1,0],done(){knobCover.visible=true},
+  over:"小麻糬轉開了瓦斯爐，廚房起火了！",tip:"瓦斯爐要裝旋鈕保護蓋，打火機和火柴要收在孩子拿不到的高處。"},
+ {k:"rope",verb:"在玩窗簾拉繩",name:"把拉繩綁到高處",x:4.2,z:-5.2,ax:[4.1,1.25,-5.8],ad:[0,0,-1],done(){CORD.forEach(m=>m.visible=false);cordTie.visible=true},
+  over:"窗簾拉繩纏住了小麻糬的脖子！",tip:"窗簾拉繩要綁高或剪短，嬰兒床和遊戲區旁不要有任何繩子。"},
+ {k:"bath",verb:"在玩浴缸的水",name:"放掉浴缸的水",x:-.35,z:-4.5,ax:[-1.27,.6,-4.72],ad:[0,-1,0],done(){water.visible=false;duck.position.y=.14},
+  over:"小麻糬翻進了浴缸裡！",tip:"幼兒在幾公分深的水裡就可能溺水。浴缸用完一定要放掉水，浴室門要關好。"}];
+// 每天偷偷多一個新危險區：第 2 天訪客的包包、第 3 天熱水瓶
+const visitorBag=rbox(.42,.3,.24,0x7A4E3A,-1.65,.47,5.15,null,.06);visitorBag.visible=false;
+const thermos=new THREE.Group();scene.add(thermos);cyl(.11,.12,.38,0xF2F0EC,0,0,0,thermos,20);cyl(.05,.05,.06,0x9AA3AA,0,.38,0,thermos,14);rod([.08,.05,0],[.5,0,-.2],.008,0x333333,thermos);thermos.visible=false;
+HAZARDS.push(
+ {k:"bag",day:2,only:1,verb:"在翻訪客的包包",name:"把包包收到高處",x:-1.65,z:4.45,ax:[-1.65,.9,5.15],ad:[0,-1,0],done(){visitorBag.visible=false},
+  over:"小麻糬從包包裡翻出藥丸，往嘴巴裡塞……",tip:"訪客的包包常有藥品、打火機、硬幣，請他們把包包放在高處或關起來的地方。"},
+ {k:"thermos",day:3,only:1,verb:"在拉熱水瓶的電線",name:"把熱水瓶收到流理台上",x:2.0,z:2.3,ax:[2.25,.55,2.55],ad:[0,-1,0],done(){thermos.position.set(1.2,.92,.4)},
+  over:"熱水瓶被拉倒，熱水灑了出來！",tip:"熱水瓶、電熱水壺要放在孩子碰不到的地方，電線也要收好。燙傷時立刻沖冷水 15～30 分鐘。"});
+HAZARDS.forEach(h=>{h.r=1.15;h.arrow=makeArrow(h.ax,h.ad)});
+const activeHaz=()=>HAZARDS.filter(h=>!h.day||((FLOW.step==="play"||FLOW.step==="sheet")&&(h.only?h.day===RUN.day:h.day<=RUN.day)));
+function dayProps(){visitorBag.visible=RUN.day===2;thermos.visible=RUN.day===3;thermos.position.set(2.25,0,2.55)}
+function resetHazards(){G.protected={};outletCover.visible=tvStrap.visible=winLock.visible=knobCover.visible=cordTie.visible=false;
+  jelly.visible=water.visible=true;CORD.forEach(m=>m.visible=true);visitorBag.visible=false;thermos.visible=false;fire.visible=false;HAZARDS.forEach(h=>h.arrow.visible=false)}
+// ---------- 小麻糬自己到處爬（正式遊戲才會） ----------
+const B={state:"idle",t:4,path:[],target:null,h:null,dangerT:0,last:null};
+const TOYS=[[-6.3,2.6],[-1.6,1.8],[3.0,1.6],[-4.5,-2.7],[-.5,4.7],[5.2,-2.2],[-6.0,4.4]];
+const GS=.25,GX0=-8,GZ0=-6,GW=64,GH=48;let GRID=null;
+function gridInit(){GRID=new Uint8Array(GW*GH);for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)GRID[j*GW+i]=blocked(GX0+(i+.5)*GS,GZ0+(j+.5)*GS,.12)?0:1}
+const cellOf=(x,z)=>[Math.max(0,Math.min(GW-1,Math.floor((x-GX0)/GS))),Math.max(0,Math.min(GH-1,Math.floor((z-GZ0)/GS)))];
+function pathTo(x,z){if(!GRID)gridInit();const [si,sj]=cellOf(baby.position.x,baby.position.z),[ti,tj]=cellOf(x,z);
+  const prev=new Int32Array(GW*GH).fill(-1),st=sj*GW+si,q=[st];prev[st]=st;let found=-1,best=st,bd2=1e9;
+  for(let k=0;k<q.length;k++){const c=q[k],ci=c%GW,cj=(c/GW)|0,d=Math.abs(ci-ti)+Math.abs(cj-tj);if(d<bd2){bd2=d;best=c}if(d===0){found=c;break}
+    for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){const ni=ci+di,nj=cj+dj;if(ni<0||nj<0||ni>=GW||nj>=GH)continue;const n=nj*GW+ni;if(prev[n]>=0||!GRID[n])continue;prev[n]=c;q.push(n)}}
+  let c=found>=0?found:best;const pts=[];while(prev[c]!==c){pts.push([GX0+(c%GW+.5)*GS,GZ0+(((c/GW)|0)+.5)*GS]);c=prev[c]}pts.reverse();if(found>=0)pts.push([x,z]);return pts}
+const CARE_K=new Set(["feed","soothe","mini","diaper"]);
+const playerBusy=()=>!!(G.rest||(G.action&&!CARE_K.has(G.action.s.k)));
+function openHaz(){const o=activeHaz().filter(h=>!G.protected[h.k]);return o.length>1?o.filter(h=>h!==B.last):o}
+function chooseTarget(busy){const open=openHaz();
+  const pH=!open.length?0:busy?.92:.7+.2*Math.min(1,(gameMin-DAY_START)/600);   // 危險區沒處理，他空閒就會往那裡爬；你在忙的時候幾乎一定去
+  if(Math.random()<pH){const h=open[Math.floor(Math.random()*open.length)];B.target=h;B.path=pathTo(h.x,h.z);
+    if(busy&&(G.sneakT||0)<=0){G.sneakT=20;toast("👀 小麻糬趁你在忙，往危險的地方衝過去了！",2200)}}
+  else{const t=TOYS[Math.floor(Math.random()*TOYS.length)];B.target=null;B.path=pathTo(t[0]+(Math.random()-.5)*.5,t[1]+(Math.random()-.5)*.5)}
+  B.state="move"}
+function arrive(){const h=B.target;if(h&&!G.protected[h.k]&&Math.hypot(baby.position.x-h.x,baby.position.z-h.z)<.6)startDanger(h);else{B.state="idle";B.t=3+Math.random()*3}}
+function startDanger(h){bump("danger");B.state="danger";B.h=h;B.last=h;B.dangerT=gameMin>=17*60?7:9;h.arrow.visible=true;if(h.k==="fire")fire.visible=true;setMood("danger");
+  toast(`⚠ 小麻糬${h.verb}！快過去按 ${IS_TOUCH?"👶🏻":"E"} 把他抱走！`,2600)}
+function clearDanger(){if(B.h){B.h.arrow.visible=false;if(B.h.k==="fire")fire.visible=false}B.h=null;B.state="idle";B.t=3+Math.random()*3;$("dang").classList.remove("show");if(mood==="danger")setMood(null)}
+function babyAI(dt){if(FLOW.step!=="play"){B.crawling=false;return}
+  if(G.carry||G.asleep){if(B.state==="danger")clearDanger();if(B.state==="move")B.state="idle";B.crawling=false;return}
+  if((G.action&&CARE_K.has(G.action.s.k)&&babyNear(1.8))||G.crying){B.crawling=false;if(B.state==="move")B.state="idle";return}          // 正在被照顧的時候乖乖不動
+  B.crawling=false;const busy=playerBusy();
+  if(busy&&B.state==="idle"&&B.t>.6)B.t=.6;                                       // 你一忙，他馬上開始動
+  if(busy&&B.state==="move"&&!B.target&&openHaz().length)chooseTarget(true);      // 本來在玩玩具，也改去危險的地方
+  if(B.state==="idle"){B.t-=dt;if(B.t<=0)chooseTarget(busy)}
+  else if(B.state==="move"){const p=B.path[0];if(!p){arrive();return}
+    const dx=p[0]-baby.position.x,dz=p[1]-baby.position.z,d=Math.hypot(dx,dz);if(d<.05){B.path.shift();if(!B.path.length)arrive();return}
+    const sp=Math.min(d,TUNE.crawl*(gameMin>=17*60?1.15:1)*(B.target?TUNE.sneak:1)*(busy?1.25:1)*dt);baby.position.x+=dx/d*sp;baby.position.z+=dz/d*sp;baby.position.y=0;baby.rotation.set(0,Math.atan2(dx,dz),0);B.crawling=true}
+  else if(B.state==="danger"){B.dangerT-=dt;const el=$("dang");el.classList.add("show");el.innerHTML=`⚠ 小麻糬${B.h.verb}！<b>${B.dangerT.toFixed(1)}</b> 秒`;
+    if(B.dangerT<=0){const h=B.h;clearDanger();gameOver(h.over,h.tip)}}}
+// 照顧點：靠近按 F
+// =====================================================================
+//  能力數值（滿額 100）：玩家＝體力、耐心；小麻糬＝肚子、心情、體力、尿布
+// =====================================================================
+const ST={sta:100,pat:100,food:100,mood:100,energy:100,diaper:100};
+// 遊戲平衡用的數字都集中在這裡（每秒的變化量，現實時間）
+const TUNE={walk:.12,run:.45,carryWalk:.08,           // 玩家走路、跑步、抱著走：每秒扣多少體力
+  runBoost:1.15,                                        // 跑步比走路快 13%
+  needPat:.35,cryPat:1.6,patBase:.04,dangerPat:.6,                               // 寶寶有需要沒人理／大哭：每秒扣多少耐心
+  food:.48,diaper:.26,moodDrop:.26,energy:.24,           // 小麻糬每秒自然下降
+  cost:{milk:3,diaper:4,feed:2,sleep:3,play:4,soothe:3,secure:3},  // 每個照顧動作扣多少體力
+  restSofa:3,restTv:2.5,restMusic:2,                    // 休息時每秒回多少（體力會再乘上角色的恢復力）
+  coffeeBuff:.6,coffeeTime:25,                          // 喝完咖啡：接下來 25 秒每秒回 0.6 體力
+  sleepGain:1.5,                                        // 小麻糬在床上睡覺：每秒回多少體力
+  secure:3.2,crawl:.61,sneak:1.35,hush:.6,hushTime:8,                                  // 做防護要幾秒（再乘角色的動作時間）、小麻糬爬行速度
+  milkT:72,hotT:45,coolAir:.8,coolSink:12,
+  cryEvery:90,evCool:45,cryFirst:40,cryMood:.6,cryDur:25,relaxChance:.04};                  // 大約每 55 秒有機會突然哭一次（開局 25 秒後開始）、哭的時候心情每秒多掉 0.6             // 奶瓶溫度：剛泡好 72°C、45°C 以下才能喝、放著每秒降 0.8°C、沖冷水每秒降 12°C                                       // 小麻糬在床上睡覺：每秒回多少體力// 每個照顧動作扣多少體力
+const role=()=>ROLE_MOD[FLOW.role]||ROLE_MOD.friend;
+function addStat(k,v){const before=ST[k];ST[k]=Math.max(0,Math.min(100,ST[k]+v));statDelta(k,ST[k]-before)}
+const careCost=k=>addStat("sta",-TUNE.cost[k]*role().sta);
+const happy=(m=15)=>{addStat("mood",m);setMood("happy")};
+// 照顧點：靠近按 F
+//  need：free＝手要空著、baby＝要抱著小麻糬、near＝小麻糬在旁邊
+//  gain：動作進行中「慢慢」加上去的數值；rest：坐下／站著休息，每秒慢慢恢復，按方向鍵起身
+const STATIONS=[
+  {k:"milk",name:"泡奶",x:6.75,z:4.65,r:1.0,time:4,hold:["加熱水","加奶粉","搖一搖"],need:"free",done:()=>{careCost("milk");G.bottle=true;G.temp=TUNE.milkT;bottleInHand(true);toast(`泡好了！${TUNE.milkT}°C 太燙，到水槽沖冷水降溫（放著也會慢慢變涼）`,2800)}},
+  {k:"cool",name:"沖冷水降溫",x:6.75,z:3.6,r:.75,time:1.5,hold:["沖冷水降溫"],need:"hot",done:()=>{G.temp=Math.min(G.temp,38);toast("✓ 38°C 溫度剛好，可以餵小麻糬了",1800)}},
+  {k:"diaper",name:"換尿布",x:-3.05,z:-4.85,r:1.0,time:5,hold:["拆尿布","擦屁屁","穿新尿布"],need:"baby",gain:{diaper:100},done:()=>{careCost("diaper");bump("diaper");happy(10)}},
+  {k:"sleep",name:"哄睡",x:-5.85,z:-4.3,r:1.0,time:2.5,need:"baby",soothe:1,done:()=>{careCost("sleep");G.carry=false;G.asleep=true;baby.position.set(-6.88,.52,-4.3);baby.rotation.set(0,0,0);setMood("asleep");toast("小麻糬睡著了，趁現在去做別的事吧",2400)}},
+  {k:"play",name:"陪玩",x:-6.2,z:2.6,r:1.3,time:4,need:"near",soothe:1,gain:{mood:30},done:()=>{careCost("play");happy(0)}},
+  {k:"sofa",name:"坐沙發休息",x:-2.85,z:4.3,r:.9,need:"free",rest:{sta:"restSofa"},sit:[-2.85,5.12,Math.PI]},
+  {k:"tv",name:"坐著看電視",x:-1.5,z:2.55,r:.8,need:"free",rest:{pat:"restTv"},sit:[-.8,2.55,-Math.PI/2-.25]},
+  {k:"music",name:"聽音樂",x:-6.95,z:4.35,r:.8,need:"free",rest:{pat:"restMusic"}},
+  {k:"coffee",name:"喝咖啡",x:2.55,z:1.1,r:.9,time:1.5,need:"free",done:()=>{G.coffee=TUNE.coffeeTime;toast("☕ 接下來一段時間，體力會慢慢回來",2200);if(FLOW.step==="play"&&Math.random()<.4)setTimeout(()=>{if(FLOW.step==="play"&&!G.ev)relaxEvent()},1500)}}];
+const FEED={k:"feed",name:"餵奶",time:5,hold:["咕嚕咕嚕","快喝完了","拍嗝"],gain:{food:70},done:()=>{careCost("feed");bump("feed");RUN.feedsToday++;G.bottle=false;bottleInHand(false);happy(10);maybeSpit()}};
+const SOOTHE={k:"soothe",name:"安撫小麻糬",time:2.5,soothe:1,gain:{mood:45},done:()=>{careCost("soothe");bump("soothe");stopCry();happy(0)}};
+// 寶寶頭上的表情泡泡
+const HAPPY=["🧡","🩷","❤️","💛","🐈","🌞","🧸"],MOODS={hungry:"🍼",diaper:"💩",cry:"😭",sleepy:"😴",asleep:"💤",danger:"⚠️"};
+let mood=null,moodT=0,happyI=0;const _hv=new THREE.Vector3();
+function setMood(m){mood=m;moodT=0;if(m==="happy")happyI=Math.floor(Math.random()*HAPPY.length);moodShow()}
+function moodShow(){const el=$("mood");if(!mood){el.classList.remove("show");return}el.innerHTML=`<span>${mood==="happy"?HAPPY[happyI%HAPPY.length]:mood==="mini"?(G.mini?G.mini.icon:"❔"):MOODS[mood]}</span>`;el.classList.add("show","bob");el.classList.toggle("mini",mood==="mini")}
+function updateMood(dt){const el=$("mood");if(!mood||(FLOW.step!=="tutorial"&&FLOW.step!=="play")){el.classList.remove("show");return}
+  if(mood==="happy"){moodT+=dt;if(moodT>4.2){setMood(null);return}const i=Math.floor(moodT/.7);if((happyI+i)%HAPPY.length!==el.dataset.i*1){el.dataset.i=(happyI+i)%HAPPY.length;el.innerHTML=`<span>${HAPPY[el.dataset.i]}</span>`}}
+  bhead.getWorldPosition(_hv);_hv.y+=.28;_hv.project(camera);el.classList.add("show");// 寶寶不在畫面裡的時候，泡泡貼在畫面邊緣提醒玩家
+  const cl=(v,a,b)=>Math.max(a,Math.min(b,v));el.style.left=cl((_hv.x*.5+.5)*innerWidth,36,innerWidth-36)+"px";el.style.top=cl((-_hv.y*.5+.5)*innerHeight,60,innerHeight-20)+"px"}
+// 小麻糬的需要：數值會自己下降，太低就冒泡泡、扣玩家耐心
+function updateNeeds(dt){
+  if(FLOW.step==="play"){const r=role();
+    const sl=G.asleep?.5:1;addStat("food",-TUNE.food*sl*dt);addStat("diaper",-TUNE.diaper*sl*dt);
+    if(G.asleep){addStat("energy",TUNE.sleepGain*dt);if(ST.energy>=100){G.asleep=false;baby.position.set(-5.75,0,-4.3);B.state="idle";B.t=4;happy(10);toast("小麻糬睡飽醒來了 🌞",2000)}}else addStat("energy",-TUNE.energy*dt);
+    const unmet=(ST.food<35)+(ST.diaper<35)+(!G.asleep&&ST.energy<30);if(!G.asleep)addStat("mood",-(TUNE.moodDrop*(1+unmet))*dt);
+    if(!G.crying&&!G.asleep&&B.state!=="danger"){G.cryT-=dt;if(ST.mood<25)startCry("心情很差");else if(G.cryT<=0){const fz=RUN.fuss||0;G.cryT=TUNE.cryEvery*(1-.1*fz)*(.7+Math.random()*.6);if(Math.random()<.75+.04*fz)startCry(CRY_WHY[Math.floor(Math.random()*CRY_WHY.length)])}}
+    if(G.crying){addStat("mood",-TUNE.cryMood*dt);G.cryLeft-=dt;if(G.cryLeft<=0){stopCry();setMood(null)}}
+    if(mood!=="happy"&&!G.asleep&&B.state!=="danger"){const want=G.crying?"cry":G.mini?"mini":ST.food<35?"hungry":ST.diaper<35?"diaper":ST.energy<30?"sleepy":null;if(want!==mood)setMood(want)}
+    addStat("pat",-((mood==="cry"?TUNE.cryPat*(G.carry?.6:1):unmet?TUNE.needPat*unmet:0)+(G.rest?0:TUNE.patBase)+(B.state==="danger"?TUNE.dangerPat:0))*r.pat*dt);
+    if(ST.food<=0)gameOver("小麻糬餓到哭不出聲了……","寶寶餓了要早點泡奶；泡好的奶要先降溫，45°C 以下才能喝。");
+    else if(ST.sta<=0)gameOver("你累倒了……","記得找時間坐沙發、喝咖啡休息，照顧者也要照顧自己。","你累到在沙發上睡著了……<br>");
+    else if(ST.pat<=0)gameOver("你的耐心用完了……","看電視、聽音樂可以讓自己冷靜一下；快崩潰時，先把寶寶放在安全的嬰兒床，離開一下深呼吸。","你崩潰大哭，打給了 Linda……<br>");
+    RUN.stats.moodSum+=ST.mood*dt;RUN.stats.moodN+=dt;RUN.total.moodSum+=ST.mood*dt;RUN.total.moodN+=dt;if(G.crying){RUN.stats.cry+=dt;RUN.total.cry+=dt}}
+  else if(FLOW.step==="tutorial"&&ST.sta<40)ST.sta=40;   // 教學中不會累倒
+}
+// 能力條（每次增減都會飄出數字）
+const STATS=[["sta","💪","體力","p"],["pat","🧘","耐心","p"],["food","🍼","肚子","b"],["mood","😊","心情","b"],["energy","💤","體力","b"],["diaper","🧷","尿布","b"]];
+const shown={},pend={},pendT={};
+{let h='<div class="sg"><b>你</b>';STATS.forEach(([k,ic,n,g],i)=>{if(i===2)h+='</div><div class="sg"><b>小麻糬</b>';
+  h+=`<div class="sr" id="sr_${k}"><span class="si">${ic}</span><span class="sn">${n}</span><span class="sb"><i id="sb_${k}"></i></span><span class="sv" id="sv_${k}">100%</span></div>`});
+ $("stats").innerHTML=h+'</div>'}
+function statDelta(k,d){if(!d)return;pend[k]=(pend[k]||0)+d}
+function updateStatUI(dt){STATS.forEach(([k])=>{const v=ST[k],r=Math.round(v);
+  if(shown[k]!==r){shown[k]=r;const lv=v>60?"g":v>30?"m":"l";$("sb_"+k).style.width=v+"%";$("sb_"+k).className=lv;$("sv_"+k).textContent=r+"%";const row=$("sr_"+k);row.style.setProperty("--v",v);row.dataset.l=lv}
+  pendT[k]=(pendT[k]||0)+dt;
+  if(Math.abs(pend[k]||0)>=1&&pendT[k]>.7){const n=Math.round(pend[k]);pend[k]-=n;pendT[k]=0;
+    const el=document.createElement("em");el.className="pop "+(n<0?"neg":"pos");el.textContent=(n>0?"+":"")+n;$("sr_"+k).appendChild(el);setTimeout(()=>el.remove(),1300);
+    if(n<0){const row=$("sr_"+k);row.classList.remove("hit");void row.offsetWidth;row.classList.add("hit")}}})}
+function setStats(o){Object.assign(ST,o);for(const k in pend)pend[k]=0}
+function gameOver(title,tip,lead){if(FLOW.step!=="play")return;G.action=null;clearDanger();stopCry();$("prog").classList.remove("show");$("endT").textContent=title;$("endP").innerHTML=`${lead||""}📱 Linda 接到電話，立刻衝回家了……<br><br>💡 ${tip}`;$("restart").textContent="再試一次（從今天早上開始）";G.endMode="over";document.body.classList.add("over");setStep("ended")}
+// 手上的奶瓶
+let handBottle=null;
+function bottleInHand(on){if(!player)return;if(!handBottle){handBottle=new THREE.Group();player.arms[1].hand.add(handBottle);handBottle.position.set(0,-.02,.07);
+  put("models/props/bottle.glb",{p:handBottle,s:.13}).then(w=>{if(!w)cyl(.035,.035,.14,0xFFFFFF,0,-.07,0,handBottle,12)})}handBottle.visible=on}
+
+// ---------- 鍵盤 ----------
+const KEYMAP={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right"};
+addEventListener("keydown",e=>{if(!canPlay())return;
+  if(KEYMAP[e.key]){G.keys[KEYMAP[e.key]]=true;G.moveTo=null;if(G.rest)endRest();e.preventDefault();return}
+  if(e.key==="Shift"){G.keys.run=true;return}
+  if(e.repeat)return;const k=e.key.toLowerCase();
+  if(k==="e")doE();if(k==="f")doF();if(k==="q")doQ()});
+addEventListener("keyup",e=>{if(KEYMAP[e.key])G.keys[KEYMAP[e.key]]=false;if(e.key==="Shift")G.keys.run=false;const k=e.key.toLowerCase();if(k==="f"||k==="q")G.holdKey=false});
+addEventListener("blur",()=>{G.keys={};G.holdKey=false});
+const canPlay=()=>(FLOW.step==="tutorial"||FLOW.step==="play")&&player&&!G.paused&&!G.ev;
+// ---------- 滑鼠：點地板就走過去（拖曳還是旋轉鏡頭） ----------
+{let down=null;const ray=new THREE.Raycaster(),pl=new THREE.Plane(new THREE.Vector3(0,1,0),0),v=new THREE.Vector2(),hit=new THREE.Vector3();
+  canvas.addEventListener("pointerdown",e=>{down=[e.clientX,e.clientY]});
+  canvas.addEventListener("pointerup",e=>{if(!down||!canPlay()||IS_TOUCH)return;const moved=Math.hypot(e.clientX-down[0],e.clientY-down[1]);down=null;if(moved>6||e.button!==0)return;
+    v.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(v,camera);if(ray.ray.intersectPlane(pl,hit)){if(G.rest)endRest();G.moveTo=hit.clone();showClickMark(hit)}})}
+const clickMark=new THREE.Mesh(new THREE.RingGeometry(.12,.2,28),new THREE.MeshBasicMaterial({color:0xC98A5B,transparent:true,opacity:0,depthWrite:false}));clickMark.rotation.x=-Math.PI/2;scene.add(clickMark);
+function showClickMark(p){clickMark.position.set(p.x,.03,p.z);clickMark.material.opacity=.9;clickMark.scale.setScalar(1)}
+// ---------- 手機：搖桿＋三顆按鈕 ----------
+{const joy=$("joy"),knob=$("knob");let id=null,c=null;
+  joy.addEventListener("pointerdown",e=>{id=e.pointerId;joy.setPointerCapture(id);const r=joy.getBoundingClientRect();c=[r.left+r.width/2,r.top+r.height/2,r.width/2];move(e)});
+  const move=e=>{if(e.pointerId!==id)return;let dx=(e.clientX-c[0])/c[2],dy=(e.clientY-c[1])/c[2];const L2=Math.hypot(dx,dy);if(L2>1){dx/=L2;dy/=L2}
+    G.joy.x=dx;G.joy.y=dy;G.moveTo=null;if(G.rest&&Math.hypot(dx,dy)>.3)endRest();knob.style.transform=`translate(${dx*32}px,${dy*32}px)`};
+  joy.addEventListener("pointermove",move);
+  const up=e=>{if(e.pointerId!==id)return;id=null;G.joy.x=G.joy.y=0;knob.style.transform=""};joy.addEventListener("pointerup",up);joy.addEventListener("pointercancel",up);
+  [["bE",()=>doE()],["bF",()=>doF()],["bQ",()=>doQ()]].forEach(([id,fn])=>{const b=$(id);b.addEventListener("pointerdown",e=>{e.preventDefault();if(canPlay())fn()});["pointerup","pointercancel","pointerleave"].forEach(t=>b.addEventListener(t,()=>{G.holdKey=false}));b.addEventListener("contextmenu",e=>e.preventDefault())});
+  $("pad").addEventListener("contextmenu",e=>e.preventDefault());
+  $("rotOk").onclick=()=>{document.body.classList.add("rotSeen")}}
+
+// ---------- 動作 ----------
+const fwd=()=>new THREE.Vector3(Math.sin(player.root.rotation.y),0,Math.cos(player.root.rotation.y));
+const near=(x,z,r)=>Math.hypot(player.root.position.x-x,player.root.position.z-z)<r;
+function doE(){if(G.action)return;if(G.rest)endRest();
+  if(G.carry){// 放下：放在面前（前面是牆或家具的話就放在腳邊）
+    const p=player.root.position.clone().addScaledVector(fwd(),.45);if(blocked(p.x,p.z,.12))p.copy(player.root.position);
+    baby.position.set(p.x,0,p.z);baby.rotation.set(0,player.root.rotation.y,0);G.carry=false;B.state="idle";B.t=4+Math.random()*3;emit("drop");return}
+  if(bd()<1.1){if(B.state==="danger"){clearDanger();bump("rescue");toast("好險！把小麻糬抱走了",1600)}B.state="idle";if(G.asleep){G.asleep=false;addStat("mood",-10);setMood(null);toast("小麻糬被吵醒了…",1600)}G.carry=true;G.crawlTo=null;emit("pick");if(G.mini&&G.mini.k==="hug"){if(!G.crying)G.hush=0;toast("🤗 抱著他在家裡走一走吧",1600)}return}
+  toast("走到小麻糬旁邊才能抱他喔",1800)}
+const bd=()=>Math.hypot(baby.position.x-player.root.position.x,baby.position.z-player.root.position.z);
+const babyNear=r=>G.carry||bd()<r;
+Object.defineProperty(G,"hot",{get(){return G.bottle&&G.temp>TUNE.hotT}});
+const canFeed=()=>G.bottle&&!G.hot&&babyNear(1.2);
+const canSoothe=()=>G.crying&&G.carry;
+const pickF=()=>G.rest?null:G.mini&&G.mini.k!=="hug"&&babyNear(1.3)?MINI:canFeed()?FEED:STATIONS.find(s=>near(s.x,s.z,s.r)&&(s.need!=="hot"||G.hot)&&(s.k!=="milk"||!G.bottle)&&(s.k!=="sleep"||!G.asleep));
+function doF(){if(G.action){if(G.action.s.hold)G.holdKey=true;return}if(G.rest)return;if(G.crying&&!G.carry&&bd()<1.4){toast(`先按 ${IS_TOUCH?"👶🏻":"E"} 把小麻糬抱起來，才能安撫他`,1800);return}const s=pickF();
+  if(!s&&G.carry&&(G.crying||(G.mini&&G.mini.k==="hug"))){toast("抱著他在家裡走一走，就能慢慢哄好",1800);return}
+  if(!s){toast(G.hot&&babyNear(1.2)?"奶太燙了！先到水槽沖冷水降溫":G.bottle?"拿著奶瓶走到小麻糬旁邊才能餵奶":"這裡沒有可以做的事",1800);return}
+  if(s.need==="hot"&&!G.hot){toast(G.bottle?"奶已經不燙了，可以直接餵":"這裡是水槽，奶泡好再來降溫",1600);return}
+  if(s.k==="milk"&&G.bottle){toast("你手上已經有一瓶奶了",1500);return}
+  if(s.rest){startRest(s);return}
+  if(FLOW.step==="play"){// 正式遊戲：有些照顧動作會變成選擇事件
+    if(s.k==="sleep"){if(ST.energy>=60){toast("小麻糬還不想睡，精神好得很 👀",1800);return}openEvent("sleep");return}
+    if(s.k==="play"){openEvent("play");return}
+    if(s.k==="diaper"&&G.evCD<=0&&Math.random()<.2){openEvent("diaperRefuse");return}
+    if(s===FEED&&G.evCD<=0&&Math.random()<.25){openEvent("feedRefuse");return}}
+  if(s.need==="free"&&G.carry){toast("先把小麻糬放下，才能"+s.name,1800);return}
+  if(s.need==="baby"&&!G.carry){toast("先把小麻糬抱過來，才能"+s.name,1800);return}
+  if(s.need==="near"&&!babyNear(1.6)){toast("把小麻糬帶過來，才能"+s.name,1800);return}
+  const time=s.k==="cool"?Math.max(.6,(G.temp-38)/TUNE.coolSink):s.time*(s.soothe?role().soothe:s.k==="coffee"?1:role().cook);G.action={s,t:0,time};resumePart();G.holdKey=true;$("prog").classList.add("show");$("progT").textContent=s.name+"中…"}
+// 長按動作：放開會暫停，走開會中斷（進度先記著，回來接著做）
+function resumePart(){const a=G.action;if(G.part&&G.part.id===a.s.k+a.s.name)a.t=Math.min(G.part.t,a.time*.95);G.part=null;a.idle=0}
+function holdBreak(){const a=G.action;if(!a)return;if(a.s.hold)G.part={id:a.s.k+a.s.name,t:a.t};G.action=null;$("prog").classList.remove("show")}
+// 休息：坐下（或站著）每秒慢慢恢復，按方向鍵（或推搖桿）就起身
+function startRest(s){G.rest={s,back:player.root.position.clone()};G.restT=0;G.moveTo=null;
+  if(s.sit){player.root.position.set(s.sit[0],0,s.sit[1]);player.root.rotation.y=s.sit[2]}
+  $("prog").classList.add("show","rest");$("progF").style.width="0%";emit("rest",s.k)}
+function endRest(){if(!G.rest)return;if(G.rest.s.sit)player.root.position.copy(G.rest.back);G.rest=null;$("prog").classList.remove("show","rest")}
+function doQ(){if(G.action){if(G.action.s.hold)G.holdKey=true;return}if(G.rest)endRest();const h=activeHaz().find(h=>near(h.x,h.z,h.r)&&!G.protected[h.k]);
+  if(!h){toast(activeHaz().some(h=>near(h.x,h.z,h.r))?"這裡已經做好防護了":"附近沒有危險區",1500);return}
+  if(G.carry){toast("先把小麻糬放下，才能"+h.name,1800);return}
+  G.action={s:{k:"secure",name:h.name,done(){G.protected[h.k]=true;h.done();careCost("secure");if(FLOW.step==="play"){bump("secure");if(KEEP.includes(h.k))RUN.keep.add(h.k)}emit("protect",h.k)}},t:0,time:TUNE.secure*role().cook};G.action.s.hold=[h.name];G.action.s.q=1;resumePart();G.holdKey=true;
+  $("prog").classList.add("show");$("progT").textContent=h.name+"中…"}
+// 角色數值（原始＝1）
+//  cook＝照顧動作時間（越小越快） speed＝走路速度 sta＝體力消耗 pat＝耐心消耗（越小越好）
+//  rec＝體力恢復 soothe＝安撫寶寶（哄哭）時間（越小越快）
+const ROLE_MOD={
+  nanny: {cook:.7, speed:1.1, sta:1.35,pat:1.1,rec:.75,soothe:.8,hush:.875},   // 保母 Amy：做事快、會哄寶寶，但容易累
+  friend:{cook:1.25,speed:.95,sta:.8, pat:.7, rec:1.0,soothe:1.2,hush:1.125}}; // Linda 的朋友：慢一點，但耐操、有耐心
+// =====================================================================
+//  暫停／結束遊戲（⏸ 按鈕或 Esc）
+// =====================================================================
+// 配樂：第一次點擊或按鍵後開始播放（瀏覽器規定），音量約 65%
+const BGM=new Audio("assets/audio/bgm.mp3");BGM.loop=true;BGM.volume=.65;let bgmOn=true;
+function bgmTry(){if(bgmOn&&BGM.paused)BGM.play().catch(()=>{})}
+addEventListener("pointerdown",bgmTry,{capture:true});addEventListener("keydown",bgmTry,{capture:true});
+$("musBtn").onclick=e=>{bgmOn=!bgmOn;$("musBtn").textContent=bgmOn?"🔊":"🔇";if(bgmOn)bgmTry();else BGM.pause();e.stopPropagation()};
+$("musBtn").addEventListener("pointerdown",e=>e.stopPropagation(),{capture:false});
+function pauseGame(on){if(FLOW.step!=="play"&&FLOW.step!=="tutorial")return;G.paused=on;document.body.classList.toggle("paused",on);
+  G.keys={};G.joy.x=G.joy.y=0;$("pQuit").classList.remove("warn");$("pQuit").textContent="⏹ 結束遊戲";
+  $("pRestart").textContent=FLOW.step==="tutorial"?"↺ 重新開始教學":`↺ 重新開始第 ${RUN.day} 天`;
+  $("pauseP").textContent=FLOW.step==="tutorial"?"教學暫停中":`現在是 ${fmt(gameMin)}，小麻糬在等你喔`}
+$("pauseBtn").onclick=()=>pauseGame(!G.paused);$("pResume").onclick=()=>pauseGame(false);
+$("pRestart").onclick=()=>{const tut=FLOW.step==="tutorial";pauseGame(false);if(tut)startTutorial();else startDay(RUN.day,true)};
+$("pQuit").onclick=()=>{const b=$("pQuit");if(!b.classList.contains("warn")){b.classList.add("warn");b.textContent="確定要結束嗎？再按一次";return}
+  pauseGame(false);backToStart();toast("遊戲已結束，按「開始遊戲」可以再玩一次",2600)};
+addEventListener("keydown",e=>{if(e.key==="Escape"||e.key==="p"||e.key==="P"){if(FLOW.step==="play"||FLOW.step==="tutorial"){pauseGame(!G.paused);e.preventDefault()}}});
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&FLOW.step==="play"&&!G.paused)pauseGame(true)});
+// =====================================================================
+//  寶寶哭鬧：不定時突然大哭，要抱起來（E）再安撫（F）
+// =====================================================================
+const CRY_WHY=["跌倒了","被聲音嚇到了","想要抱抱","長牙不舒服","玩具被搶走（被自己丟掉）了","做惡夢醒來"];
+const tears=new THREE.Group();bhead.add(tears);
+[-1,1].forEach(s2=>{const t2=sph(.035,0x6EC3F5,s2*.11,-.06,.23,tears);t2.material=new THREE.MeshStandardMaterial({color:0x6EC3F5,emissive:0x3A8FD0,emissiveIntensity:.3,roughness:.2})});tears.visible=false;
+function startCry(why,dur){if(G.asleep)return;G.cryLeft=Math.max(G.cryLeft||0,dur||TUNE.cryDur);if(G.crying)return;G.crying=true;if(!(G.mini&&G.mini.k==="hug"&&G.carry))G.hush=0;tears.visible=true;setMood("cry");if(B.state==="move")B.state="idle";
+  toast(`😭 小麻糬哭了${why?`（${why}）`:""}！按 ${IS_TOUCH?"👶🏻":"E"} 抱起來，抱著走一走哄他`,3000)}
+function stopCry(){G.crying=false;tears.visible=false;bhead.rotation.y=0}
+// 教學會聽這些事件
+const LISTEN=[];const emit=(ev,arg)=>LISTEN.forEach(f=>f(ev,arg));
+
+// ---------- 每一格：移動、動畫、提示 ----------
+const _f=new THREE.Vector3(),_r=new THREE.Vector3(),_m=new THREE.Vector3();
+function updateGame(dt,t){if(!player||(FLOW.step!=="tutorial"&&FLOW.step!=="play"))return;if(G.paused||G.ev)return;
+  const P=player.root.position,spd=3.0*(ROLE_MOD[FLOW.role]||ROLE_MOD.friend).speed;
+  // 方向以「畫面」為準：↑ 就是往畫面上方走
+  _f.subVectors(controls.target,camera.position);_f.y=0;_f.normalize();_r.set(-_f.z,0,_f.x);
+  _m.set(0,0,0);const K=G.keys;
+  if(K.up)_m.add(_f);if(K.down)_m.sub(_f);if(K.right)_m.add(_r);if(K.left)_m.sub(_r);
+  if(G.joy.x||G.joy.y){_m.addScaledVector(_r,G.joy.x).addScaledVector(_f,-G.joy.y)}
+  if(G.moveTo&&!_m.lengthSq()){_m.set(G.moveTo.x-P.x,0,G.moveTo.z-P.z);if(_m.length()<.08){G.moveTo=null;_m.set(0,0,0)}}
+  if(G.rest&&_m.lengthSq()>.0004)endRest();
+  if(G.action&&G.action.s.hold&&!G.holdKey&&_m.lengthSq()>.0004)holdBreak();
+  if(G.action||G.rest)_m.set(0,0,0);
+  let moving=false;
+  if(_m.lengthSq()>.0004){const len=Math.min(1,_m.length());_m.normalize();G.running=(G.keys.run||Math.hypot(G.joy.x,G.joy.y)>.92)&&!G.carry;const step=spd*len*dt*(G.running?TUNE.runBoost:1);
+    const nx=P.x+_m.x*step,nz=P.z+_m.z*step;let ok=false;
+    const stuck=blocked(P.x,P.z);if(stuck||!blocked(nx,P.z)){P.x=nx;ok=true}if(stuck||!blocked(P.x,nz)){P.z=nz;ok=true}
+    if(!ok&&G.moveTo)G.moveTo=null;
+    const ang=Math.atan2(_m.x,_m.z);let d=ang-player.root.rotation.y;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;player.root.rotation.y+=d*Math.min(1,dt*12);moving=ok}
+  if(!moving)G.running=false;
+  player.mode=G.rest?(G.rest.s.sit?"sit":"idle"):G.carry?(moving?"carryWalk":"carry"):(moving?"walk":"idle");
+  if(G.rest&&FLOW.step==="play"){G.restT=(G.restT||0)+dt;if(G.restT>2&&Math.random()<TUNE.relaxChance*dt){endRest();relaxEvent();return}}
+  if(G.rest){const r=G.rest.s.rest;let full=true;for(const k in r){const v=TUNE[r[k]]*(k==="sta"?role().rec:1);addStat(k,v*dt);if(ST[k]<100)full=false}
+    const k0=Object.keys(r)[0];$("progT").textContent=`${G.rest.s.name}中 ${k0==="sta"?"💪":"🧘"} ${Math.round(ST[k0])}%・${IS_TOUCH?"推搖桿":"按方向鍵"}起身`;$("progF").style.width=ST[k0]+"%";
+    if(full){endRest();toast("✓ 休息夠了！",1400)}}
+  if(G.coffee>0){G.coffee-=dt;addStat("sta",TUNE.coffeeBuff*role().rec*dt)}
+  if(moving){G.ranDist=(G.ranDist||0)+(G.running?spd*dt:0);addStat("sta",-(G.running?TUNE.run:G.carry?TUNE.walk+TUNE.carryWalk:TUNE.walk)*role().sta*dt)}
+  updateNeeds(dt);babyAI(dt);
+  // 抱著小麻糬：他在玩家胸前
+  if(G.carry){const f=fwd();baby.position.set(P.x+f.x*.3,.46,P.z+f.z*.3);baby.rotation.set(-.9,player.root.rotation.y,0,"YXZ")}
+  else if(G.crawlTo){// 小麻糬往目標爬
+    const d=new THREE.Vector3(G.crawlTo.x-baby.position.x,0,G.crawlTo.z-baby.position.z);const L2=d.length();
+    if(L2<.15){emit("reach");G.crawlTo=null}else{d.normalize();baby.position.addScaledVector(d,(FLOW.step==="tutorial"?.22:TUNE.crawl)*dt);baby.rotation.set(0,Math.atan2(d.x,d.z),0)}}
+  // 照顧動作進度
+  if(G.bottle&&G.temp>30)G.temp-=TUNE.coolAir*dt;
+  if(G.action){const a=G.action,hd=!a.s.hold||G.holdKey,step2=hd?Math.max(0,Math.min(dt,a.time-a.t)):0;if(hd){a.t+=dt;a.idle=0}else if((a.idle=(a.idle||0)+dt)>4){holdBreak()}
+    if(a.s.hold&&G.action){const st=a.s.hold[Math.min(a.s.hold.length-1,Math.floor(a.t/a.time*a.s.hold.length))],kk=IS_TOUCH?(a.s.q?"🛡️":"🍼"):(a.s.q?"Q":"F");$("progT").textContent=hd?st+"…":`${st}・按住 ${kk} 繼續`}
+    if(!G.action){}else if(hd&&a.s.k==="cool")G.temp=Math.max(38,G.temp-TUNE.coolSink*dt);if(a.s.gain)for(const k in a.s.gain)addStat(k,a.s.gain[k]*step2/a.time);$("progF").style.width=Math.min(100,a.t/a.time*100)+"%";
+    if(G.action&&G.action.t>=G.action.time){const s=G.action.s;G.action=null;$("prog").classList.remove("show");s.done();emit(s===FEED?"feed":s===SOOTHE?"soothe":"station",s.k);toast("✓ "+s.name+"完成",1500)}}
+  {const hug=G.mini&&G.mini.k==="hug";
+   if(G.carry&&(G.crying||hug)&&!G.action&&!G.rest){const need=TUNE.hushTime*role().hush;
+     if(moving){G.hush=(G.hush||0)+dt;addStat("sta",-TUNE.hush*role().sta*dt)}
+     $("prog").classList.add("show");$("progF").style.width=Math.min(100,(G.hush||0)/need*100)+"%";
+     $("progT").textContent=`${G.crying?"😭 抱著走一走哄他":"🤗 抱著走一走"} ${Math.floor(Math.min(need,G.hush||0))}/${Math.round(need)} 秒${moving?"":"（要走動喔）"}`;G.hushShow=true;
+     if(G.hush>=need){G.hush=0;G.hushShow=false;$("prog").classList.remove("show");
+       if(G.crying){bump("soothe");stopCry();addStat("mood",45);happy(0);emit("soothe");toast("✓ 小麻糬不哭了",1500)}
+       if(hug)miniDone(true)}}
+   else if(G.hushShow){G.hushShow=false;if(!G.action&&!G.rest)$("prog").classList.remove("show")}}
+  // 現在可以做什麼？（電腦顯示提示、手機按鈕亮起來）
+  const canE=G.carry||bd()<1.1,st=pickF(),hz=activeHaz().find(h=>near(h.x,h.z,h.r)&&!G.protected[h.k]);
+  const tips=[];if(canE)tips.push(["E",G.carry?"放下小麻糬":G.mini&&G.mini.k==="hug"?"抱抱小麻糬 🤗":"抱起小麻糬"]);if(st&&!G.action)tips.push(["F",(st.hold?"按住・":"")+st.name+(st===FEED||st.k==="cool"?`（${Math.round(G.temp)}°C）`:"")]);if(hz)tips.push(["Q","按住・"+hz.name]);if(G.carry&&(G.crying||(G.mini&&G.mini.k==="hug")))tips.push([IS_TOUCH?"🕹️":"↑↓←→","抱著走一走哄他"]);
+  $("ctx").innerHTML=tips.map(([k,n])=>`<span><kbd>${k}</kbd>${n}</span>`).join("");
+  $("bE").classList.toggle("lit",canE);$("bF").classList.toggle("lit",!!st);$("bQ").classList.toggle("lit",!!hz);
+  // 鏡頭跟著玩家、牆壁依照玩家所在的房間降低
+  region=ROOMS[roomAt(P.x,P.z)];
+  const goal=new THREE.Vector3(P.x,.6,P.z);
+  if(tween)tween.b.t.copy(goal);else{const delta=goal.sub(controls.target).multiplyScalar(Math.min(1,dt*4));controls.target.add(delta);camera.position.add(delta)}
+  if(clickMark.material.opacity>0){clickMark.material.opacity=Math.max(0,clickMark.material.opacity-dt*1.5);clickMark.scale.multiplyScalar(1+dt*.8)}
+  updateMood(dt);updateStatUI(dt);
+  {const pb=$("pbub");if(G.bottle){pb.textContent=G.hot?`♨️ ${Math.round(G.temp)}°C`:`🍼 ${Math.round(G.temp)}°C`;pb.classList.toggle("ok",!G.hot);player.arms[1].hand.getWorldPosition(_hv);_hv.y+=.25;_hv.project(camera);pb.style.left=(_hv.x*.5+.5)*innerWidth+"px";pb.style.top=(-_hv.y*.5+.5)*innerHeight+"px";pb.classList.add("show")}else pb.classList.remove("show")}
+  if(G.crying){bhead.rotation.y=Math.sin(t*14)*.18;tears.children.forEach((m,i)=>m.position.y=-.06-((t*1.5+i*.5)%1)*.12)}
+  if(G.crawlTo||B.crawling){barms[0].rotation.x=Math.sin(t*9)*.7-.3;barms[1].rotation.x=-Math.sin(t*9)*.7-.3}
+}
+
+// =====================================================================
+//  操作教學：每一項都讓玩家試一次，也可以跳過
+// =====================================================================
+const ring=new THREE.Group();scene.add(ring);
+{const m=new THREE.Mesh(new THREE.RingGeometry(.38,.5,40),new THREE.MeshBasicMaterial({color:0xF2B36B,transparent:true,opacity:.8,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.y=.03;ring.add(m);
+ const d=new THREE.Mesh(new THREE.CircleGeometry(.38,40),new THREE.MeshBasicMaterial({color:0xFFE2B8,transparent:true,opacity:.35,depthWrite:false}));d.rotation.x=-Math.PI/2;d.position.y=.025;ring.add(d);ring.visible=false}
+const K=(k,icon)=>IS_TOUCH?`<b class="tbtn">${icon}</b>`:`<kbd>${k}</kbd>`;
+const TUT=[
+  {t:"走路",d:()=>IS_TOUCH?"用左下角的搖桿，走到發光的圈圈。":"用方向鍵 <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> 走路，也可以用滑鼠點地板。走到發光的圈圈。",
+   on(){setMood(null);showRing(-3.4,4.2)},tick(){return near(-3.4,4.2,.55)}},
+  {t:"跑步",d:()=>IS_TOUCH?"把搖桿推到最外圈就會跑步，跑到發光的圈圈。跑步比較快，但會多扣一點體力（看左上角的 💪）。":"按住 <kbd>Shift</kbd> 再按方向鍵就會跑步，跑到發光的圈圈。跑步比較快，但會多扣一點體力（看左上角的 💪）。",
+   on(){G.ranDist=0;showRing(-1.4,1.3)},tick(){return near(-1.4,1.3,.6)&&G.ranDist>1.2}},
+  {t:"抱起小麻糬",d:()=>`走到小麻糬旁邊，按 ${K("E","👶🏻")} 把他抱起來。`,on(){},ev:e=>e==="pick"},
+  {t:"放下小麻糬",d:()=>`抱著他走一走，再按一次 ${K("E","👶🏻")} 把他放下來。`,on(){},ev:e=>e==="drop"},
+  {t:"泡奶、降溫、餵奶",d:()=>`小麻糬肚子餓了（看 🍼 肚子條）！① 到廚房泡奶區按住 ${K("F","🍼")} 泡奶 ② 剛泡好 72°C 太燙（♨️），到水槽按住 ${K("F","🍼")} 沖冷水，降到 45°C 以下 ③ 拿到小麻糬旁邊按住 ${K("F","🍼")} 餵他。放開會暫停，再按住就能繼續。`,
+   on(){setStats({food:25});setMood("hungry");showRing(6.75,4.65)},ev:(e,a)=>{if(e==="station"&&a==="milk")showRing(6.75,3.6);if(e==="station"&&a==="cool")ring.visible=false;return e==="feed"}},
+  {t:"換尿布",d:()=>`小麻糬要換尿布了！按 ${K("E","👶🏻")} 抱起他，帶到嬰兒房的尿布台（發光的圈圈），按住 ${K("F","🍼")} 換尿布。`,
+   on(){setStats({diaper:20});setMood("diaper");showRing(-3.05,-4.85)},ev:(e,a)=>e==="station"&&a==="diaper"},
+  {t:"恢復體力",d:()=>`跑來跑去會累（看 💪 體力條）。走到沙發按 ${K("F","🍼")} 坐下休息，體力會慢慢回來；${IS_TOUCH?"推搖桿":"按方向鍵"}就能起身。也可以去廚房喝咖啡。`,
+   on(){setStats({sta:45});showRing(-2.85,4.3)},tick(){return G.rest&&G.rest.s.k==="sofa"&&ST.sta>=58}},
+  {t:"恢復耐心",d:()=>`小麻糬哭鬧會讓 🧘 耐心下降。坐到扶手椅看電視，或到書架旁聽音樂（按 ${K("F","🍼")}），耐心會慢慢回來。`,
+   on(){setStats({pat:45});showRing(-1.5,2.55)},tick(){return G.rest&&(G.rest.s.k==="tv"||G.rest.s.k==="music")&&ST.pat>=58}},
+  {t:"安撫哭鬧",d:()=>`小麻糬突然哭了（😭）！他哭的時候你的 🧘 耐心會一直掉。按 ${K("E","👶🏻")} 抱起他，抱著在家裡走一走，走滿幾秒他就不哭了（停下來就不會前進喔）。`,
+   on(){endRest();if(G.carry)G.carry=false;baby.position.set(-5.4,0,3.2);G.crying=false;startCry("跌倒了");showRing(-5.4,3.2)},ev:e=>e==="soothe"},
+  {id:"hazard",t:"處理危險",d:()=>`小麻糬爬向插座了！快走過去，按住 ${K("Q","🛡️")} 裝上保護蓋（要按住幾秒）。正式遊戲裡他到了危險區會開始倒數，也可以按 ${K("E","👶🏻")} 直接把他抱走。`,
+   on(){stopCry();setMood(null);endRest();resetHazards();if(G.carry){G.carry=false}baby.position.set(-6.0,0,2.0);baby.rotation.set(0,0,0);G.crawlTo=new THREE.Vector3(-7.62,0,1.3);showArrows("play")},
+   ev:e=>e==="protect"||e==="reach"}];
+let tutI=0;
+function showRing(x,z){ring.position.set(x,0,z);ring.visible=true}
+const SHORT={走路:()=>IS_TOUCH?"用搖桿走到發光圈圈":"方向鍵走到發光圈圈",跑步:()=>IS_TOUCH?"搖桿推到底，跑到圈圈":"按住 Shift＋方向鍵跑到圈圈",
+  抱起小麻糬:()=>`靠近按 ${K("E","👶🏻")} 抱起`,放下小麻糬:()=>`再按 ${K("E","👶🏻")} 放下`,"泡奶、降溫、餵奶":()=>`泡奶 → 水槽降溫 → 餵奶（按住 ${K("F","🍼")}）`,
+  換尿布:()=>`抱到尿布台按住 ${K("F","🍼")}`,恢復體力:()=>`坐沙發按 ${K("F","🍼")}`,恢復耐心:()=>`看電視或聽音樂按 ${K("F","🍼")}`,安撫哭鬧:()=>`按 ${K("E","👶🏻")} 抱起來，抱著走一走`,處理危險:()=>`到插座按住 ${K("Q","🛡️")} 做防護`};
+let tutFold=null;function tutOpen(ms=4200){$("tut").classList.add("open");clearTimeout(tutFold);tutFold=setTimeout(()=>$("tut").classList.remove("open"),ms)}
+$("tutMore").onclick=()=>{if($("tut").classList.contains("open"))$("tut").classList.remove("open");else tutOpen(8000)};
+function tutShow(){const s=TUT[tutI];ring.visible=false;showArrows(null);s.on();
+  $("tutT").innerHTML=`${tutI+1}. ${s.t}：${SHORT[s.t]?SHORT[s.t]():""}`;$("tutT").onclick=()=>$("tutMore").click();tutOpen();$("tutD").innerHTML=s.d();$("tutN").innerHTML=TUT.map((_,i)=>`<i class="${i<tutI?"ok":i===tutI?"now":""}"></i>`).join("");$("tutOk").classList.remove("show")}
+function tutPass(){const ok=$("tutOk");if(ok.classList.contains("show"))return;ok.classList.add("show");ring.visible=false;showArrows(null);
+  setTimeout(()=>{tutI++;if(tutI<TUT.length)tutShow();else askReady()},1100)}
+LISTEN.push((e,a)=>{if(FLOW.step!=="tutorial")return;const s=TUT[tutI];if(!s||!s.ev)return;
+  if(s.id==="hazard"&&e==="reach"){G.crawlTo=null;toast("差一點！小麻糬摸到插座了，再試一次",2200);setTimeout(()=>{if(FLOW.step==="tutorial"&&TUT[tutI].id==="hazard")tutShow()},1200);return}
+  if(s.ev(e,a))tutPass()});
+function tutTick(){if(FLOW.step!=="tutorial")return;const s=TUT[tutI];if(s&&s.tick&&s.tick())tutPass();ring.rotation.y+=.02;ring.scale.setScalar(1+Math.sin(performance.now()/300)*.06)}
+function resetPlay(play){if(typeof G!=="undefined"){G.rest=null;G.asleep=false;G.temp=20;G.coffee=0;clearDanger();resetHazards();stopCry();G.cryT=TUNE.cryFirst;G.paused=false;G.mini=null;G.evCD=0;document.body.classList.remove("paused");B.state="idle";B.t=5}setMood(null);setStats(play?{sta:100,pat:100,food:80,mood:90,energy:85,diaper:90}:{sta:100,pat:100,food:100,mood:100,energy:100,diaper:100});G.running=false;G.keys={};G.carry=false;G.crawlTo=null;G.action=null;G.bottle=false;G.protected={};G.moveTo=null;outletCover.visible=false;bottleInHand(false);
+  baby.position.copy(BABY_HOME);baby.rotation.set(0,.9,0);player.root.position.set(-5.6,0,5.15);player.root.rotation.y=Math.PI*.85;$("prog").classList.remove("show","rest")}
+function startTutorial(){setStep("tutorial");resetPlay();tutI=0;
+  goTo(new THREE.Vector3(-5.6,.6,5.15),.62,1.75,1.0);tutShow()}
+function askReady(){ring.visible=false;showArrows(null);setStep("ready")}
+$("tutSkip").onclick=askReady;
+$("readyGo").onclick=()=>{newRun();startDay(1)};
+$("readyAgain").onclick=startTutorial;
+// =====================================================================
+//  三天的故事：每天的開場、突發事件（選項卡）、結算、結局
+//  事件資料都在下面的 EV 裡，想改文字或數值直接改那裡
+//  you＝玩家（sta 體力、pat 耐心）；baby＝小麻糬（food 肚子、mood 心情、energy 體力、diaper 尿布）
+//  "=100" 代表直接設成 100；min＝這個選擇花掉的遊戲時間（時鐘會快轉，小麻糬的需要照樣下降）
+//  cry＝會哭幾秒；tag＝留下記號（影響後面的劇情）；tip＝衛教提醒（會收進結局的衛教回顧）
+// =====================================================================
+const DAYSTART={1:{sta:100,pat:100},2:{sta:80,pat:80},3:{sta:50,pat:50}};
+const KEEP=["outlet","tv","rope","fire"];            // 隔天還在的防護；果凍、浴缸的水、窗戶每天早上會恢復危險
+const newStats=()=>({feed:0,diaper:0,sleep:0,soothe:0,play:0,rescue:0,secure:0,danger:0,good:0,bad:0,cry:0,moodSum:0,moodN:0});
+const RUN={day:1,tags:new Set(),done:new Set(),queue:[],keep:new Set(),stats:newStats(),total:newStats(),tips:[],feedsToday:0,reportDrain:false,snap:null};
+const bump=(k,n=1)=>{RUN.stats[k]+=n;RUN.total[k]+=n};
+const hasTag=t=>RUN.tags.has(t);
+const roleName=()=>FIGURES[FLOW.role].name;
+const isNanny=()=>FLOW.role==="nanny";
+const TIP={phone:"講電話或滑手機時，視線很容易離開孩子。",alone:"就算只有幾分鐘，也不要把嬰幼兒單獨留在家裡。"};
+
+const EV={
+// ---------------- 第 1 天 ----------------
+"1-1":{day:1,at:9.5*60,icon:"📱",title:"爺爺奶奶打視訊來了",text:"「咦？你是誰？Linda 呢？我們想看看小麻糬！」",choices:[
+  {t:"抱小麻糬一起揮手、拍手",ok:1,you:{sta:-5,pat:-12},baby:{mood:3,energy:-10},min:15,res:"爺爺奶奶看到小麻糬，笑得合不攏嘴。",next:{id:"1-1a",after:0}},
+  {t:"說 Linda 不在，先掛掉、晚點回電",ok:1,you:{pat:-8},min:2,res:"你說晚點再打給他們。",next:{id:"1-1b",after:10}},
+  {t:"邊講電話邊讓他自己爬",ok:0,you:{pat:-5},baby:{mood:-5},min:25,cry:20,tip:TIP.phone,res:"你聊得太專心，回頭一看……",then:()=>RUN.tags.add("_撞頭提前"),next:{id:"2-2",after:0}}]},
+"1-1a":{adult:1,icon:"👵",title:"奶奶：「他是不是瘦了？」",text:"「有沒有好好吃飯啊？」",choices:[
+  {t:"拿出今天的餵奶時間給奶奶看",if:()=>RUN.feedsToday>=1,ok:1,you:{pat:-8},min:2,res:"奶奶：「好好好，我放心了！」"},
+  {t:"敷衍說「有啦有啦」",ok:0,you:{pat:-2},min:1,tag:"奶奶不放心",res:"奶奶：「……我明天過去看看好了。」"}]},
+"1-1b":{adult:1,icon:"📱",title:"爺爺奶奶又打來了",text:"10 分鐘過去，手機又響了。",choices:[
+  {t:"接起來，抱小麻糬一起揮手",ok:1,you:{sta:-5,pat:-12},baby:{mood:3,energy:-10},min:15,res:"這次終於看到小麻糬了！",next:{id:"1-1a",after:0}},
+  {t:"不接",ok:0,you:{pat:-3},tag:"奶奶不放心",res:"LINE 被轟炸了 12 則訊息。"}]},
+"1-2":{day:1,at:10.5*60,icon:"🦷",title:"小麻糬長牙不舒服",text:"他一直咬手指、流口水，有點煩躁，牙齦紅紅的。",choices:[
+  {t:"給他冰過的固齒器",ok:1,you:{sta:-4,pat:-6},baby:{mood:18},min:5,res:"冰冰涼涼的，小麻糬舒服多了。"},
+  {t:"抱著他，輕輕按摩牙齦",ok:1,you:{sta:-8,pat:-8},baby:{mood:20},min:10,res:"小麻糬靠在你身上，慢慢安靜下來。"},
+  {t:"隨手拿桌上的小積木給他咬",ok:0,you:{pat:-2},baby:{mood:3},tag:"亂給東西咬",tip:"幼兒會把東西往嘴裡放，小於 3.5 公分的物品都有噎到風險。",res:"他咬得很開心……但積木好小一顆。"}]},
+"1-3":{day:1,at:12*60,icon:"🛵",title:"Uber Eats 不肯上樓",text:"外送員：「大樓規定不能上去，麻煩你下來拿。」說完就不接電話了。",choices:[
+  {t:"抱著小麻糬一起下樓拿",ok:1,you:{sta:-15,pat:-6},baby:{mood:5,energy:-5},min:15,res:"一手抱寶寶、一手提便當，總算拿到了。"},
+  {t:"請管理員先代收",ok:1,you:{pat:-9},min:5,res:"管理員說：「好，先放這裡。」",next:{id:"1-3a",at:14*60}},
+  {t:"把小麻糬放著，自己衝下樓",ok:0,you:{sta:-6,pat:-3},baby:{mood:-30},cry:25,tip:TIP.alone,res:"你衝回來時，小麻糬哭到滿臉通紅。"}]},
+"1-3a":{adult:1,icon:"🍱",title:"便當在管理室放到涼了",text:"你突然想起，午餐還在樓下……",choices:[
+  {t:"抱小麻糬下去拿，回來微波",ok:1,you:{sta:-10,pat:-5},min:10,res:"熱騰騰的便當，終於吃到了。"},
+  {t:"算了，吃餅乾撐一下",ok:0,you:{sta:-10,pat:-8},res:"餓著肚子顧小孩，整個人都沒力了。"}]},
+// ---------------- 第 2 天：訪客日 ----------------
+"2-1":{day:2,at:9.5*60,icon:"🔔",title:"鄰居王太太按門鈴",text:"「我來打個招呼～哎呀，寶寶好可愛，可以抱一下嗎？」",choices:[
+  {t:"抱著小麻糬到門口寒暄幾句",ok:1,you:{sta:-6,pat:-12},baby:{mood:10},min:10,res:"王太太送了一袋水果，開心地走了。"},
+  {t:"隔著門道謝，請她把水果放門口",ok:1,you:{pat:-5},min:2,res:"「好好好，那我放門口喔！」"},
+  {t:"請她進來坐，順便聊聊天",ok:0,you:{sta:-3,pat:-8},baby:{mood:-15,energy:-10},min:60,cry:15,tip:"訪客太多、待太久，會讓寶寶過度刺激、作息大亂。",res:"一聊就是一個小時……小麻糬累到崩潰。"}]},
+"2-2":{day:2,at:11.5*60,cond:()=>!hasTag("撞過頭")&&!hasTag("_撞頭提前"),icon:"💥",title:"小麻糬撞到頭了！",
+  text:()=>G.protected.tv?"他扶著茶几想站起來，一個重心不穩……咚！還好你固定過家具，撞到的是軟墊角。":"他扶著茶几想站起來，一個重心不穩……咚！額頭撞到桌角，腫了一個包。",
+  choices:()=>G.protected.tv?[{t:"抱起來安撫",ok:1,you:{sta:-4,pat:-6},baby:{mood:10},min:5,res:"只是嚇一跳，抱一下就沒事了。"}]:[
+  {t:"抱起來安撫、冷敷，觀察精神和有沒有嘔吐",ok:1,you:{sta:-8,pat:-15},baby:{mood:12},min:15,tag:"撞過頭",res:"冷敷之後腫包消了一點，精神也還不錯。"},
+  {t:"用力搓揉腫包、塗萬金油",ok:0,you:{pat:-5},baby:{mood:-15},cry:20,tag:"撞過頭",res:"萬金油太刺激，小麻糬哭得更大聲了。"},
+  {t:"哭一下就好，不用管他",ok:0,you:{pat:-2},baby:{mood:-20},cry:25,tag:"撞過頭",res:"他哭了好久好久……"}],
+  tip:"撞到頭後 24～48 小時要多觀察：一直嘔吐、昏昏欲睡叫不醒、抽搐、走路不穩，或耳朵鼻子流出液體，都要立刻就醫。"},
+"2-3":{day:2,at:13.5*60,icon:"👴👵",title:"爺爺奶奶來家裡了",
+  text:()=>hasTag("奶奶不放心")?"「昨天你說有餵，我們還是不放心，今天特地來看看！」（看樣子要待一整個下午）":"「我們剛好經過，抱一下小麻糬就走！」",
+  choices:()=>{const nx=hasTag("奶奶不放心")?{id:"2-3a",after:0}:null;return[
+  {t:"讓爺爺奶奶陪小麻糬玩，你在旁邊顧",ok:1,you:{sta:-5,pat:-12},baby:{mood:15,energy:-10},min:30,res:"小麻糬被逗得咯咯笑。",next:nx},
+  {t:"先泡茶招待，請他們洗手後再抱",ok:1,you:{sta:-10,pat:-9},baby:{mood:12},min:20,res:"爺爺誇你：「這孩子真細心。」",next:nx},
+  {t:"讓他們一直搖他、拋高高逗他笑",ok:0,you:{pat:-3},baby:{mood:-15,energy:-25},min:30,cry:20,tip:"不可以用力搖晃或拋接嬰兒，可能造成嬰兒搖晃症候群。",res:"小麻糬一開始在笑，後來嚇得大哭。",next:nx}]}},
+"2-3a":{adult:1,icon:"🧊",title:"奶奶打開冰箱",text:"「怎麼都沒菜？小麻糬吃什麼？」",choices:[
+  {t:"好好解釋今天的餵奶和副食品時間",ok:1,you:{pat:-12},min:10,untag:"奶奶不放心",res:"奶奶：「原來你這麼細心，是我太緊張了。」"},
+  {t:"跟奶奶爭辯「現在的育兒方式不一樣了」",ok:0,you:{pat:-23},min:20,res:"奶奶臉色一沉……這件事大概還沒完。"}]},
+"2-4":{adult:1,day:2,at:15.5*60,icon:"☎️",
+  title:()=>isNanny()?"前雇主陳太太來電":"老闆催季度報告",
+  text:()=>isNanny()?"「Amy 阿姨，不好意思打擾！我們家妹妹這兩天一直吐奶，你之前說要怎麼拍嗝？」":"「季度報告今天下班前要交喔！客戶在等，你現在可以處理一下嗎？」",
+  choices:()=>isNanny()?[
+  {t:"耐心在電話裡說明拍嗝和餵奶姿勢",ok:1,you:{pat:-15},min:10,res:"陳太太：「謝謝阿姨，我試試看！」"},
+  {t:"說現在在顧別的寶寶，晚上再回電",ok:1,you:{pat:-6},min:2,tag:"答應回電給陳太太",res:"你答應晚點回電。"},
+  {t:"一手抱小麻糬、一手傳長長的訊息",ok:0,you:{sta:-4,pat:-8},baby:{mood:-15},min:30,cry:15,tag:"陳太太很擔心",tip:TIP.phone,res:"訊息越打越長，小麻糬在你懷裡扭來扭去。"}]:[
+  {t:"說明今天在幫忙顧小孩，約明天一早交",ok:1,you:{pat:-15},min:5,tag:"明天要交報告",res:"老闆：「好吧，明天早上給我。」"},
+  {t:"把小麻糬放進嬰兒床，抓空檔寫一段",ok:1,you:{sta:-8,pat:-12},min:30,tag:"明天要交報告",res:"寫了一半，剩下明天一早補完。"},
+  {t:"一手抱娃、一手打報告",ok:0,you:{sta:-6,pat:-9},baby:{mood:-15},min:45,cry:15,tag:"報告搞砸了",tip:"同時顧小孩又工作，兩邊都很難顧好。先確保孩子安全，再跟主管溝通時間。",res:"報告送出去了……但你自己都不敢看。"}]},
+"colic":{icon:"😣",title:"小麻糬腸絞痛",text:"肚子脹脹的，腳一直往上縮，怎麼哄都哄不好。",choices:()=>{const again={id:"colic",after:30+Math.floor(Math.random()*20)};return[
+  {t:"飛機抱，輕輕順時鐘按摩肚子",ok:1,you:{sta:-15,pat:-15},baby:{mood:22},min:20,res:"「噗～」放了一個屁，小麻糬終於舒服了。"},
+  {t:"抱著拍嗝、在家裡慢慢走",ok:1,you:{sta:-18,pat:-9},baby:{mood:18},min:25,res:"走了好幾圈，他慢慢安靜下來。"},
+  {t:"再餵一次奶看看",ok:0,you:{pat:-3},baby:{mood:-15},cry:20,res:"肚子更脹了……",next:again},
+  {t:"讓他自己哭一下就好",ok:0,you:{pat:-2},baby:{mood:-25},cry:30,res:"哭聲越來越大……",next:again}]}},
+"2-5":{day:2,at:16.5*60,use:"colic"},
+// ---------------- 第 3 天：危機日 ----------------
+"3-1":{adult:1,day:3,at:9*60,icon:"☎️",cond:()=>isNanny()?(hasTag("答應回電給陳太太")||hasTag("陳太太很擔心")):(hasTag("明天要交報告")||hasTag("報告搞砸了")),
+  title:()=>isNanny()?"陳太太的事":"工作的事",
+  text:()=>isNanny()?(hasTag("陳太太很擔心")?"陳太太傳訊息：「妹妹昨天吐奶後一直哭，我好緊張……」":"你想起昨天答應要回電給陳太太。"):(hasTag("報告搞砸了")?"老闆：「昨天那份報告錯很多，今天要重做。」":"老闆：「早安，報告好了嗎？」"),
+  choices:()=>isNanny()?(hasTag("陳太太很擔心")?[
+    {t:"建議她帶去給小兒科醫師看",ok:1,you:{pat:-12},min:10,untag:"陳太太很擔心",res:"陳太太：「好，我現在就去掛號！」"},
+    {t:"說「沒事啦，寶寶都這樣」",ok:0,you:{pat:-3},res:"陳太太好像還是很不安……",next:{id:"3-1c",at:15*60}}]:[
+    {t:"早上先回電，好好說明",ok:1,you:{pat:-9},min:10,untag:"答應回電給陳太太",res:"陳太太：「謝謝阿姨！」"},
+    {t:"等一下再說",ok:0,you:{pat:-2},res:"……結果你忘了。",next:{id:"3-1b",at:12*60}}]):(hasTag("報告搞砸了")?[
+    {t:"誠實說明在顧小孩，約 Linda 回來後重做",ok:1,you:{pat:-18},min:5,untag:"報告搞砸了",res:"老闆嘆了口氣：「好吧。」"},
+    {t:"邊顧邊重做",ok:0,you:{sta:-6,pat:-9},baby:{mood:-15},min:40,cry:15,res:"又是一手抱娃、一手打字的一天。"}]:[
+    {t:"趁小麻糬玩的空檔，花 20 分鐘交出去",ok:1,you:{sta:-6,pat:-12},min:20,untag:"明天要交報告",res:"送出！壓力解除了。"},
+    {t:"再拖一下，下午再說",ok:0,you:{pat:-2},res:"報告的事一直掛在心上，讓你越來越煩躁。",then:()=>{RUN.reportDrain=true}}])},
+"3-1b":{adult:1,icon:"📞",title:"陳太太又打來了",text:"「Amy 阿姨，你昨天說要回電……」",choices:[{t:"接起來，好好說明",ok:1,you:{pat:-15},min:15,untag:"答應回電給陳太太",res:"說完之後，你鬆了一口氣。"}]},
+"3-1c":{adult:1,icon:"📞",title:"陳太太又打來了",text:"「妹妹還是一直哭，我真的好怕……」",choices:[{t:"請她馬上帶去看醫生",ok:1,you:{pat:-15},min:10,res:"希望妹妹沒事。"}]},
+"3-2":{day:3,at:10*60,icon:"📦",title:"黑貓宅急便",text:"「有 Linda 小姐的包裹，要代收簽名喔，我在一樓。」",choices:[
+  {t:"抱著小麻糬下樓簽收",ok:1,you:{sta:-15,pat:-6},baby:{mood:5,energy:-5},min:15,res:"簽收完成！"},
+  {t:"請司機放管理室，晚點再拿",ok:1,you:{pat:-9},min:3,res:"司機：「好，放管理室喔！」"},
+  {t:"把小麻糬放著，自己衝下樓簽收",ok:0,you:{sta:-6,pat:-3},baby:{mood:-30},cry:25,tip:TIP.alone,res:"你衝回來時，小麻糬哭到滿臉通紅。"}]},
+"3-3":{day:3,at:()=>hasTag("亂給東西咬")?11*60:12*60,emergency:1,wrongPat:15,icon:"🚨",title:"小麻糬噎到了！",
+  text:()=>(hasTag("亂給東西咬")?"是你那天給他咬的那種積木……":"")+"小麻糬把一顆小積木放進嘴裡，突然咳不出聲、哭不出來，臉開始發紫！",
+  choices:[
+  {t:"讓他趴在前臂、頭低於身體，拍背 5 下，再翻過來壓胸 5 下，交替進行，同時打 119",ok:1,you:{sta:-15,pat:-15},baby:{energy:-10},min:20,res:"「咳！」積木掉出來了，小麻糬哇地大哭。哭得出來就好！"},
+  {t:"用手指伸進嘴巴把東西挖出來",ok:0,why:"手指盲挖會把異物推得更深。"},
+  {t:"抓住腳倒吊起來用力搖",ok:0,why:"這不是有效的急救方法，還可能讓寶寶受傷。"},
+  {t:"趕快餵水讓他吞下去",ok:0,why:"餵水可能嗆進氣管，讓情況更糟。"}],
+  tip:"1 歲以下寶寶噎到、不能哭也不能咳：「拍背 5 下＋壓胸 5 下」交替。1 歲以上用哈姆立克法。寶寶還能大聲咳嗽時，先讓他自己咳出來。"},
+"3-4":{day:3,at:13.5*60,icon:"🤒",title:"小麻糬發燒了",text:"額頭好燙，一直哭，手腳和嘴巴附近好像有幾顆小紅點……",choices:[
+  {t:"量體溫、補充水分，打給 Linda 一起帶去看醫生",ok:1,you:{sta:-15,pat:-15},baby:{energy:-10},min:90,tag:"發燒處理得好",res:"醫生說可能是腸病毒，要多觀察、多補充水分。"},
+  {t:"包厚一點，讓他把汗逼出來",ok:0,you:{pat:-5},baby:{mood:-20,energy:-15},cry:30,tag:"發燒處理不當",tip:"發燒時不要包太厚，要讓身體散熱。",res:"小麻糬越來越燙……"},
+  {t:"拿大人的退燒藥給他吃一點",ok:0,you:{pat:-5},baby:{mood:-15},cry:30,tag:"發燒處理不當",tip:"寶寶用藥要依照醫師或藥師指示，大人的藥不能給寶寶吃。",res:"燒好像沒有退……"}]},
+"3-5":{adult:1,day:3,at:14.5*60,icon:"📚",title:"幼兒教材推銷員上門",text:"「媽媽您好！我們這套雙語教材，0 歲開始學最好！今天簽約打八折喔！」",choices:[
+  {t:"禮貌地說不需要，關門",ok:1,you:{pat:-8},min:2,res:"門一關，世界清靜了。"},
+  {t:"說要問 Linda，拿了 DM 請他離開",ok:1,you:{pat:-12},min:8,res:"他終於走了。"},
+  {t:"開門讓他進來介紹",ok:0,you:{sta:-6,pat:-27},baby:{mood:-10},min:50,cry:10,tip:"不認識的推銷人員不要隨便讓他進門，尤其家裡只有你和寶寶時。",res:"講了快一個小時……"}]},
+"3-6":{day:3,at:16*60,emergency:1,icon:"🚨",title:"小麻糬抽搐了！",
+  wrongPat:()=>hasTag("發燒處理不當")?20:15,
+  text:()=>(hasTag("發燒處理得好")?"還好你下午已經量過體溫、知道他在發燒，你很快就冷靜下來。":"下午的燒一直沒退，現在燒得更高了……")+"小麻糬突然眼睛上吊、全身僵硬，手腳一抽一抽的，叫他都沒有反應！",
+  choices:()=>[
+  {t:"讓他側躺在平坦安全的地方，移開旁邊的硬物，看時間記錄抽搐多久",ok:1,you:hasTag("發燒處理得好")?{sta:-5,pat:-10}:{sta:-12,pat:-20},baby:{energy:-20},min:60,res:"兩分鐘後抽搐停了。你打給 Linda，一起帶他去看醫生。"},
+  {t:"塞湯匙或毛巾到嘴裡，免得咬到舌頭",ok:0,why:"可能造成牙齒斷裂、窒息。"},
+  {t:"用力抱緊、壓住手腳",ok:0,why:"停不了抽搐，還可能骨折或拉傷。"},
+  {t:"趕快沖冷水、泡冷水降溫",ok:0,why:"有嗆水、溺水的危險。"}],
+  tip:"熱性痙攣大多幾分鐘內會自己停止。讓孩子側躺、保持呼吸順暢、記錄時間（可以錄影給醫生看）。抽搐超過 5 分鐘、第一次發作、停止後一直叫不醒或呼吸困難，要立刻打 119。"},
+"3-7":{day:3,at:17.5*60,icon:"📱",title:"爺爺奶奶來電",
+  text:()=>hasTag("撞過頭")?"「上次撞到頭還好嗎？我們明天再去看他！」":hasTag("奶奶不放心")?"「我還是覺得你們餵太少，下次我帶雞湯過去！」":"「聽 Linda 說你幫了好多忙，謝謝你啊！」",
+  choices:[{t:"「好的，謝謝爺爺奶奶！」",ok:1,neutral:1}]},
+// ---------------- 照顧事件（三天都有） ----------------
+"sleep":{icon:"😫",title:"哭鬧不肯睡",text:"小麻糬明明很睏，卻一直扭來扭去、哭鬧不肯睡。",choices:[
+  {t:"唱搖籃曲",ok:1,you:{sta:-3,pat:-15},baby:{mood:10},min:15,sleep:1,res:"唱到第三遍，他終於睡著了。"},
+  {t:"給他兔兔安撫娃娃",ok:1,you:{sta:-3,pat:-9},baby:{mood:8},min:10,sleep:1,res:"抱著兔兔，小麻糬很快就睡了。"},
+  {t:"抱著他輕輕搖",ok:1,you:{sta:-14,pat:-6},baby:{mood:12},min:20,sleep:1,res:"搖到手都酸了，他終於睡沉了。"},
+  {t:"打開手機影片給他看",ok:0,you:{pat:-2},baby:{mood:5},cry:20,tip:"2 歲以下建議不要使用螢幕，睡前看螢幕更難入睡。",res:"影片一關，他哭得更大聲了。"},
+  {t:"大聲說「快睡！」",ok:0,you:{pat:-3},baby:{mood:-20},cry:25,res:"他被嚇到，哭得停不下來。"}]},
+"diaperRefuse":{icon:"🧷",title:"不肯換尿布",text:"一放上尿布台，小麻糬就開始翻身、踢腳，死都不肯換。",choices:[
+  {t:"邊唱歌邊換",ok:1,you:{sta:-5,pat:-15},baby:{diaper:"=100",mood:12},min:10,res:"唱完一首歌，尿布也換好了。"},
+  {t:"給他一個玩具分散注意力",ok:1,you:{sta:-6,pat:-9},baby:{diaper:"=100",mood:8},min:10,res:"他玩得很專心，一下就換好了。"},
+  {t:"用力壓住，快速換完",ok:0,you:{sta:-3,pat:-3},baby:{mood:-20,diaper:"=100"},cry:15,res:"換是換好了，但他氣到大哭。"},
+  {t:"等一下再換",ok:0,you:{pat:-2},baby:{mood:-10},cry:15,res:"濕濕的尿布讓他越來越不舒服。"}]},
+"feedRefuse":{icon:"🍼",title:"不肯好好喝奶",text:"小麻糬喝兩口就推開奶瓶，一直扭來扭去。",choices:[
+  {t:"先幫他拍嗝，換個姿勢再餵",ok:1,you:{sta:-6,pat:-9},baby:{food:"=100",mood:10},drink:1,res:"「嗝～」拍完嗝，他咕嚕咕嚕喝光了。"},
+  {t:"等 10 分鐘，他餓一點再試",ok:1,lazy:1,you:{pat:-3},baby:{food:30,mood:3},min:10,drink:1,res:"這次喝了一半。"},
+  {t:"硬把奶嘴塞進去",ok:0,you:{pat:-3},baby:{mood:-20,food:15},cry:20,drink:1,tip:"硬餵容易嗆奶，寶寶不想喝時先找原因（脹氣、太燙、不餓）。",res:"他嗆了一下，哭著把奶推開。"}]},
+"play":{icon:"🧸",title:"陪小麻糬玩",text:"小麻糬眼睛亮亮地看著你，要玩什麼呢？",choices:[
+  {t:"講故事",ok:1,you:{sta:-10,pat:-18},baby:{mood:30},min:20,res:"他聽得好專心，還會指著圖案咿咿呀呀。"},
+  {t:"給他娃娃玩",ok:1,lazy:1,you:{sta:-2},baby:{mood:8},min:10,res:"他抱著娃娃又咬又親。"},
+  {t:"一起唱跳兒歌",ok:1,you:{sta:-16,pat:-8},baby:{mood:25,energy:-8},min:15,res:"兩個人跳得滿頭大汗！"},
+  {t:"給他手機自己玩",ok:0,you:{pat:-2},baby:{mood:5},cry:15,tip:"2 歲以下建議不要使用螢幕，親子互動比影片更能幫助發展。",res:"手機一拿走，他就大哭。"}]},
+// ---------------- 小麻糬的隨機突發事件 ----------------
+"spitup":{icon:"🍼",title:"小麻糬吐奶了",text:"剛喝完奶沒多久，「噗」一聲，吐了你一身……",choices:[
+  {t:"直立抱著，輕輕拍背",ok:1,you:{sta:-4,pat:-8},baby:{mood:10},min:5,res:"「嗝～」打了個大嗝，舒服多了。"},
+  {t:"先擦乾淨、換一件衣服",ok:1,you:{sta:-8,pat:-9},baby:{mood:12},min:10,res:"換上乾淨衣服，香香的。"},
+  {t:"馬上再餵一次補回來",ok:0,you:{pat:-3},baby:{mood:-15,food:-10},cry:15,tip:"吐奶後不要急著再餵，先直立抱、拍嗝，觀察他的精神和食慾。",res:"……又吐了一次。"}]},
+"phone":{icon:"📱",title:"小麻糬搶你的手機",text:"你才剛拿起手機回個訊息，小麻糬就撲過來，一把抓住手機往嘴裡塞！",choices:[
+  {t:"拿固齒器跟他交換",ok:1,you:{pat:-8},baby:{mood:10},min:3,res:"他想了一下，接受了這筆交易。"},
+  {t:"手機收起來，陪他玩一下",ok:1,you:{sta:-8,pat:-5},baby:{mood:15},min:10,res:"他開心得咯咯笑。"},
+  {t:"讓他玩一下，反正很安靜",ok:0,you:{pat:-2},baby:{mood:3},cry:15,tip:"2 歲以下建議不要使用螢幕；手機也容易被咬、被摔，口水還可能弄壞它。",res:"要拿回來的時候，他哭得驚天動地。"}]},
+"cat":{icon:"🐱",title:"鄰居的貓跑進來了",text:"門沒關好，鄰居的橘貓大搖大擺地走進客廳。小麻糬看到，眼睛整個亮起來！",choices:[
+  {t:"抱著他輕輕摸貓，摸完洗手",ok:1,you:{sta:-4,pat:-9},baby:{mood:15},min:10,res:"「喵～」小麻糬學得有模有樣。"},
+  {t:"先把貓請出去",ok:1,you:{sta:-4,pat:-3},min:3,res:"橘貓不情願地走了。"},
+  {t:"讓他自己去抓貓尾巴",ok:0,you:{pat:-2},baby:{mood:3},cry:20,tip:"寶寶和動物接觸要有大人在旁邊，教他輕輕摸，摸完記得洗手。",res:"貓「哈！」了一聲，小麻糬嚇到大哭。"}]},
+"bite":{icon:"🦷",title:"小麻糬咬了你一口",text:"長牙的小麻糬抓住你的手指，用力咬下去——好痛！",choices:[
+  {t:"冷靜說「會痛喔」，換固齒器給他",ok:1,you:{pat:-9},baby:{mood:10},min:2,res:"他抱著固齒器咬得很滿足。"},
+  {t:"大叫一聲，把手抽回來",ok:0,you:{pat:-2},baby:{mood:-15},cry:15,tip:"長牙期咬人是在探索，不是故意的；平靜地說「會痛」，再給他可以咬的東西。",res:"他被你嚇到，哭了出來。"}]},
+
+// ---------------- 放鬆時的隨機事件 ----------------
+"blowout":{icon:"💩",title:"尿布爆了！",text:"你才剛坐下……一股味道飄過來。尿布整個爆開，連衣服都沾到了。",choices:[
+  {t:"抱去洗屁屁、換衣服",ok:1,you:{sta:-12,pat:-12},baby:{diaper:"=100",mood:12},min:15,res:"洗得香香的，換上乾淨衣服。"},
+  {t:"用濕紙巾擦一擦",ok:1,lazy:1,you:{sta:-4,pat:-5},baby:{mood:3,diaper:80},min:8,res:"大致清乾淨了。"},
+  {t:"假裝沒聞到",ok:0,you:{pat:-2},baby:{mood:-10,diaper:"=0"},cry:25,res:"味道越來越重，小麻糬也哭了。"}]}};
+
+// ---------------- 事件卡 ----------------
+const YOU={sta:["體力","💪"],pat:["耐心","🧘"]},BABY={food:["肚子","🍼"],mood:["心情","😊"],energy:["體力","💤"],diaper:["尿布","🧷"]};
+const val=v=>typeof v==="string"?`→ ${v.slice(1)}`:(v>0?"+":"−")+Math.abs(v);
+function deltaText(c){const part=(o,map)=>Object.entries(o||{}).map(([k,v])=>IS_TOUCH?`${map[k][1]} ${val(v)}`:`${map[k][0]} ${val(v)}`).join(IS_TOUCH?" ":"、");
+  const a=part(c.you,YOU),b=part(c.baby,BABY);return [a&&`你：${a}`,b&&`小麻糬：${b}`].filter(Boolean).join("｜")}
+const rv=(v)=>typeof v==="function"?v():v;
+function openEvent(id){let e=EV[id];if(e.use)e={...EV[e.use]};
+  endRest();G.moveTo=null;G.keys={};G.running=false;G.holdKey=false;if(G.action)holdBreak();
+  const choices=rv(e.choices).filter(c=>!c.if||c.if());
+  G.ev={id,e,choices,wrong:new Set(),pend:[]};RUN.emergency=!!e.emergency;
+  const em=$("evc");em.classList.toggle("emerg",!!e.emergency);
+  $("evIcon").textContent=e.icon||"📣";$("evT").textContent=rv(e.title);$("evP").textContent=rv(e.text);$("evR").hidden=true;$("evW").hidden=true;
+  renderChoices();document.body.classList.add("event")}
+function renderChoices(){const ev=G.ev,box=$("evC");box.hidden=false;box.innerHTML="";
+  ev.choices.forEach((c,i)=>{const b=document.createElement("button");b.className="evb";b.disabled=ev.wrong.has(i);
+    const d=c.neutral?"":deltaText(c);b.innerHTML=`<span>${c.t}</span>${d?`<small>${d}</small>`:""}`;b.onclick=()=>pickChoice(i);box.appendChild(b)})}
+function addTip(t){if(t&&!RUN.tips.includes(t))RUN.tips.push(t)}
+function pickChoice(i){const ev=G.ev,c=ev.choices[i],e=ev.e;
+  if(e.emergency&&!c.ok){// 緊急事件選錯：說明原因、扣耐心，馬上重選
+    ev.wrong.add(i);const wp=rv(e.wrongPat)||15;applyDelta({you:{pat:-wp}});bump("bad");
+    $("evW").hidden=false;$("evW").innerHTML=`❌ ${c.why}<br><small>耐心 −${wp}，冷靜下來，再選一次！</small>`;renderChoices();return}
+  {const em=RUN.emergency;ev.pend.unshift(()=>{const o=RUN.emergency;RUN.emergency=em;applyDelta(c);RUN.emergency=o})}if(!c.neutral)bump(c.ok?"good":"bad");
+  if(!c.neutral&&!e.emergency&&!e.adult){if(!c.ok||c.lazy)RUN.fuss=Math.min(5,(RUN.fuss||0)+1);else RUN.fuss=Math.max(0,(RUN.fuss||0)-.5)}// 偷懶會讓小麻糬更愛鬧
+  if(c.tag)RUN.tags.add(c.tag);if(c.untag)RUN.tags.delete(c.untag);if(c.then)c.then();
+  if(c.drink){G.bottle=false;bottleInHand(false);G.action=null;bump("feed");RUN.feedsToday++;if(c.ok)maybeSpit()}
+  if(c.baby&&c.baby.diaper==="=100")bump("diaper");
+  if(c.sleep){G.carry=false;G.asleep=true;baby.position.set(-6.88,.52,-4.3);baby.rotation.set(0,0,0);setMood("asleep");bump("sleep")}
+  if(c.cry)ev.pend.push(()=>startCry("",c.cry));else if(c.ok&&!c.neutral&&(c.baby&&c.baby.mood>0||c.sleep))ev.pend.push(()=>{if(!G.asleep)setMood("happy")});
+  if(e.id==="play"||ev.id==="play")bump("play");
+  if(c.min)ev.ff=c.min;
+  if(c.next)ev.next=c.next;
+  const tip=c.tip||(e.tip&&(c.ok||!e.emergency)?e.tip:null);addTip(tip);
+  $("evC").hidden=true;$("evW").hidden=true;$("evR").hidden=false;
+  $("evRes").textContent=c.res||"";$("evTip").hidden=!tip;$("evTip").innerHTML=tip?`💡 ${tip}`:"";
+  $("evD").textContent=c.neutral?"":deltaText(c)}
+$("evOk").onclick=()=>{const ev=G.ev;if(!ev)return;G.ev=null;G.evCD=TUNE.evCool;RUN.emergency=false;document.body.classList.remove("event");
+  if(ev.ff)fastForward(ev.ff);ev.pend.forEach(f=>f());
+  if(ev.next){if(ev.next.after===0)openEvent(ev.next.id);else RUN.queue.push({id:ev.next.id,at:ev.next.at??(gameMin+(ev.ff||0)+ev.next.after)})}};
+// 事件的數值：不會讓遊戲直接結束（最低停在 5，緊急事件時耐心最低 10）
+function applyDelta(c){const fl=RUN.emergency?10:5;
+  for(const [k,v] of Object.entries(c.you||{})){const nv=v<0?Math.max(Math.min(ST[k],fl),ST[k]+v):ST[k]+v;addStat(k,nv-ST[k])}
+  for(const [k,v] of Object.entries(c.baby||{})){if(typeof v==="string"){addStat(k,+v.slice(1)-ST[k]);continue}const nv=v<0?Math.max(Math.min(ST[k],5),ST[k]+v):ST[k]+v;addStat(k,nv-ST[k])}}
+// 時間快轉：時鐘往前跳，小麻糬的需要照樣下降（最低停在 15）
+function fastForward(min){const drop=(k,v)=>{const nv=Math.max(Math.min(ST[k],15),ST[k]-v);addStat(k,nv-ST[k])};
+  drop("food",TUNE.food*min*(G.asleep?.5:1));drop("diaper",TUNE.diaper*min*(G.asleep?.5:1));drop("mood",TUNE.moodDrop*min*.5);
+  if(G.asleep)addStat("energy",TUNE.sleepGain*min);else drop("energy",TUNE.energy*min);
+  G.ff=(G.ff||0)+min;if(min>=5)toast("⏩ 時間過得好快……",1600)}
+// 每一格：檢查有沒有該發生的事件、一天結束了沒
+function storyTick(dt){if(FLOW.step!=="play"||G.paused)return;
+  if(G.ff>0){const s=Math.min(G.ff,dt*90);gameMin=Math.min(DAY_END,gameMin+s);G.ff-=s}
+  if(G.ev)return;
+  if(RUN.reportDrain)addStat("pat",-.2*dt);
+  if(gameMin>=DAY_END&&!G.ff){endDay();return}
+  G.evCD-=dt;miniTick(dt);if(G.action||B.state==="danger"||G.ff>0)return;
+  if(babyTick(dt))return;
+  const qi=RUN.queue.findIndex(x=>gameMin>=x.at);if(qi>=0){const q=RUN.queue.splice(qi,1)[0];openEvent(q.id);return}
+  for(const id in EV){const e=EV[id];if(e.day!==RUN.day||RUN.done.has(id))continue;if(gameMin<rv(e.at))continue;
+    RUN.done.add(id);if(e.cond&&!e.cond())continue;openEvent(id);return}}
+// ---------------- 隨機事件卡（每種一天最多一次，腸絞痛除外） ----------------
+function cardPool(){const p=["blowout","phone"];if(RUN.day===2)p.push("cat");if(RUN.day===3)p.push("bite");return p.filter(id=>!RUN.rdone.has(id)).concat(RUN.day>=2?["colic"]:[])}
+function randomCard(){if(G.evCD>0||G.ev)return false;const p=cardPool();if(!p.length)return false;const id=p[Math.floor(Math.random()*p.length)];RUN.rdone.add(id);openEvent(id);return true}
+function relaxEvent(){randomCard()}
+function maybeSpit(){if(FLOW.step==="play"&&Math.random()<.35)G.spitT=15+Math.random()*30}
+// ---------------- 小麻糬的小狀況（不跳卡片，頭上冒圖示，10 秒內處理） ----------------
+const MINIS=[
+  {k:"sneeze",icon:"🤧",name:"幫小麻糬擦鼻涕",msg:"小麻糬打噴嚏，鼻涕流下來了",ok:{mood:5,sta:-2,pat:-3},bad:{mood:-8,pat:-9}},
+  {k:"hiccup",icon:"😮‍💨",name:"拍拍背止嗝",msg:"小麻糬一直打嗝",ok:{mood:5,sta:-2,pat:-5},bad:{mood:-5,pat:-9}},
+  {k:"mosq",icon:"🦟",name:"趕走蚊子",msg:"有蚊子在小麻糬旁邊飛",ok:{mood:8,sta:-3,pat:-3},bad:{mood:-10,pat:-9},cry:10,badMsg:"小麻糬被蚊子叮了一包"},
+  {k:"water",icon:"🥤",name:"擦乾地上的水",msg:"小麻糬打翻水杯，地上濕濕的",ok:{sta:-4,pat:-3},bad:{mood:-5,pat:-9,sta:-3},cry:15,badMsg:"小麻糬踩到水滑倒了"},
+  {k:"sock",icon:"🧦",name:"把襪子拿出來",msg:"小麻糬把襪子塞進嘴巴",ok:{sta:-2,pat:-3},bad:{mood:-5,pat:-8}},
+  {k:"hug",icon:"🤗",name:"抱抱",msg:"小麻糬張開手要抱抱",ok:{pat:4,sta:-2,mood:10},bad:{mood:-5,pat:-8},badMsg:"小麻糬等不到抱抱，嘟起嘴巴"}];
+const MINI={k:"mini",name:"處理小狀況",time:1,done:()=>miniDone(true)};
+function miniStart(){const list=MINIS.filter(m=>m.k!==(G.miniLast||""));const m=list[Math.floor(Math.random()*list.length)];G.miniLast=m.k;
+  G.mini={...m,t:10};MINI.name=m.name;setMood("mini");
+  toast(`${m.icon} ${m.msg}！${m.k==="hug"?`靠近按 ${IS_TOUCH?"👶🏻":"E"} 抱起來，抱著走一走`:`靠近按 ${IS_TOUCH?"🍼":"F"} ${m.name}`}`,2600)}
+function miniDone(ok){const m=G.mini;if(!m)return;G.mini=null;if(!ok)RUN.fuss=Math.min(5,(RUN.fuss||0)+.5);G.miniT=(60+Math.random()*30)*(1-.08*(RUN.fuss||0));
+  for(const [k,v] of Object.entries(ok?m.ok:m.bad))addStat(k,v);
+  if(ok){bump("good");setMood(G.asleep?"asleep":"happy");toast(`✓ ${m.icon} 處理好了`,1300)}
+  else{setMood(null);if(m.cry)startCry(m.badMsg?m.badMsg.replace("小麻糬",""):"",m.cry);else toast(`${m.icon} ${m.badMsg||"來不及了……小麻糬不太開心"}`,1800)}}
+function miniTick(dt){if(G.sneakT>0)G.sneakT-=dt;if(G.mini){if(!(G.mini.k==="hug"&&G.carry))G.mini.t-=dt;if(G.mini.t<=0||G.asleep||B.state==="danger")miniDone(false);return}
+  if(G.ev||G.asleep||G.crying||B.state==="danger"||G.action||G.ff>0)return;
+  G.miniT=(G.miniT??30)-dt;if(G.miniT<=0)miniStart()}
+// ---------------- 小麻糬的事件排程：吐奶、隨機卡、溫馨時刻 ----------------
+const WARM=[["💛","小麻糬對你笑了！",{pat:10}],["🗣️","小麻糬發出「ㄇㄚ……ㄇㄚ」的聲音！",{pat:12,sta:5}],["👏","小麻糬自己拍手了！",{mood:10,pat:8}]];
+function newDayBaby(){RUN.rdone=new Set();RUN.fuss=0;RUN.rndT=100+Math.random()*40;G.spitT=0;G.miniT=25+Math.random()*20;G.mini=null;G.evCD=0;
+  const w=[...WARM].sort(()=>Math.random()-.5).slice(0,2);RUN.warm=w.map((x,i)=>({x,at:(i?12.5*60:9.5*60)+Math.random()*4*60})).sort((a,b)=>a.at-b.at)}
+function babyTick(dt){const busy=G.asleep||G.crying;
+  if(RUN.warm&&RUN.warm.length&&gameMin>=RUN.warm[0].at&&!busy&&!G.mini){const [ic,msg,gain]=RUN.warm.shift().x;for(const k in gain)addStat(k,gain[k]);setMood("happy");toast(`${ic} ${msg}`,2600)}
+  if(G.spitT>0){G.spitT-=dt;if(G.spitT<=0&&!G.asleep&&G.evCD<=0&&!G.mini){openEvent("spitup");return true}}
+  if(!busy&&!G.mini){RUN.rndT-=dt;if(RUN.rndT<=0){RUN.rndT=120+Math.random()*50;if(randomCard())return true}}
+  return false}
+
+
+// ---------------- 一天的開始與結束 ----------------
+const DAYINFO={2:{t:"第 2 天・訪客日",p:"昨天實在太累，你的體力和耐心只恢復到 80。聽說小麻糬今天特別愛哭……而且，好像還會有人找上門。"},
+  3:{t:"第 3 天・危機日",p:"連續兩天下來，你的體力和耐心只剩 50。今天的小麻糬……好像不太對勁。撐過今天，Linda 就能精神飽滿地回來！"}};
+const cloneStats=s=>JSON.parse(JSON.stringify(s));
+function newRun(){Object.assign(RUN,{day:1,tags:new Set(),done:new Set(),queue:[],keep:new Set(),total:newStats(),tips:[],snap:null});if(lindaFig){scene.remove(lindaFig.root);lindaFig=null}}
+function startDay(n,retry){
+  if(retry&&RUN.snap){RUN.tags=new Set(RUN.snap.tags);RUN.keep=new Set(RUN.snap.keep);RUN.total=cloneStats(RUN.snap.total);RUN.tips=[...RUN.snap.tips]}
+  RUN.day=n;RUN.snap={tags:[...RUN.tags],keep:[...RUN.keep],total:cloneStats(RUN.total),tips:[...RUN.tips]};
+  RUN.stats=newStats();RUN.done=new Set();RUN.queue=[];RUN.feedsToday=0;newDayBaby();RUN.reportDrain=false;G.ff=0;G.ev=null;document.body.classList.remove("event","over");
+  resetPlay(true);setStats({sta:DAYSTART[n].sta,pat:DAYSTART[n].pat,food:80,mood:85,energy:85,diaper:90});
+  RUN.keep.forEach(k=>{const h=HAZARDS.find(h=>h.k===k);if(h){G.protected[k]=true;h.done()}});
+  dayProps();gameMin=DAY_START;$("dayN").textContent=`第${n}天`;
+  if(n===1){setStep("play");toast(`${roleName()}，加油！撐到 18:00 Linda 回家就過關！`,3200)}
+  else{showSheet(`<h2>${DAYINFO[n].t}</h2><p class="lead">${DAYINFO[n].p}</p><div class="sbs"><button class="pri" id="sgo">開始 →</button></div>`);setStep("sheet");$("sgo").onclick=()=>{hideSheet();setStep("play")}}}
+function endDay(){clearDanger();stopCry();G.action=null;$("prog").classList.remove("show");if(RUN.day<3)daySummary();else finalEnding()}
+// 評分（只在結算時算）
+const TITLES={3:"Linda 的神",2:"手忙腳亂但沒放棄",1:"有呼吸就好，大家都還活著"};
+function rate(s){const mood=s.moodN?s.moodSum/s.moodN:70,ch=s.good+s.bad?s.good/(s.good+s.bad):.7;
+  const sc=mood*.5+ch*30+Math.min(12,s.rescue*2+s.secure*1.5)+8-Math.min(18,s.cry/15)-s.bad*1.5;return sc>=72?3:sc>=50?2:1}
+const stars=n=>"⭐".repeat(n)+'<span class="dim">'+"⭐".repeat(3-n)+"</span>";
+function statGrid(s){const it=[["🍼","餵奶",s.feed],["🧷","換尿布",s.diaper],["💤","哄睡",s.sleep],["🤗","安撫",s.soothe],["🧸","陪玩",s.play],["🛡️","做好防護",s.secure],["🚨","救援",s.rescue],["😭","大哭",Math.round(s.cry)+" 秒"]];
+  return `<div class="sgrid">${it.map(([ic,n,v],i)=>`<div style="animation-delay:${i*.08}s"><span>${ic}</span><b>${v}</b><small>${n}</small></div>`).join("")}</div>`}
+function daySummary(){const s=RUN.stats,r=rate(s),n=RUN.day;
+  const hints=[];if(hasTag("奶奶不放心"))hints.push("💬 奶奶好像不太放心……");if(hasTag("明天要交報告")||hasTag("報告搞砸了"))hints.push("💼 明天一早，工作的事還沒完……");
+  if(hasTag("答應回電給陳太太")||hasTag("陳太太很擔心"))hints.push("📞 陳太太的事還掛在心上……");
+  hints.push(n===1?"🚪 明天，好像會有人上門……":"🌡️ 明天的小麻糬……好像不太對勁。");
+  showSheet(`<h2>🌙 第 ${n} 天，撐過去了！</h2><p class="lead">Linda 傳來訊息：「今天辛苦了！${n===1?"小麻糬有沒有很皮？":"明天是最後一天了，拜託你了 🙏"}」</p>
+    ${statGrid(s)}<div class="title2">今日稱號：<b>${TITLES[r]}</b> ${stars(r)}</div>
+    <div class="hints">${hints.map(h=>`<p>${h}</p>`).join("")}<p class="warn">明天你的體力和耐心只剩 ${DAYSTART[n+1].sta}……</p></div>
+    <div class="sbs"><button id="sRun">趕緊逃跑</button><button class="pri" id="sNext">再幫 Linda 顧一天 →</button></div>`);
+  setStep("sheet");$("sNext").onclick=()=>{hideSheet();startDay(n+1)};$("sRun").onclick=()=>escapeEnding(n)}
+function escapeEnding(n){const txt=n===1?
+  `<p>你一邊穿鞋一邊打字：「Linda 我突然想起我家瓦斯沒關！」（你家是電磁爐）</p><p>小麻糬在背後「啊～」了一聲，你頭也不回地衝下樓。</p><p>你直接把手機轉靜音，先裝死再說。</p>`:
+  `<p>送走鄰居、爺爺奶奶、還接了工作電話……你癱在沙發上，用最後的力氣打字：</p><p>「Linda，我覺得我的靈魂已經先回家了，身體等等跟上 🫠」</p><p>Linda：「我懂……那種感覺我已經持續三個月了 🥲 謝謝你撐了兩天！」</p>`;
+  showSheet(`<h2>🏃 逃跑結局</h2><div class="story">${txt}</div><p class="lead">你撐了 ${n} 天。</p>${statGrid(RUN.total)}<div class="sbs"><button class="pri" id="sAgain">再玩一次</button></div>`);
+  $("sAgain").onclick=backToStart}
+let lindaFig=null;
+function finalEnding(){const s=RUN.total,r=rate(s);
+  lindaFig=makeFigure(FIGURES.linda);lindaFig.setFace("happy");lindaFig.mode="wave";lindaFig.root.scale.setScalar(.82);lindaFig.root.position.set(-6.15,0,5.2);lindaFig.root.rotation.y=Math.PI*.9;scene.add(lindaFig.root);
+  goTo(new THREE.Vector3(-5.6,.8,4.6),.62,2.2,1.2);
+  const lines=[];if(hasTag("撞過頭"))lines.push("「頭上的包還好嗎？我會再帶他去給醫生看看。」");if(hasTag("發燒處理得好"))lines.push("「醫生說你處理得很好，幸好有你在！」");
+  if(hasTag("發燒處理不當"))lines.push("「發燒的事……下次記得先量體溫、打給我喔。」");if(hasTag("奶奶不放心"))lines.push("「我媽說你們餵太少……別理她啦 😂」");
+  lines.push(r===3?"「你根本是神！小麻糬好像比較喜歡你了 😳」":r===2?"「看得出來你很努力，真的謝謝你！」":"「大家都還活著，這樣就很好了 🥲」");
+  showSheet(`<h2>🌞 Linda 回來了！</h2><p class="lead">Linda 睡飽了、精神飽滿地打開門，一把抱起小麻糬。</p><div class="story">${lines.map(l=>`<p>Linda：${l}</p>`).join("")}</div>
+    ${statGrid(s)}<div class="title2">三天總稱號：<b>${TITLES[r]}</b> ${stars(r)}</div>
+    ${RUN.tips.length?`<details class="tips" open><summary>📚 這三天學到的事（${RUN.tips.length}）</summary><ul>${RUN.tips.map(t=>`<li>${t}</li>`).join("")}</ul></details>`:""}
+    <div class="sbs"><button class="pri" id="sAgain">再玩一次（換個角色試試）</button></div>`,"side");
+  setStep("sheet");$("sAgain").onclick=backToStart}
+function backToStart(){hideSheet();newRun();resetPlay();setStep("intro");focus("exterior")}
+function showSheet(html,cls=""){const el=$("sheet");el.className=cls;$("sheetB").innerHTML=html;el.scrollTop=0}
+function hideSheet(){$("sheet").className="";$("sheetB").innerHTML=""}
+
+
+const L=(a,b,k)=>a+(b-a)*k,C1=new THREE.Color(),C2=new THREE.Color();
+function updateLight(dt){updateClock(dt);nightK+=(night-nightK)*Math.min(1,dt*2.5);const k=nightK;
+  hemi.intensity=L(.95,.28,k);hemi.color.copy(C1.set(0xFFF7EE).lerp(C2.set(0x9AA4D0),k));
+  sun.intensity=L(1.55,.35,k);sun.color.copy(C1.set(0xFFF0DD).lerp(C2.set(0xFFB27A),k));fill.intensity=L(.35,.12,k);
+  renderer.toneMappingExposure=L(1.15,1.0,k);
+  GLASS.emissive.copy(C1.set(0xEAF5FB).lerp(C2.set(0x34406A).lerp(C1.clone().set(0xFFC27A),1-roofK),k));GLASS.emissiveIntensity=L(.55,.7,k);
+  LAMPS.forEach(o=>o.l.intensity=o.power*k);EMIS.forEach(o=>o.m.emissiveIntensity=L(o.day,o.night,k));GLOWS.forEach(o=>o.sp.material.opacity=L(o.day,o.night,k))}
+
+// =====================================================================
+//  每一格畫面
+// =====================================================================
+const clock=new THREE.Clock();setCam(new THREE.Vector3(0,0,1.2),ROOMS.exterior.az,POL,.82);focus("exterior");
+function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
+  if(tween){tween.k=Math.min(1,tween.k+dt/tween.dur);const e=1-Math.pow(1-tween.k,3),a=tween.a,b=tween.b;
+    setCam(a.t.clone().lerp(b.t,e),L(a.az,b.az,e),L(a.pol,b.pol,e),L(a.zoom,b.zoom,e));controls.enabled=tween.k>=1;if(tween.k>=1)tween=null}
+  else controls.update();
+  updateGame(dt,t);tutTick();
+  updateWalls(dt);updateLight(dt);
+  animArrows(t);storyTick(dt);if(lindaFig)lindaFig.update(dt);if(player)player.update(dt*(typeof G!=="undefined"&&G.running?1.5:1));if(FLOW.step==="select")renderSelect(dt);
+  mobile.rotation.y=t*.4;bhead.rotation.z=Math.sin(t*1.6)*.12;barms[0].rotation.x=Math.sin(t*3)*.5-.3;barms[1].rotation.x=-Math.sin(t*3)*.5-.3;
+  if(water.visible)duck.position.y=.48+Math.sin(t*2)*.01;
+  renderer.render(scene,camera)}
+frame();
+
+</script>
+
+
+
+</body></html>

@@ -125,7 +125,57 @@
     "score": 49.7,
     "signaling": 5,
     "summary_zh": "等權重股開始追上權值股、資金偏向防禦、大型股領先",
-    "generated_at": "2026-11-17 09:42:26"
+    "generated_at": "2026-11-17 09:42:26",
+    "parts": [
+      {
+        "key": "concentration",
+        "name": "市場集中度",
+        "ratio": "RSP/SPY",
+        "weight": 25,
+        "score": 70,
+        "direction": "走向擴散"
+      },
+      {
+        "key": "sector_rotation",
+        "name": "類股輪動",
+        "ratio": "XLY/XLP",
+        "weight": 10,
+        "score": 60,
+        "direction": "偏避險"
+      },
+      {
+        "key": "size_factor",
+        "name": "大小型股",
+        "ratio": "IWM/SPY",
+        "weight": 15,
+        "score": 52,
+        "direction": "大型股領先"
+      },
+      {
+        "key": "yield_curve",
+        "name": "殖利率曲線",
+        "ratio": "SHY/TLT",
+        "weight": 20,
+        "score": 50,
+        "direction": "趨平"
+      },
+      {
+        "key": "credit_conditions",
+        "name": "信用環境",
+        "ratio": "HYG/LQD",
+        "weight": 15,
+        "score": 42,
+        "direction": "轉緊"
+      },
+      {
+        "key": "equity_bond",
+        "name": "股債關係",
+        "ratio": "SPY/TLT",
+        "weight": 15,
+        "score": 14,
+        "direction": "偏避險"
+      }
+    ]
   },
   "calendar": [
     {
@@ -165,6 +215,6 @@
       "event": "CPI"
     }
   ],
-  "mino_says": "這週醫療、通訊服務跑在前面，原物料、能源、公用事業偏弱～11 個類股有 2 個趨勢向上喔！",
+  "mino_says": "最新收盤：醫療、通訊服務跑在前面，原物料、能源、公用事業偏弱～11 個類股有 2 個趨勢向上喔！",
   "updated_at": "2026-11-17 17:42"
 }

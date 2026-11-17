@@ -110,7 +110,22 @@ def build_macro():
         p = DIRECTION_PHRASE.get((k, v.get("direction")))
         if p and p not in phrases:
             phrases.append(p)
+    names = {"concentration": ("市場集中度", "RSP/SPY"), "yield_curve": ("殖利率曲線", "SHY/TLT"),
+             "credit_conditions": ("信用環境", "HYG/LQD"), "size_factor": ("大小型股", "IWM/SPY"),
+             "equity_bond": ("股債關係", "SPY/TLT"), "sector_rotation": ("類股輪動", "XLY/XLP")}
+    dir_zh = {"broadening": "走向擴散", "concentrating": "走向集中", "flattening": "趨平", "steepening": "轉陡",
+              "tightening": "轉緊", "easing": "轉鬆", "large_cap_leading": "大型股領先",
+              "small_cap_leading": "小型股領先", "risk_off": "偏避險", "risk_on": "偏積極"}
+    weights = m["composite"]["component_scores"]
+    parts = []
+    for k, (nm, ratio) in names.items():
+        v = comps.get(k, {})
+        parts.append({"key": k, "name": nm, "ratio": ratio,
+                      "weight": round(weights.get(k, {}).get("weight", 0) * 100),
+                      "score": v.get("score", 0), "direction": dir_zh.get(v.get("direction"), v.get("direction", ""))})
+    parts.sort(key=lambda x: -x["score"])
     return {
+        "parts": parts,
         "zone_zh": ZONE_ZH.get(m["composite"]["zone"], m["composite"]["zone"]),
         "score": m["composite"]["composite_score"],
         "signaling": m["composite"]["signaling_components"],
@@ -149,7 +164,7 @@ def pick_calendar(events, days=28):
 def mino_says(s):
     top = "、".join(r["name"] for r in s["top3"][:2])
     weak = "、".join(r["name"] for r in s["oversold"]) or "沒有類股超賣"
-    return f"這週{top}跑在前面，{weak}偏弱～11 個類股有 {len(s['up_names'])} 個趨勢向上喔！"
+    return f"最新收盤：{top}跑在前面，{weak}偏弱～11 個類股有 {len(s['up_names'])} 個趨勢向上喔！"
 
 
 def main():

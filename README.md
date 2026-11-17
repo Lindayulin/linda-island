@@ -1,6 +1,6 @@
 # Hello Island｜Linda 小島
 
-每週一台灣時間 10:30，GitHub 會自動跑三個技能，更新「米諾的美股週觀測」的數據，Netlify 再自動重新發布網站。
+週二到週六台灣時間 10:30、13:30，GitHub 會自動跑三個技能，更新「米諾的美股週觀測」的數據，Netlify 再自動重新發布網站。
 
 ## 資料夾裡有什麼
 
@@ -12,7 +12,7 @@
 | `scripts/update.py` | 跑技能、整理成中文數據的程式 |
 | `.github/workflows/update.yml` | 每週一自動執行的排程設定 |
 | `netlify.toml` | Netlify 設定 |
-| `images/` | 放角色圖片：`linda.png`、`mino.png`、`peipei.png` |
+| `linda.png` 等 | 角色圖片 |
 
 ## 想手動更新一次？
 
