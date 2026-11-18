@@ -2,14 +2,18 @@ name: 每天更新市場數據
 
 on:
   schedule:
-    - cron: "30 2,5 * * 2-6"   # 週二到週六 台灣時間 10:30、13:30
+    - cron: "17 2,5 * * 2-6"   # 週二到週六 台灣時間 10:17、13:17
   workflow_dispatch:
   push:
     paths:
-      - "site-update.zip"      # 上傳網站更新包時自動執行
+      - "site-update.zip"
 
 permissions:
   contents: write
+
+concurrency:
+  group: update-site
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -48,4 +52,5 @@ jobs:
           git config user.email "island-bot@users.noreply.github.com"
           git add data/
           git diff --staged --quiet || git commit -m "更新市場數據 $(date +'%Y-%m-%d %H:%M')"
+          git pull --rebase origin main
           git push
