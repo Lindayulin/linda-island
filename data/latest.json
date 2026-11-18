@@ -126,8 +126,8 @@
         "name": "市場集中度",
         "ratio": "RSP/SPY",
         "weight": 25,
-        "score": 70,
-        "direction": "走向擴散"
+        "score": 60,
+        "direction": "走向集中"
       },
       {
         "key": "sector_rotation",
@@ -142,7 +142,7 @@
         "name": "大小型股",
         "ratio": "IWM/SPY",
         "weight": 15,
-        "score": 52,
+        "score": 54,
         "direction": "大型股領先"
       },
       {
@@ -166,15 +166,15 @@
         "name": "股債關係",
         "ratio": "SPY/TLT",
         "weight": 15,
-        "score": 14,
+        "score": 21,
         "direction": "偏避險"
       }
     ],
     "zone_zh": "多項指標進入轉換區",
-    "score": 49.7,
+    "score": 48.5,
     "signaling": 5,
-    "summary_zh": "等權重股開始追上權值股、資金偏向防禦、大型股領先",
-    "generated_at": "2026-11-18 03:48:56"
+    "summary_zh": "權值股持續主導、資金偏向防禦、大型股領先",
+    "generated_at": "2026-11-18 13:58:12"
   },
   "calendar": [
     {
@@ -206,8 +206,14 @@
       "weekday": "四",
       "time": "21:30",
       "event": "CPI"
+    },
+    {
+      "date": "12/16",
+      "weekday": "三",
+      "time": "21:30",
+      "event": "零售銷售"
     }
   ],
   "mino_says": "最新收盤：醫療、通訊服務跑在前面，原物料、能源、公用事業偏弱～11 個類股有 1 個趨勢向上喔！",
-  "updated_at": "2026-11-18 11:48"
+  "updated_at": "2026-11-18 21:58"
 }
