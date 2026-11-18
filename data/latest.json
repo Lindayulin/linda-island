@@ -1,32 +1,31 @@
 {
   "sector": {
-    "data_date": "2026-11-16",
-    "us_label": "11/16（一）",
-    "score": 54,
-    "prev_score": 57,
+    "data_date": "2026-11-17",
+    "us_label": "11/17（二）",
+    "score": 50,
+    "prev_score": 54,
     "regime_zh": "平衡",
-    "cyclical_pct": 20.2,
-    "defensive_pct": 19.3,
+    "cyclical_pct": 15.5,
+    "defensive_pct": 16.5,
     "up_names": [
-      "通訊服務",
-      "不動產"
+      "通訊服務"
     ],
     "top3": [
       {
         "name": "醫療",
-        "ratio": 31.5,
+        "ratio": 26.6,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "通訊服務",
-        "ratio": 30.5,
+        "ratio": 26.2,
         "trend": "Up",
         "oversold": false
       },
       {
         "name": "必需消費",
-        "ratio": 23.7,
+        "ratio": 21.8,
         "trend": "Down",
         "oversold": false
       }
@@ -34,7 +33,7 @@
     "oversold": [
       {
         "name": "原物料",
-        "ratio": 4.3,
+        "ratio": 2.9,
         "trend": "Down",
         "oversold": true
       },
@@ -54,55 +53,55 @@
     "all": [
       {
         "name": "醫療",
-        "ratio": 31.5,
+        "ratio": 26.6,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "通訊服務",
-        "ratio": 30.5,
+        "ratio": 26.2,
         "trend": "Up",
         "oversold": false
       },
       {
         "name": "必需消費",
-        "ratio": 23.7,
-        "trend": "Down",
-        "oversold": false
-      },
-      {
-        "name": "科技",
-        "ratio": 20.6,
+        "ratio": 21.8,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "不動產",
-        "ratio": 20.6,
-        "trend": "Up",
+        "ratio": 16.4,
+        "trend": "Down",
         "oversold": false
       },
       {
-        "name": "金融",
-        "ratio": 18.1,
+        "name": "科技",
+        "ratio": 15.3,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "非必需消費",
-        "ratio": 16.8,
+        "ratio": 13.2,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "工業",
-        "ratio": 15.1,
+        "ratio": 12.4,
+        "trend": "Down",
+        "oversold": false
+      },
+      {
+        "name": "金融",
+        "ratio": 10.5,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "原物料",
-        "ratio": 4.3,
+        "ratio": 2.9,
         "trend": "Down",
         "oversold": true
       },
@@ -175,15 +174,9 @@
     "score": 49.7,
     "signaling": 5,
     "summary_zh": "等權重股開始追上權值股、資金偏向防禦、大型股領先",
-    "generated_at": "2026-11-17 10:15:15"
+    "generated_at": "2026-11-18 03:48:56"
   },
   "calendar": [
-    {
-      "date": "11/17",
-      "weekday": "二",
-      "time": "21:30",
-      "event": "零售銷售"
-    },
     {
       "date": "11/19",
       "weekday": "四",
@@ -215,6 +208,6 @@
       "event": "CPI"
     }
   ],
-  "mino_says": "最新收盤：醫療、通訊服務跑在前面，原物料、能源、公用事業偏弱～11 個類股有 2 個趨勢向上喔！",
-  "updated_at": "2026-11-17 18:15"
+  "mino_says": "最新收盤：醫療、通訊服務跑在前面，原物料、能源、公用事業偏弱～11 個類股有 1 個趨勢向上喔！",
+  "updated_at": "2026-11-18 11:48"
 }
