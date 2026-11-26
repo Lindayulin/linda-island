@@ -1,29 +1,31 @@
 {
   "sector": {
-    "data_date": "2026-11-24",
-    "us_label": "11/24（二）",
-    "score": 46,
-    "prev_score": 53,
+    "data_date": "2026-11-25",
+    "us_label": "11/25（三）",
+    "score": 45,
+    "prev_score": 46,
     "regime_zh": "平衡",
-    "cyclical_pct": 13.4,
-    "defensive_pct": 16.1,
-    "up_names": [],
+    "cyclical_pct": 14.4,
+    "defensive_pct": 17.4,
+    "up_names": [
+      "公用事業"
+    ],
     "top3": [
       {
         "name": "醫療",
-        "ratio": 29.9,
+        "ratio": 27.8,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "必需消費",
-        "ratio": 22.9,
+        "ratio": 23.5,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "通訊服務",
-        "ratio": 21.0,
+        "ratio": 21.4,
         "trend": "Down",
         "oversold": false
       }
@@ -31,31 +33,25 @@
     "oversold": [
       {
         "name": "金融",
-        "ratio": 8.0,
-        "trend": "Down",
-        "oversold": true
-      },
-      {
-        "name": "工業",
-        "ratio": 8.0,
+        "ratio": 7.8,
         "trend": "Down",
         "oversold": true
       },
       {
         "name": "原物料",
-        "ratio": 1.5,
+        "ratio": 4.6,
         "trend": "Down",
         "oversold": true
       },
       {
         "name": "公用事業",
-        "ratio": 1.3,
-        "trend": "Down",
+        "ratio": 2.7,
+        "trend": "Up",
         "oversold": true
       },
       {
         "name": "能源",
-        "ratio": 0.0,
+        "ratio": 0.7,
         "trend": "Down",
         "oversold": true
       }
@@ -63,25 +59,31 @@
     "all": [
       {
         "name": "醫療",
-        "ratio": 29.9,
+        "ratio": 27.8,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "必需消費",
-        "ratio": 22.9,
+        "ratio": 23.5,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "通訊服務",
-        "ratio": 21.0,
+        "ratio": 21.4,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "科技",
-        "ratio": 15.1,
+        "ratio": 18.2,
+        "trend": "Down",
+        "oversold": false
+      },
+      {
+        "name": "不動產",
+        "ratio": 15.5,
         "trend": "Down",
         "oversold": false
       },
@@ -92,38 +94,32 @@
         "oversold": false
       },
       {
-        "name": "不動產",
-        "ratio": 10.2,
+        "name": "工業",
+        "ratio": 9.8,
         "trend": "Down",
         "oversold": false
       },
       {
         "name": "金融",
-        "ratio": 8.0,
-        "trend": "Down",
-        "oversold": true
-      },
-      {
-        "name": "工業",
-        "ratio": 8.0,
+        "ratio": 7.8,
         "trend": "Down",
         "oversold": true
       },
       {
         "name": "原物料",
-        "ratio": 1.5,
+        "ratio": 4.6,
         "trend": "Down",
         "oversold": true
       },
       {
         "name": "公用事業",
-        "ratio": 1.3,
-        "trend": "Down",
+        "ratio": 2.7,
+        "trend": "Up",
         "oversold": true
       },
       {
         "name": "能源",
-        "ratio": 0.0,
+        "ratio": 0.7,
         "trend": "Down",
         "oversold": true
       }
@@ -156,19 +152,11 @@
         "direction": "偏避險"
       },
       {
-        "key": "yield_curve",
-        "name": "殖利率曲線",
-        "ratio": "SHY/TLT",
-        "weight": 20,
-        "score": 50,
-        "direction": "趨平"
-      },
-      {
         "key": "credit_conditions",
         "name": "信用環境",
         "ratio": "HYG/LQD",
         "weight": 15,
-        "score": 50,
+        "score": 52,
         "direction": "轉緊"
       },
       {
@@ -176,23 +164,25 @@
         "name": "大小型股",
         "ratio": "IWM/SPY",
         "weight": 15,
-        "score": 47,
+        "score": 42,
         "direction": "大型股領先"
+      },
+      {
+        "key": "yield_curve",
+        "name": "殖利率曲線",
+        "ratio": "SHY/TLT",
+        "weight": 20,
+        "score": 41,
+        "direction": "轉陡"
       }
     ],
     "zone_zh": "多項指標進入轉換區",
-    "score": 57.0,
+    "score": 54.8,
     "signaling": 6,
     "summary_zh": "等權重股開始追上權值股、股債關係偏避險、資金偏向防禦",
-    "generated_at": "2026-11-25 11:17:56"
+    "generated_at": "2026-11-26 07:19:57"
   },
   "calendar": [
-    {
-      "date": "11/25",
-      "weekday": "三",
-      "time": "21:30",
-      "event": "PCE、GDP"
-    },
     {
       "date": "12/4",
       "weekday": "五",
@@ -216,8 +206,14 @@
       "weekday": "三",
       "time": "21:30",
       "event": "零售銷售"
+    },
+    {
+      "date": "12/23",
+      "weekday": "三",
+      "time": "21:30",
+      "event": "PCE、GDP"
     }
   ],
-  "mino_says": "最新收盤：醫療、必需消費跑在前面，金融、工業、原物料、公用事業、能源偏弱～11 個類股有 0 個趨勢向上喔！",
-  "updated_at": "2026-11-25 19:17"
+  "mino_says": "最新收盤：醫療、必需消費跑在前面，金融、原物料、公用事業、能源偏弱～11 個類股有 1 個趨勢向上喔！",
+  "updated_at": "2026-11-26 15:19"
 }
